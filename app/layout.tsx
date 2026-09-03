@@ -1,5 +1,8 @@
 import { Analytics } from '@vercel/analytics/next'
+import { Noto_Sans_KR } from 'next/font/google'
 import type { Metadata, Viewport } from 'next'
+
+const notoSansKr = Noto_Sans_KR({ subsets: ['latin'], variable: '--font-korean', display: 'swap' })
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -36,7 +39,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className="bg-background">
+    <html lang="ko" className={`bg-background ${notoSansKr.variable}`}>
       <body className="antialiased">
         {children}
         {process.env.NODE_ENV === 'production' && <Analytics />}
