@@ -135,9 +135,9 @@ main:not(.theme-dark) .intro, main:not(.theme-dark) .schedule-section, main:not(
 main:not(.theme-dark) .image-break { border-bottom: 1px solid rgba(92,119,157,.14); }
 
 /* Keep one divider above the upcoming-series label. */
-.event-filters, .date-filter { border-bottom: 0 !important; }
-.schedule-section { border-top: 0 !important; }
-.schedule-section .section-top { border-top: 1px solid rgba(92,119,157,.14) !important; padding-top: 14px; }
+.event-filters, .date-filter, .filter-row { border: 0 !important; border-bottom: 0 !important; box-shadow: none !important; }
+.schedule-section { border-top: 0 !important; position: relative; }.schedule-section::before { content: ''; position: absolute; top: 88px; left: 4.5vw; right: 4.5vw; height: 1px; background: rgba(92,119,157,.18); pointer-events: none; z-index: 2; }
+.schedule-section .section-top { border-top: 1px solid rgba(92,119,157,.28) !important; padding-top: 18px; margin-top: 28px; }
 .schedule-section .date-filter { margin-bottom: 0; padding-bottom: 10px; }
 main:not(.theme-dark) .news-section { background: #f7faff !important; background-image: none !important; }
 main:not(.theme-dark) .schedule-section { background: #f7faff !important; background-image: none !important; }
