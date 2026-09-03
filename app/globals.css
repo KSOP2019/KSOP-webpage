@@ -198,3 +198,7 @@ main[class*="lang-"] .site-header { min-width: 0; }
 /* Restore the original EN copy visibility; translations may wrap but never disappear. */
 main[class*="lang-"] .hero-copy h1 { height: auto !important; min-height: 0 !important; max-height: none !important; flex: none !important; white-space: normal !important; overflow: visible !important; max-width: 8ch; }
 main[class*="lang-"] h2 { max-width: none !important; white-space: normal !important; overflow: visible !important; text-overflow: clip !important; }
+/* Keep both columns of the series introduction visible after language changes. */
+main[class*="lang-"] .intro-content { display: grid !important; grid-template-columns: minmax(0, 1fr) minmax(240px, .8fr) !important; align-items: start !important; overflow: visible !important; }
+main[class*="lang-"] .intro-content h2 { width: auto !important; max-width: none !important; height: auto !important; min-height: 0 !important; overflow: visible !important; white-space: normal !important; }
+main[class*="lang-"] .intro-content .large-copy { width: auto !important; max-width: 34ch !important; height: auto !important; min-height: 0 !important; overflow: visible !important; white-space: normal !important; }
