@@ -147,6 +147,11 @@ main:not(.theme-dark) .news-section { background: #f7faff !important; background
 main:not(.theme-dark) .schedule-section { background: #f7faff !important; background-image: none !important; }
 section#ranking { border-top: 2px solid rgba(54,72,103,.34) !important; padding-top: 112px !important; }
 
+/* Ranks 4–10: only the name lifts on direct hover. */
+.ranking-table .player-row { transform: none !important; background: transparent !important; box-shadow: none !important; }
+.ranking-table .player-row .player-name { display: inline-block; position: relative; z-index: 2; cursor: pointer; transform: translateY(0) translateZ(0); transition: transform .2s ease, text-shadow .2s ease, color .2s ease; }
+.ranking-table .player-row .player-name:hover { transform: translateY(-8px) translateZ(14px) scale(1.04) !important; text-shadow: 1px 1px 0 rgba(23,26,36,.22), 3px 4px 0 rgba(23,26,36,.16), 7px 10px 14px rgba(23,26,36,.18); color: var(--primary); }
+
 /* Keep every ranking row flat; apply depth only to the player-name text. */
 .player-row, .player-row:hover, .player-row:focus-visible { transform: none !important; box-shadow: none !important; background: transparent !important; }
 .player-row > *:not(.player-name) { transform: none !important; box-shadow: none !important; }
