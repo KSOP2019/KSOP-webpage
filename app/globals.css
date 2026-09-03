@@ -192,4 +192,8 @@ main[class*="lang-"] .nav-links a { display: inline-flex; width: 82px; justify-c
 main[class*="lang-"] .section-label, main[class*="lang-"] .eyebrow { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 main[class*="lang-"] .event-title b { width: 100%; overflow: hidden; text-overflow: ellipsis; }
 main[class*="lang-"] .site-header { min-width: 0; }
-@media (max-width: 720px) { main[class*="lang-"] .hero-copy h1 { height: 200px !important; min-height: 200px !important; max-height: 200px !important; flex-basis: 200px !important; } }
+@media (max-width: 720px) { main[class*="lang-"] .hero-copy h1 { height: auto !important; min-height: 0 !important; max-height: none !important; flex: none !important; white-space: normal !important; overflow: visible !important; } }
+
+/* Restore the original EN copy visibility; translations may wrap but never disappear. */
+main[class*="lang-"] .hero-copy h1 { height: auto !important; min-height: 0 !important; max-height: none !important; flex: none !important; white-space: normal !important; overflow: visible !important; max-width: 8ch; }
+main[class*="lang-"] h2 { max-width: none !important; white-space: normal !important; overflow: visible !important; text-overflow: clip !important; }
