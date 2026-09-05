@@ -13,7 +13,7 @@ const nav = [
 ] as const
 
 const content = {
-  schedule: { kicker: '01 / SCHEDULE', title: 'SCHEDULE', intro: 'A considered calendar of live poker, from opening tables to championship nights.', items: ['NOV 17 — NLH WARM-UP', 'NOV 18 — PLO KICK-OFF', 'NOV 20 — MAIN EVENT DAY 1', 'NOV 22 — HIGH ROLLER CHAMPIONSHIP'] },
+  schedule: { kicker: '01 / SCHEDULE', title: 'SCHEDULE', intro: 'A considered calendar of live poker, from opening tables to championship nights.', items: [{ label: 'NOV 17 — NLH WARM-UP', image: '/images/schedule-warmup.png' }, { label: 'NOV 18 — PLO KICK-OFF', image: '/images/schedule-plo.png' }, { label: 'NOV 20 — MAIN EVENT DAY 1', image: '/images/schedule-main-event.png' }, { label: 'NOV 22 — HIGH ROLLER CHAMPIONSHIP', image: '/images/schedule-high-roller.png' }] },
   event: { kicker: 'EVENT / THE PROGRAM', title: 'THE TABLE IS SET', intro: 'Every event is built around momentum, precision, and the players who shape the room.', items: ['INVITATION', 'NLH POKER PLAYERS CHAMPIONSHIP', 'PLO NIGHT', 'MAIN EVENT'] },
   ranking: { kicker: '03 / PLAYER RANKING', title: 'TOP PLAYERS', intro: 'The season belongs to the players who make every decision count.', items: ['01  JUN-HYUK LEE — ₩ 218,400,000', '02  DANIEL LIM — ₩ 164,800,000', '03  MIN-SEOK KIM — ₩ 129,500,000', '04  ALEX PARK — ₩ 98,200,000'] },
   news: { kicker: '04 / FROM THE SERIES', title: 'INSIDE THE STORY.', intro: 'Reports, portraits, and moments from the Korea Series of Poker.', items: ['THE TABLE IS SET', 'A NEW STANDARD FOR LIVE POKER', 'SEOUL GRAND PRIX RECAP', 'THE PLAYERS TO WATCH'] },
@@ -35,7 +35,7 @@ export default function DetailPage({ section }: { section: Section }) {
       <div className="detail-actions"><details className="language-menu"><summary className="language"><Globe2 /> {language}</summary><div className="language-options">{['EN', 'KR', 'JP', 'CN'].map(code => <button key={code} onClick={() => setLanguage(code)}>{code}</button>)}</div></details><button className="theme-switch" onClick={() => setDark(value => !value)} aria-label="Toggle theme">☼ <span className="theme-track"><span /></span> ☾</button><button className="menu-toggle" onClick={() => setMenuOpen(value => !value)} aria-label="Toggle menu">{menuOpen ? <X /> : <Menu />}</button></div>
     </header>
     <section className="detail-hero"><div className="detail-kicker">{page.kicker}</div><div className="detail-hero-grid"><h1>{page.title}</h1><p>{page.intro}</p></div></section>
-    <section className="detail-list" aria-label={`${page.title} details`}>{page.items.map((item, index) => <article className="detail-row" key={item}><span>{String(index + 1).padStart(2, '0')}</span><h2>{item}</h2><span className="detail-arrow">↗</span></article>)}</section>
+    <section className="detail-list" aria-label={`${page.title} details`}>{page.items.map((item, index) => { const label = typeof item === 'string' ? item : item.label; return <article className="detail-row" key={label} style={section === 'schedule' && typeof item !== 'string' ? { backgroundImage: `linear-gradient(90deg, rgba(7, 12, 22, .92) 0%, rgba(7, 12, 22, .58) 48%, rgba(7, 12, 22, .18) 100%), url(${item.image})` } : undefined}><span>{String(index + 1).padStart(2, '0')}</span><h2>{label}</h2>{section !== 'schedule' && <span className="detail-arrow">↗</span>}</article> })}</section>
     <footer className="detail-footer"><span>THE KOREA SERIES OF POKER · 2026</span><Link href="/">BACK TO HOME ↗</Link></footer>
   </main>
 }
