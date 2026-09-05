@@ -13,7 +13,7 @@ const nav = [
 ] as const
 
 const content = {
-  schedule: { kicker: '02 / UPCOMING SERIES', title: 'EVENTS', intro: 'A considered calendar of live poker, from opening tables to championship nights.', items: ['NOV 17 — NLH WARM-UP', 'NOV 18 — PLO KICK-OFF', 'NOV 20 — MAIN EVENT DAY 1', 'NOV 22 — HIGH ROLLER CHAMPIONSHIP'] },
+  schedule: { kicker: '01 / SCHEDULE', title: 'SCHEDULE', intro: 'A considered calendar of live poker, from opening tables to championship nights.', items: ['NOV 17 — NLH WARM-UP', 'NOV 18 — PLO KICK-OFF', 'NOV 20 — MAIN EVENT DAY 1', 'NOV 22 — HIGH ROLLER CHAMPIONSHIP'] },
   event: { kicker: 'EVENT / THE PROGRAM', title: 'THE TABLE IS SET', intro: 'Every event is built around momentum, precision, and the players who shape the room.', items: ['INVITATION', 'NLH POKER PLAYERS CHAMPIONSHIP', 'PLO NIGHT', 'MAIN EVENT'] },
   ranking: { kicker: '03 / PLAYER RANKING', title: 'TOP PLAYERS', intro: 'The season belongs to the players who make every decision count.', items: ['01  JUN-HYUK LEE — ₩ 218,400,000', '02  DANIEL LIM — ₩ 164,800,000', '03  MIN-SEOK KIM — ₩ 129,500,000', '04  ALEX PARK — ₩ 98,200,000'] },
   news: { kicker: '04 / FROM THE SERIES', title: 'INSIDE THE STORY.', intro: 'Reports, portraits, and moments from the Korea Series of Poker.', items: ['THE TABLE IS SET', 'A NEW STANDARD FOR LIVE POKER', 'SEOUL GRAND PRIX RECAP', 'THE PLAYERS TO WATCH'] },
@@ -28,7 +28,7 @@ export default function DetailPage({ section }: { section: Section }) {
   const [menuOpen, setMenuOpen] = useState(false)
   const page = content[section]
   useEffect(() => { document.documentElement.lang = language.toLowerCase() }, [language])
-  return <main className={`detail-page ${dark ? 'theme-dark' : ''}`}>
+  return <main className={`detail-page ${section === 'schedule' ? 'schedule-detail' : ''} ${dark ? 'theme-dark' : ''}`}>
     <header className="site-header detail-header">
       <Link href="/" className="brand"><img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/%EB%88%84%EB%81%BC%EB%A1%9C%EA%B3%A02-OT3NlxHk30TAmPPpNIcNvNtvTVM74n.png" alt="KSOP Korea Series of Poker" /></Link>
       <nav className={menuOpen ? 'nav-links is-open' : 'nav-links'}>{nav.map(([label, href]) => <Link key={href} href={href} className={href === `/${section}` ? 'active' : ''} onClick={() => setMenuOpen(false)}>{label}</Link>)}</nav>
