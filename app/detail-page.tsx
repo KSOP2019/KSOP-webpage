@@ -23,7 +23,7 @@ const content = {
 type Section = keyof typeof content
 
 export default function DetailPage({ section }: { section: Section }) {
-  const [language, setLanguage] = useState('EN')
+  const [language, setLanguage] = useState('KR')
   const [dark, setDark] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const page = content[section]
@@ -32,7 +32,7 @@ export default function DetailPage({ section }: { section: Section }) {
     <header className="site-header detail-header">
       <Link href="/" className="brand"><img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/%EB%88%84%EB%81%BC%EB%A1%9C%EA%B3%A02-OT3NlxHk30TAmPPpNIcNvNtvTVM74n.png" alt="KSOP Korea Series of Poker" /></Link>
       <nav className={menuOpen ? 'nav-links is-open' : 'nav-links'}>{nav.map(([label, href]) => <Link key={href} href={href} className={href === `/${section}` ? 'active' : ''} onClick={() => setMenuOpen(false)}>{label}</Link>)}</nav>
-      <div className="detail-actions"><details className="language-menu"><summary className="language"><Globe2 /> {language}</summary><div className="language-options">{['EN', 'KR', 'JP', 'CN'].map(code => <button key={code} onClick={() => setLanguage(code)}>{code}</button>)}</div></details><button className="theme-switch" onClick={() => setDark(value => !value)} aria-label="Toggle theme">☼ <span className="theme-track"><span /></span> ☾</button><button className="menu-toggle" onClick={() => setMenuOpen(value => !value)} aria-label="Toggle menu">{menuOpen ? <X /> : <Menu />}</button></div>
+      <div className="detail-actions"><details className="language-menu"><summary className="language" aria-label={`Current language: ${language}`}><Globe2 /></summary><div className="language-options">{['EN', 'KR', 'JP', 'CN'].filter(code => code !== language).map(code => <button key={code} onClick={() => setLanguage(code)}>{code}</button>)}</div></details><button className="theme-switch" onClick={() => setDark(value => !value)} aria-label="Toggle theme">☼ <span className="theme-track"><span /></span> ☾</button><button className="menu-toggle" onClick={() => setMenuOpen(value => !value)} aria-label="Toggle menu">{menuOpen ? <X /> : <Menu />}</button></div>
     </header>
     <section className="detail-hero"><div className="detail-kicker">{page.kicker}</div><div className="detail-hero-grid"><h1>{page.title}</h1><p>{page.intro}</p></div></section>
     <section className="detail-list" aria-label={`${page.title} details`}>{page.items.map((item, index) => { const label = typeof item === 'string' ? item : item.label; return <article className="detail-row" key={label} style={section === 'schedule' && typeof item !== 'string' ? { backgroundImage: `linear-gradient(90deg, rgba(7, 12, 22, .92) 0%, rgba(7, 12, 22, .58) 48%, rgba(7, 12, 22, .18) 100%), url(${item.image})` } : undefined}>{section !== 'schedule' && <span>{String(index + 1).padStart(2, '0')}</span>}<h2>{label}</h2>{section !== 'schedule' && <span className="detail-arrow">↗</span>}</article> })}</section>
