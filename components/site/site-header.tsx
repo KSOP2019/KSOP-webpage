@@ -23,7 +23,7 @@ export function SiteHeader() {
       <nav className={menuOpen ? 'nav-links is-open' : 'nav-links'}>
         {t.nav.map((item, index) => {
           const href = NAV_ROUTES[index]
-          const active = pathname === href || (href !== '/' && pathname.startsWith(href))
+          const active = pathname === href || ((href as string) !== '/' && pathname.startsWith(href))
           return (
             <Link
               key={item}
