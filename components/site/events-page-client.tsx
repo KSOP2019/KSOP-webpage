@@ -78,11 +78,10 @@ export function EventsPageClient({ events }: { events: EventItem[] }) {
         </div>
       ) : null}
 
-      <p className="muted-copy" style={{ marginBottom: '12px' }}>
-        SHOWING {shownEvents.length} OF {visibleEvents.length} EVENTS
-      </p>
-
       <div className="schedule-list">
+        <p className="muted-copy" style={{ marginBottom: '12px' }}>
+          SHOWING {shownEvents.length} OF {visibleEvents.length} EVENTS
+        </p>
         {visibleEvents.length === 0 ? (
           <div>
             <p className="muted-copy">NO EVENTS MATCH THE SELECTED FILTERS</p>
@@ -128,15 +127,14 @@ export function EventsPageClient({ events }: { events: EventItem[] }) {
             )}
           </article>
         ))}
+        {remainingCount > 0 ? (
+          <div className="detail-actions" style={{ marginTop: '20px' }}>
+            <button type="button" className="ghost-button" onClick={() => setVisibleCount((count) => count + PAGE_SIZE)}>
+              SHOW MORE ({remainingCount} REMAINING)
+            </button>
+          </div>
+        ) : null}
       </div>
-
-      {remainingCount > 0 ? (
-        <div className="detail-actions" style={{ marginTop: '20px' }}>
-          <button type="button" className="ghost-button" onClick={() => setVisibleCount((count) => count + PAGE_SIZE)}>
-            SHOW MORE ({remainingCount} REMAINING)
-          </button>
-        </div>
-      ) : null}
     </section>
   )
 }
