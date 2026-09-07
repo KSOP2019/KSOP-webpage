@@ -22,6 +22,14 @@ export default async function AboutPage() {
         <Link className="text-link" href="/events" style={{ marginTop: '32px', display: 'inline-flex' }}>
           Explore the schedule
         </Link>
+        <div className="detail-actions" style={{ marginTop: '32px' }}>
+          <Link className="ghost-button" href="/about/series">
+            THE SERIES
+          </Link>
+          <Link className="ghost-button" href="/about/venue">
+            THE VENUE
+          </Link>
+        </div>
       </div>
     </section>
   )
