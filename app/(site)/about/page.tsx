@@ -1,0 +1,28 @@
+import Link from 'next/link'
+import { getSiteContent } from '@/lib/data'
+
+export default async function AboutPage() {
+  const content = await getSiteContent()
+
+  return (
+    <section className="intro section-pad">
+      <div className="section-label">01 / THE SERIES</div>
+      <div className="intro-content">
+        <h2>
+          More than
+          <br />
+          <em>a tournament.</em>
+        </h2>
+        <p className="large-copy">{content.introBody}</p>
+        <p className="muted-copy" style={{ marginTop: '24px' }}>
+          {content.seriesDate} · {content.seriesVenue}
+          <br />
+          {content.seriesGtd}
+        </p>
+        <Link className="text-link" href="/events" style={{ marginTop: '32px', display: 'inline-flex' }}>
+          Explore the schedule
+        </Link>
+      </div>
+    </section>
+  )
+}
