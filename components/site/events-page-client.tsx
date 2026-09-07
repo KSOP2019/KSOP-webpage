@@ -9,6 +9,8 @@ import { EVENT_CATEGORIES } from '@/lib/nav'
 import { filterEvents } from '@/lib/event-filters'
 import type { EventItem } from '@/lib/types'
 
+const PAGE_SIZE = 15
+
 export function EventsPageClient({ events }: { events: EventItem[] }) {
   const { t, content } = useSite()
   const searchParams = useSearchParams()
@@ -16,12 +18,15 @@ export function EventsPageClient({ events }: { events: EventItem[] }) {
   const [selectedCategory, setSelectedCategory] = useState(initialCategory)
   const [selectedDate, setSelectedDate] = useState('ALL')
   const [open, setOpen] = useState(-1)
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE)
 
   const dates = Array.from(new Set(events.map((event) => event.date)))
   const visibleEvents = useMemo(
     () => filterEvents(events, selectedCategory, selectedDate),
     [events, selectedCategory, selectedDate],
   )
+  const shownEvents = visibleEvents.slice(0, visibleCount)
+  const remainingCount = visibleEvents.length - shownEvents.length
 
   return (
     <section className="schedule-section section-pad">
@@ -46,6 +51,8 @@ export function EventsPageClient({ events }: { events: EventItem[] }) {
             onClick={() => {
               setSelectedCategory(category)
               setSelectedDate('ALL')
+              setVisibleCount(PAGE_SIZE)
+              setOpen(-1)
             }}
           >
             {category}
@@ -55,7 +62,7 @@ export function EventsPageClient({ events }: { events: EventItem[] }) {
 
       {selectedCategory === 'DAY' ? (
         <div className="date-filter" style={{ display: 'flex', gap: '14px', marginBottom: '20px' }}>
-          <button type="button" className={selectedDate === 'ALL' ? 'is-active' : ''} onClick={() => setSelectedDate('ALL')}>
+          <button type="button" className={selectedDate === 'ALL' ? 'is-active' : ''} onClick={() => { setSelectedDate('ALL'); setVisibleCount(PAGE_SIZE); setOpen(-1) }}>
             ALL DATES
           </button>
           {dates.map((date) => (
@@ -63,7 +70,7 @@ export function EventsPageClient({ events }: { events: EventItem[] }) {
               key={date}
               type="button"
               className={selectedDate === date ? 'is-active' : ''}
-              onClick={() => setSelectedDate(date)}
+              onClick={() => { setSelectedDate(date); setVisibleCount(PAGE_SIZE); setOpen(-1) }}
             >
               {date}
             </button>
@@ -71,8 +78,31 @@ export function EventsPageClient({ events }: { events: EventItem[] }) {
         </div>
       ) : null}
 
+      <p className="muted-copy" style={{ marginBottom: '12px' }}>
+        SHOWING {shownEvents.length} OF {visibleEvents.length} EVENTS
+      </p>
+
       <div className="schedule-list">
-        {visibleEvents.map((event, index) => (
+        {visibleEvents.length === 0 ? (
+          <div>
+            <p className="muted-copy">NO EVENTS MATCH THE SELECTED FILTERS</p>
+            <div className="detail-actions" style={{ marginTop: '16px' }}>
+              <button
+                type="button"
+                className="ghost-button"
+                onClick={() => {
+                  setSelectedCategory('ALL EVENT')
+                  setSelectedDate('ALL')
+                  setVisibleCount(PAGE_SIZE)
+                  setOpen(-1)
+                }}
+              >
+                CLEAR FILTERS
+              </button>
+            </div>
+          </div>
+        ) : null}
+        {shownEvents.map((event, index) => (
           <article className={open === index ? 'schedule-item open' : 'schedule-item'} key={event.id}>
             <button className="schedule-trigger" type="button" onClick={() => setOpen(open === index ? -1 : index)}>
               <span className="date">
@@ -85,7 +115,6 @@ export function EventsPageClient({ events }: { events: EventItem[] }) {
                   {event.type} · Buy-in {event.buyInType} · {event.gtd} GTD
                 </small>
               </span>
-              <span className="event-type">{event.type}</span>
               <ChevronDown className="chevron" />
             </button>
             {open === index && (
@@ -100,6 +129,14 @@ export function EventsPageClient({ events }: { events: EventItem[] }) {
           </article>
         ))}
       </div>
+
+      {remainingCount > 0 ? (
+        <div className="detail-actions" style={{ marginTop: '20px' }}>
+          <button type="button" className="ghost-button" onClick={() => setVisibleCount((count) => count + PAGE_SIZE)}>
+            SHOW MORE ({remainingCount} REMAINING)
+          </button>
+        </div>
+      ) : null}
     </section>
   )
 }
