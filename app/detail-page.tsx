@@ -6,7 +6,7 @@ import { Globe2, Menu, X } from 'lucide-react'
 
 const nav = [
   ['SCHEDULE', '/schedule'],
-  ['EVENT', '/event'],
+  ['EVENT', '/events'],
   ['RANKING', '/ranking'],
   ['NEWS', '/news'],
   ['ABOUT', '/about'],
@@ -31,7 +31,7 @@ export default function DetailPage({ section }: { section: Section }) {
   return <main className={`detail-page ${section === 'schedule' ? 'schedule-detail' : ''} ${dark ? 'theme-dark' : ''}`}>
     <header className="site-header detail-header">
       <Link href="/" className="brand"><img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/%EB%88%84%EB%81%BC%EB%A1%9C%EA%B3%A02-OT3NlxHk30TAmPPpNIcNvNtvTVM74n.png" alt="KSOP Korea Series of Poker" /></Link>
-      <nav className={menuOpen ? 'nav-links is-open' : 'nav-links'}>{nav.map(([label, href]) => <Link key={href} href={href} className={href === `/${section}` ? 'active' : ''} onClick={() => setMenuOpen(false)}>{label}</Link>)}</nav>
+      <nav className={menuOpen ? 'nav-links is-open' : 'nav-links'}>{nav.map(([label, href]) => <Link key={href} href={href} className={(section === 'event' && href === '/events') || href === `/${section}` ? 'active' : ''} onClick={() => setMenuOpen(false)}>{label}</Link>)}</nav>
       <div className="detail-actions"><details className="language-menu"><summary className="language" aria-label={`Current language: ${language}`}><Globe2 /></summary><div className="language-options">{['EN', 'KR', 'JP', 'CN'].filter(code => code !== language).map(code => <button key={code} onClick={() => setLanguage(code)}>{code}</button>)}</div></details><button className="theme-switch" onClick={() => setDark(value => !value)} aria-label="Toggle theme">☼ <span className="theme-track"><span /></span> ☾</button><button className="menu-toggle" onClick={() => setMenuOpen(value => !value)} aria-label="Toggle menu">{menuOpen ? <X /> : <Menu />}</button></div>
     </header>
     <section className="detail-hero"><div className="detail-kicker">{page.kicker}</div><div className="detail-hero-grid"><h1>{page.title}</h1><p>{page.intro}</p></div></section>
