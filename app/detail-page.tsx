@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { Globe2, Menu, X } from 'lucide-react'
+import { slugifySeriesLabel } from '@/lib/series'
 
 const nav = [
   ['SCHEDULE', '/schedule'],
@@ -35,7 +36,7 @@ export default function DetailPage({ section }: { section: Section }) {
       <div className="detail-actions"><details className="language-menu"><summary className="language" aria-label={`Current language: ${language}`}><Globe2 /></summary><div className="language-options">{['EN', 'KR', 'JP', 'CN'].filter(code => code !== language).map(code => <button key={code} onClick={() => setLanguage(code)}>{code}</button>)}</div></details><button className="theme-switch" onClick={() => setDark(value => !value)} aria-label="Toggle theme">☼ <span className="theme-track"><span /></span> ☾</button><button className="menu-toggle" onClick={() => setMenuOpen(value => !value)} aria-label="Toggle menu">{menuOpen ? <X /> : <Menu />}</button></div>
     </header>
     <section className="detail-hero"><div className="detail-kicker">{page.kicker}</div><div className="detail-hero-grid"><h1>{page.title}</h1><p>{page.intro}</p></div></section>
-    <section className="detail-list" aria-label={`${page.title} details`}>{page.items.map((item, index) => { const label = typeof item === 'string' ? item : item.label; return <article className="detail-row" key={label} style={section === 'schedule' && typeof item !== 'string' ? { backgroundImage: `linear-gradient(90deg, rgba(7, 12, 22, .92) 0%, rgba(7, 12, 22, .58) 48%, rgba(7, 12, 22, .18) 100%), url(${item.image})` } : undefined}>{section !== 'schedule' && <span>{String(index + 1).padStart(2, '0')}</span>}<h2>{label}</h2>{section !== 'schedule' && <span className="detail-arrow">↗</span>}</article> })}</section>
+    <section className="detail-list" aria-label={`${page.title} details`}>{page.items.map((item, index) => { const label = typeof item === 'string' ? item : item.label; if (section === 'schedule' && typeof item !== 'string') return <Link className="detail-row" key={label} style={{ backgroundImage: `linear-gradient(90deg, rgba(7, 12, 22, .92) 0%, rgba(7, 12, 22, .58) 48%, rgba(7, 12, 22, .18) 100%), url(${item.image})` }} href={`/schedule/${slugifySeriesLabel(item.label)}`} aria-label={`${label.trim()} series detail`}><h2>{label}</h2></Link>; return <article className="detail-row" key={label}>{section !== 'schedule' && <span>{String(index + 1).padStart(2, '0')}</span>}<h2>{label}</h2>{section !== 'schedule' && <span className="detail-arrow">↗</span>}</article> })}</section>
     <footer className="detail-footer"><span>THE KOREA SERIES OF POKER · 2026</span><Link href="/">BACK TO HOME ↗</Link></footer>
   </main>
 }
