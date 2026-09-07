@@ -28,8 +28,26 @@ export default async function PlayerDetailPage({ params }: PageProps) {
         {player.portrait ? (
           <img src={player.portrait} alt={`${player.name} portrait`} style={{ width: '220px', borderRadius: '16px' }} />
         ) : null}
+        <div className="detail-facts" style={{ marginTop: '24px' }}>
+          <div>
+            <span>RANK</span>
+            <strong>#{player.rank}</strong>
+          </div>
+          <div>
+            <span>COUNTRY</span>
+            <strong>{player.country}</strong>
+          </div>
+          <div>
+            <span>EARNINGS</span>
+            <strong>{player.earnings}</strong>
+          </div>
+        </div>
         <p className="large-copy" style={{ marginTop: '24px' }}>
           {player.bio ?? 'Player profile details will be managed from the admin panel.'}
+        </p>
+        <div className="blind-label">RESULT / TOURNAMENT HISTORY</div>
+        <p className="muted-copy" style={{ marginTop: '12px' }}>
+          RESULT DATA PENDING
         </p>
         <div className="detail-actions">
           <Link className="ghost-button" href="/ranking">
