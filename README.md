@@ -1,33 +1,26 @@
-# KSOP-webpage-7k
+# KSOP — Korea Series of Poker
 
-This is a [Next.js](https://nextjs.org) project bootstrapped with [v0](https://v0.app).
+Next.js 16 + React 19 + Supabase 기반 KSOP 공개 사이트 및 관리자 Content Studio입니다.
 
-## Built with v0
-
-This repository is linked to a [v0](https://v0.app) project. You can continue developing by visiting the link below -- start new chats to make changes, and v0 will push commits directly to this repo. Every merge to `main` will automatically deploy.
-
-[Continue working on v0 →](https://v0.app/chat/projects/prj_XcuBCh3TGvUj2AalPT4s0rRP1y1v)
-
-## Getting Started
-
-First, run the development server:
+## 실행
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
+corepack pnpm install
+corepack pnpm dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- 공개 사이트: `http://localhost:3000`
+- 관리자: `http://localhost:3000/admin`
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Supabase를 연결하지 않아도 샘플 데이터 기반 미리보기로 실행됩니다. 실제 저장 기능을 사용하려면 `supabase/schema.sql`을 적용하고 `.env.example`을 참고해 환경변수를 설정하세요.
 
-## Learn More
+자세한 한국어 설치 안내: [IMPLEMENTATION_KR.md](./IMPLEMENTATION_KR.md)
 
-To learn more, take a look at the following resources:
+## 환경변수
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-- [v0 Documentation](https://v0.app/docs) - learn about v0 and how to use it.
+```env
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+```
+
+비밀번호, service role key, GitHub 토큰을 저장소에 커밋하지 마세요.
