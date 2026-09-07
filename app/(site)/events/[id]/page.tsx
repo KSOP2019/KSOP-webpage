@@ -1,6 +1,5 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { ArrowUpRight } from 'lucide-react'
 import { getEvent, getSiteContent } from '@/lib/data'
 
 type PageProps = { params: Promise<{ id: string }> }
@@ -43,6 +42,14 @@ export default async function EventDetailPage({ params }: PageProps) {
             <span>LATE REG.</span>
             <strong>{event.lateReg}</strong>
           </div>
+          <div>
+            <span>EVENT STATUS</span>
+            <strong>STATUS PENDING</strong>
+          </div>
+          <div>
+            <span>REGISTRATION STATUS</span>
+            <strong>REGISTRATION PENDING</strong>
+          </div>
         </div>
 
         <div className="blind-label">BLIND STRUCTURE</div>
@@ -63,9 +70,19 @@ export default async function EventDetailPage({ params }: PageProps) {
           ))}
         </div>
 
+        <div className="blind-label">RESULT</div>
+        <p className="muted-copy" style={{ marginTop: '12px' }}>
+          RESULT DATA PENDING
+        </p>
+
+        <div className="blind-label">LIVE</div>
+        <p className="muted-copy" style={{ marginTop: '12px' }}>
+          LIVE DATA PENDING
+        </p>
+
         <div className="detail-actions">
-          <button className="primary-cta" type="button">
-            Register <ArrowUpRight />
+          <button className="primary-cta" type="button" disabled aria-disabled="true" title="Registration not yet available">
+            REGISTRATION PENDING
           </button>
           <Link className="ghost-button" href="/events">
             Back to schedule
