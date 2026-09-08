@@ -8,8 +8,15 @@ import { useSite } from '@/components/site/site-provider'
 import { NAV_ROUTES } from '@/lib/nav'
 import type { Language } from '@/lib/types'
 
-const LEGACY_LIGHT_LOGOS = new Set(['/images/ksop-logo-black.png', '/images/ksop-dark-logo.png'])
-const LEGACY_DARK_LOGOS = new Set(['/images/ksop-logo-white.png'])
+const LEGACY_LIGHT_LOGOS = new Set([
+  '/images/ksop-logo-black.png',
+  '/images/ksop-dark-logo.png',
+  '/images/ksop-light-logo.svg',
+])
+const LEGACY_DARK_LOGOS = new Set([
+  '/images/ksop-logo-white.png',
+  '/images/ksop-dark-logo.svg',
+])
 
 export function SiteHeader() {
   const { language, setLanguage, darkMode, setDarkMode, content, t } = useSite()
@@ -17,10 +24,10 @@ export function SiteHeader() {
   const pathname = usePathname()
 
   const lightLogo = !content.logoBlack || LEGACY_LIGHT_LOGOS.has(content.logoBlack)
-    ? '/images/ksop-light-logo.svg'
+    ? '/images/ksop-light-logo.png'
     : content.logoBlack
   const darkLogo = !content.logoWhite || LEGACY_DARK_LOGOS.has(content.logoWhite)
-    ? '/images/ksop-dark-logo.svg'
+    ? '/images/ksop-dark-logo.png'
     : content.logoWhite
   const logo = darkMode ? darkLogo : lightLogo
 
@@ -36,7 +43,7 @@ export function SiteHeader() {
           const active = pathname === href || ((href as string) !== '/' && pathname.startsWith(href))
           return (
             <Link
-              key={item}
+              key={`${href}-${index}`}
               href={href}
               className={active ? 'is-active' : undefined}
               onClick={() => setMenuOpen(false)}
