@@ -23,12 +23,12 @@ export default async function AdminNewsPage() {
         </thead>
         <tbody>
           {news.map((item) => (
-            <tr key={item.slug}>
+            <tr key={item.adminId}>
               <td>{item.title}</td>
               <td>{item.category}</td>
               <td>{item.published ? 'Yes' : 'No'}</td>
               <td>
-                <Link href={`/admin/news/${item.slug}`} className="admin-button secondary" style={{ padding: '4px 8px', fontSize: '12px' }}>
+                <Link href={`/admin/news/${item.adminId}`} className="admin-button secondary" style={{ padding: '4px 8px', fontSize: '12px' }}>
                   Edit
                 </Link>
               </td>
