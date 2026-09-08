@@ -194,6 +194,11 @@ export async function saveEvents(events: EventItem[]) {
   if (adminClient) {
     // Production/admin persistence path
     for (const event of events) {
+      // Before parsing event.date: require an explicit 4-digit year
+      const yearRegex = /\b(19|20)\d{2}\b/;
+      if (!yearRegex.test(event.date || '')) {
+        throw new Error(`PRODUCTION_WRITE_BLOCKED_INVALID_DATE: Event "${event.name}" (slug: ${event.id}) date "${event.date}" must contain an explicit 4-digit year (e.g., NOV 17 2026).`)
+      }
       // Block writes when event.date does not contain enough info for a valid timestamptz
       if (!event.date || event.date.length < 5) {
         throw new Error(`PRODUCTION_WRITE_BLOCKED_INVALID_DATE: Event "${event.name}" (slug: ${event.id}) has date "${event.date}" which is insufficient for a valid timestamptz. Provide a full date (e.g., include year) before saving.`)
