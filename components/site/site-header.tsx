@@ -8,8 +8,8 @@ import { useSite } from '@/components/site/site-provider'
 import { NAV_ROUTES } from '@/lib/nav'
 import type { Language } from '@/lib/types'
 
-const LIGHT_LOGO = '/images/ksop-light-logo.png'
-const DARK_LOGO = '/images/ksop-dark-logo.png'
+const LIGHT_LOGO = '/images/ksop-logo-black.png'
+const DARK_LOGO = '/images/ksop-logo-white.png'
 
 export function SiteHeader() {
   const { language, setLanguage, darkMode, setDarkMode, t } = useSite()
@@ -18,27 +18,12 @@ export function SiteHeader() {
   const logo = darkMode ? DARK_LOGO : LIGHT_LOGO
 
   return (
-    <header
-      className="site-header"
-      style={{
-        display: 'grid',
-        gridTemplateColumns: '184px minmax(520px, 1fr) 222px 158px',
-        alignItems: 'center',
-        columnGap: '24px',
-      }}
-    >
-      <Link href="/" className="brand" style={{ width: 184, height: 54, display: 'flex', alignItems: 'center' }}>
-        <img
-          src={logo}
-          alt="KSOP Korea Series of Poker"
-          style={{ width: 184, height: 54, objectFit: 'contain', objectPosition: 'left center', display: 'block' }}
-        />
+    <header className="site-header">
+      <Link href="/" className="brand">
+        <img src={logo} alt="KSOP Korea Series of Poker" />
       </Link>
 
-      <nav
-        className={menuOpen ? 'nav-links is-open' : 'nav-links'}
-        style={{ display: 'grid', gridTemplateColumns: 'repeat(5, minmax(84px, 1fr))', alignItems: 'center', width: '100%', minWidth: 0 }}
-      >
+      <nav className={menuOpen ? 'nav-links is-open' : 'nav-links'}>
         {t.nav.map((item, index) => {
           const href = NAV_ROUTES[index]
           const active = pathname === href || ((href as string) !== '/' && pathname.startsWith(href))
@@ -48,7 +33,6 @@ export function SiteHeader() {
               href={href}
               className={active ? 'is-active' : undefined}
               onClick={() => setMenuOpen(false)}
-              style={{ width: '100%', textAlign: 'center', whiteSpace: 'nowrap' }}
             >
               {item}
             </Link>
@@ -56,7 +40,7 @@ export function SiteHeader() {
         })}
       </nav>
 
-      <div className="header-socials" style={{ width: 222, marginLeft: 0, justifyContent: 'center' }}>
+      <div className="header-socials">
         {[['FLOPIN', 'F'], ['Instagram', '◎'], ['X', '𝕏'], ['Discord', '◌'], ['Facebook', 'f'], ['YouTube', '▶']].map(
           ([name, symbol]) => (
             <a className="social-icon social-text" key={name} href="/#social" aria-label={name}>
@@ -69,10 +53,11 @@ export function SiteHeader() {
         )}
       </div>
 
-      <div className="header-actions" style={{ width: 158, marginLeft: 0, justifyContent: 'flex-end', gap: 10 }}>
-        <details className="language-menu" style={{ width: 58 }}>
-          <summary className="language" style={{ width: 58, justifyContent: 'center', whiteSpace: 'nowrap' }}>
-            <Globe2 /> {language}
+      <div className="header-actions">
+        <details className="language-menu">
+          <summary className="language" aria-label={`Language ${language}`}>
+            <Globe2 aria-hidden="true" />
+            <span className="language-code">{language}</span>
           </summary>
           <div className="language-options">
             {(['EN', 'KR', 'JP', 'CN'] as Language[]).map((code) => (
@@ -89,7 +74,6 @@ export function SiteHeader() {
           aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
           aria-pressed={darkMode}
           onClick={() => setDarkMode(!darkMode)}
-          style={{ width: 82, flex: '0 0 82px' }}
         >
           <span className="theme-sun" aria-hidden="true">☀</span>
           <span className="theme-track"><span /></span>
