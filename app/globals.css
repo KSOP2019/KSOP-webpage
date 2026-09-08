@@ -218,3 +218,13 @@ main[class*="lang-"] .intro-content .large-copy { grid-column: 2 !important; wid
   .series-facts { grid-template-columns: repeat(2, 1fr); }
   .series-event-meta { gap: 4px 12px; }
 }
+
+/* P2-3 events date/day hierarchy and density — scoped to the Events list only. */
+.events-density .schedule-trigger { padding-right: 44px; }
+.events-density .schedule-trigger .date::before,
+.events-density .schedule-trigger .date::after { content: none; }
+.events-density .schedule-trigger .date { flex-direction: column; align-items: flex-start; justify-content: center; gap: 3px; }
+.events-density .schedule-trigger .date strong { display: block; font-size: 16px; font-weight: 700; letter-spacing: .02em; white-space: nowrap; }
+.events-density .schedule-trigger .date > span { display: block; font-size: 10px; letter-spacing: .12em; color: var(--muted-foreground); white-space: nowrap; }
+.events-density .event-title b { white-space: normal; overflow-wrap: anywhere; }
+.events-density .event-title small { flex-wrap: wrap; white-space: normal; row-gap: 2px; }
