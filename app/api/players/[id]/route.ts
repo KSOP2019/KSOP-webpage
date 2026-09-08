@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
-import { getPlayer, getPlayers, savePlayers } from '@/lib/data'
+import { getPlayer } from '@/lib/data'
+import { deleteAdminPlayer, getAdminPlayer, updateAdminPlayer } from '@/lib/admin-player-data'
 import { isAdminAuthenticated } from '@/lib/auth'
 
 type RouteContext = { params: Promise<{ id: string }> }
@@ -20,15 +21,11 @@ export async function PUT(request: Request, context: RouteContext) {
 
   const { id } = await context.params
   const body = await request.json()
-  const players = await getPlayers()
-  const index = players.findIndex((player) => player.id === id)
-  if (index === -1) {
-    return NextResponse.json({ error: 'Not found' }, { status: 404 })
-  }
+  const current = await getAdminPlayer(id)
+  if (!current) return NextResponse.json({ error: 'Not found' }, { status: 404 })
 
-  players[index] = { ...players[index], ...body, id }
-  await savePlayers(players)
-  return NextResponse.json(players[index])
+  const updated = await updateAdminPlayer(id, { ...current, ...body, id: current.id })
+  return NextResponse.json(updated)
 }
 
 export async function DELETE(_request: Request, context: RouteContext) {
@@ -37,12 +34,9 @@ export async function DELETE(_request: Request, context: RouteContext) {
   }
 
   const { id } = await context.params
-  const players = await getPlayers()
-  const nextPlayers = players.filter((player) => player.id !== id)
-  if (nextPlayers.length === players.length) {
-    return NextResponse.json({ error: 'Not found' }, { status: 404 })
-  }
+  const current = await getAdminPlayer(id)
+  if (!current) return NextResponse.json({ error: 'Not found' }, { status: 404 })
 
-  await savePlayers(nextPlayers)
+  await deleteAdminPlayer(id)
   return NextResponse.json({ ok: true })
 }
