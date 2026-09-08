@@ -1,11 +1,11 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
-import { getPlayers } from '@/lib/data'
+import { getAdminPlayers } from '@/lib/admin-player-data'
 import { isAdminAuthenticated } from '@/lib/auth'
 
 export default async function AdminPlayersPage() {
   if (!(await isAdminAuthenticated())) redirect('/admin/login')
-  const players = await getPlayers()
+  const players = await getAdminPlayers()
   return (
     <section className="admin-card">
       <h2>Players</h2>
@@ -24,13 +24,13 @@ export default async function AdminPlayersPage() {
         </thead>
         <tbody>
           {players.map((player) => (
-            <tr key={player.id}>
+            <tr key={player.adminId}>
               <td>#{player.rank}</td>
               <td>{player.name}</td>
               <td>{player.country}</td>
               <td>{player.published ? 'Yes' : 'No'}</td>
               <td>
-                <Link href={`/admin/players/${player.id}`} className="admin-button secondary" style={{ padding: '4px 8px', fontSize: '12px' }}>
+                <Link href={`/admin/players/${player.adminId}`} className="admin-button secondary" style={{ padding: '4px 8px', fontSize: '12px' }}>
                   Edit
                 </Link>
               </td>
