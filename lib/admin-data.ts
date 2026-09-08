@@ -25,6 +25,33 @@ function mapAdminEvent(row: any): EventItem {
   } as EventItem
 }
 
+function toAdminEventPayload(event: EventItem) {
+  const yearRegex = /\b(19|20)\d{2}\b/
+  if (!yearRegex.test(event.date || '')) {
+    throw new Error(`PRODUCTION_WRITE_BLOCKED_INVALID_DATE: Event "${event.name}" date "${event.date}" must contain an explicit 4-digit year.`)
+  }
+
+  const parsed = new Date(event.date)
+  if (Number.isNaN(parsed.getTime()) || parsed.getFullYear() <= 1970) {
+    throw new Error(`PRODUCTION_WRITE_BLOCKED_INVALID_DATE: Event "${event.name}" date "${event.date}" cannot be converted to a valid timestamptz.`)
+  }
+
+  return {
+    title: event.name,
+    category: event.type,
+    entry_type: event.buyInType,
+    starts_at: event.date,
+    buy_in: parseInt(String(event.buyIn || '').replace(/[₩,]/g, '')) || 0,
+    fee: 0,
+    guarantee: parseInt(String(event.gtd || '').replace(/[₩,]/g, '')) || 0,
+    starting_stack: event.startingChips || 0,
+    level_minutes: parseInt(String(event.levelTime || '')) || 15,
+    late_registration: event.lateReg || '',
+    event_status: 'SCHEDULED',
+    status: event.published ? 'published' : 'draft',
+  }
+}
+
 export async function getAdminEvents(): Promise<EventItem[]> {
   const client = createAdminClient()
   if (!client) {
@@ -46,6 +73,27 @@ export async function getAdminEvents(): Promise<EventItem[]> {
 export async function getAdminEvent(id: string): Promise<EventItem | undefined> {
   const events = await getAdminEvents()
   return events.find((event) => event.id === id)
+}
+
+export async function updateAdminEvent(id: string, event: EventItem): Promise<EventItem> {
+  const client = createAdminClient()
+  if (!client) {
+    throw new Error('ADMIN_UPDATE_BLOCKED: Supabase admin service role not configured.')
+  }
+
+  const payload = toAdminEventPayload(event)
+  const { data, error } = await client
+    .from('events')
+    .update(payload)
+    .eq('slug', id)
+    .select(EVENT_SELECT)
+    .single()
+
+  if (error) {
+    throw new Error(`Supabase admin event update failed: ${error.message}`)
+  }
+
+  return mapAdminEvent(data)
 }
 
 export async function deleteAdminEvent(id: string): Promise<void> {
