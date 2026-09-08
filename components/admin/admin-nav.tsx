@@ -5,10 +5,11 @@ import { usePathname, useRouter } from 'next/navigation'
 
 const links = [
   { href: '/admin', label: 'Dashboard' },
-  { href: '/admin/content', label: 'Site Content' },
+  { href: '/admin/content', label: 'Home' },
   { href: '/admin/events', label: 'Events' },
-  { href: '/admin/players', label: 'Players' },
   { href: '/admin/news', label: 'News' },
+  { href: '/admin/players', label: 'Players' },
+  { href: '/admin/media', label: 'Media' },
 ]
 
 export function AdminNav() {
@@ -30,7 +31,7 @@ export function AdminNav() {
             {link.label}
           </Link>
         ))}
-        <Link href="/">View site</Link>
+        <Link href="/">Preview Site</Link>
         <button type="button" onClick={logout}>
           Logout
         </button>

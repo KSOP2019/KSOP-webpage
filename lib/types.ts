@@ -47,6 +47,7 @@ export interface NewsItem {
   title: string
   excerpt: string
   body: string
+  coverUrl?: string
   published: boolean
 }
 
