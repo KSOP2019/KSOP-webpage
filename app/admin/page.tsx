@@ -1,12 +1,13 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
-import { getEvents, getNews, getPlayers } from '@/lib/data'
+import { getNews, getPlayers } from '@/lib/data'
+import { getAdminEvents } from '@/lib/admin-data'
 import { isAdminAuthenticated } from '@/lib/auth'
 
 export default async function AdminDashboardPage() {
   if (!(await isAdminAuthenticated())) redirect('/admin/login')
 
-  const [events, players, news] = await Promise.all([getEvents(), getPlayers(), getNews()])
+  const [events, players, news] = await Promise.all([getAdminEvents(), getPlayers(), getNews()])
 
   return (
     <section className="admin-card">
