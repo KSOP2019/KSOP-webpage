@@ -13,14 +13,7 @@ export async function POST(request: Request) {
   }
 
   const body = await request.json()
-  const { getEvents: readEvents, saveEvents } = await import('@/lib/data')
-  const events = await readEvents()
-  const nextEvent = {
-    ...body,
-    id: body.id ?? `event-${Date.now()}`,
-    published: body.published ?? true,
-  }
-  events.push(nextEvent)
-  await saveEvents(events)
-  return NextResponse.json(nextEvent, { status: 201 })
+  const { createAdminEvent } = await import('@/lib/admin-data')
+  const created = await createAdminEvent(body)
+  return NextResponse.json(created, { status: 201 })
 }
