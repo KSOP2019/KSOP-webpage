@@ -11,7 +11,7 @@ export default async function AdminEditNewsPage({ params }: { params: Promise<{ 
   return (
     <section className="admin-card">
       <h2>Edit News</h2>
-      <NewsEditor initialItem={item} />
+      <NewsEditor initialItem={item} adminLocator={item.adminId} />
     </section>
   )
 }
