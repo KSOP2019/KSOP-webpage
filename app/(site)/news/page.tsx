@@ -26,6 +26,14 @@ export default async function NewsPage() {
         <div className="news-grid">
           {publishedNews.map((item, index) => (
             <Reveal as="article" key={item.slug} delay={Math.min(index * 70, 210)}>
+              {item.coverUrl ? (
+                <img
+                  src={item.coverUrl}
+                  alt=""
+                  loading="lazy"
+                  style={{ width: '100%', aspectRatio: '16 / 10', objectFit: 'cover', borderRadius: 12, marginBottom: 18 }}
+                />
+              ) : null}
               <span>
                 {item.date} · {item.category}
               </span>
