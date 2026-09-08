@@ -7,7 +7,7 @@ import type { NewsItem, NewsCategory } from '@/lib/types'
 
 const categories: NewsCategory[] = ['FIELD NOTES', 'PLAYER PORTRAIT', 'KSOP JOURNAL']
 
-export function NewsEditor({ initialItem }: { initialItem?: NewsItem }) {
+export function NewsEditor({ initialItem, adminLocator }: { initialItem?: NewsItem; adminLocator?: string }) {
   const router = useRouter()
   const [item, setItem] = useState<NewsItem & { coverUrl?: string }>(
     initialItem ? { ...initialItem, coverUrl: (initialItem as any).coverUrl || '' } : {
@@ -26,7 +26,8 @@ export function NewsEditor({ initialItem }: { initialItem?: NewsItem }) {
     event.preventDefault()
     const isNew = !initialItem
     const slug = item.slug || item.title.toLowerCase().replace(/[^a-z0-9]+/g, '-')
-    const response = await fetch(isNew ? '/api/news' : `/api/news/${slug}`, {
+    const target = isNew ? '/api/news' : `/api/news/${adminLocator || slug}`
+    const response = await fetch(target, {
       method: isNew ? 'POST' : 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ ...item, slug, published: item.published }),
