@@ -42,15 +42,15 @@ export default function DetailPage({ section, scheduleContent }: DetailPageProps
   return <main className={`detail-page ${section === 'schedule' ? 'schedule-detail' : ''} ${dark ? 'theme-dark' : ''}`}>
     <header className="site-header detail-header">
       <Link href="/" className="brand">
-        <img src={dark ? '/images/ksop-dark-logo.svg' : '/images/ksop-light-logo.svg'} alt="KSOP Korea Series of Poker" />
+        <img src={dark ? '/images/ksop-dark-logo.png' : '/images/ksop-light-logo.png'} alt="KSOP Korea Series of Poker" />
       </Link>
       <nav className={menuOpen ? 'nav-links is-open' : 'nav-links'}>
         {nav.map(([label, href]) => <Link key={href} href={href} className={(section === 'event' && href === '/events') || href === `/${section}` ? 'active' : ''} onClick={() => setMenuOpen(false)}>{label}</Link>)}
       </nav>
       <div className="detail-actions">
         <details className="language-menu">
-          <summary className="language" aria-label={`Current language: ${language}`}><Globe2 /></summary>
-          <div className="language-options">{['EN', 'KR', 'JP', 'CN'].filter(code => code !== language).map(code => <button key={code} onClick={() => setLanguage(code)}>{code}</button>)}</div>
+          <summary className="language" aria-label={`Current language: ${language}`}><Globe2 /> {language}</summary>
+          <div className="language-options">{['EN', 'KR', 'JP', 'CN'].map(code => <button key={code} type="button" onClick={() => setLanguage(code)}>{code}</button>)}</div>
         </details>
         <button className="theme-switch" onClick={() => setDark(value => !value)} aria-label="Toggle theme">☼ <span className="theme-track"><span /></span> ☾</button>
         <button className="menu-toggle" onClick={() => setMenuOpen(value => !value)} aria-label="Toggle menu">{menuOpen ? <X /> : <Menu />}</button>
