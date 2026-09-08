@@ -2,6 +2,9 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { getNewsItem } from '@/lib/data'
 
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 type PageProps = { params: Promise<{ slug: string }> }
 
 export default async function NewsDetailPage({ params }: PageProps) {
