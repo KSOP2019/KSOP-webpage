@@ -4,6 +4,8 @@ import { createAdminClient } from './supabase-server'
 const ARTICLE_SELECT = 'id,slug,category,title,excerpt,body,cover_url,author,status,sort_order,published_at,created_at,updated_at,updated_by'
 const VALID_NEWS_CATEGORIES: NewsCategory[] = ['FIELD NOTES', 'PLAYER PORTRAIT', 'KSOP JOURNAL']
 
+export type AdminNewsItem = NewsItem & { adminId: string }
+
 function safeCategory(value: string | null | undefined): NewsCategory {
   return VALID_NEWS_CATEGORIES.includes(value as NewsCategory)
     ? (value as NewsCategory)
@@ -14,11 +16,10 @@ function isUuid(value: string) {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value)
 }
 
-function mapAdminNews(row: any): NewsItem {
+function mapAdminNews(row: any): AdminNewsItem {
   return {
-    // Legacy rows may have an empty slug. In admin, fall back to immutable DB UUID
-    // so they can still be opened, repaired, or deleted safely.
-    slug: row.slug || String(row.id),
+    adminId: String(row.id),
+    slug: row.slug || '',
     category: safeCategory(row.category),
     date: row.published_at ? new Date(row.published_at).toISOString().split('T')[0] : 'DATE PENDING',
     title: row.title || '',
@@ -26,7 +27,7 @@ function mapAdminNews(row: any): NewsItem {
     body: row.body || '',
     coverUrl: row.cover_url || '',
     published: row.status === 'published',
-  } as NewsItem
+  } as AdminNewsItem
 }
 
 function toArticlePayload(item: NewsItem, currentPublishedAt?: string | null) {
@@ -45,7 +46,7 @@ function toArticlePayload(item: NewsItem, currentPublishedAt?: string | null) {
   }
 }
 
-export async function getAdminNews(): Promise<NewsItem[]> {
+export async function getAdminNews(): Promise<AdminNewsItem[]> {
   const client = createAdminClient()
   if (!client) throw new Error('ADMIN_NEWS_READ_BLOCKED: Supabase admin service role not configured.')
 
@@ -58,7 +59,7 @@ export async function getAdminNews(): Promise<NewsItem[]> {
   return (data || []).map(mapAdminNews)
 }
 
-export async function getAdminNewsItem(locator: string): Promise<NewsItem | undefined> {
+export async function getAdminNewsItem(locator: string): Promise<AdminNewsItem | undefined> {
   const client = createAdminClient()
   if (!client) throw new Error('ADMIN_NEWS_READ_BLOCKED: Supabase admin service role not configured.')
 
@@ -70,7 +71,7 @@ export async function getAdminNewsItem(locator: string): Promise<NewsItem | unde
   return data ? mapAdminNews(data) : undefined
 }
 
-export async function createAdminNews(item: NewsItem): Promise<NewsItem> {
+export async function createAdminNews(item: NewsItem): Promise<AdminNewsItem> {
   const client = createAdminClient()
   if (!client) throw new Error('ADMIN_NEWS_CREATE_BLOCKED: Supabase admin service role not configured.')
 
@@ -96,7 +97,7 @@ export async function createAdminNews(item: NewsItem): Promise<NewsItem> {
   return mapAdminNews(data)
 }
 
-export async function updateAdminNews(locator: string, item: NewsItem): Promise<NewsItem> {
+export async function updateAdminNews(locator: string, item: NewsItem): Promise<AdminNewsItem> {
   const client = createAdminClient()
   if (!client) throw new Error('ADMIN_NEWS_UPDATE_BLOCKED: Supabase admin service role not configured.')
 
