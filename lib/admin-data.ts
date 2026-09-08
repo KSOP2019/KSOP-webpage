@@ -9,7 +9,8 @@ function mapAdminEvent(row: any): EventItem {
     : ''
 
   return {
-    id: row.slug || String(row.id),
+    // Admin mutations must use the immutable database UUID, never slug.
+    id: String(row.id),
     date,
     dayLabel: `DAY ${row.event_number || 1}`,
     name: row.title || '',
@@ -75,6 +76,32 @@ export async function getAdminEvent(id: string): Promise<EventItem | undefined> 
   return events.find((event) => event.id === id)
 }
 
+export async function createAdminEvent(event: EventItem): Promise<EventItem> {
+  const client = createAdminClient()
+  if (!client) {
+    throw new Error('ADMIN_CREATE_BLOCKED: Supabase admin service role not configured.')
+  }
+
+  const payload = {
+    ...toAdminEventPayload(event),
+    slug: `event-${Date.now()}`,
+    event_number: 1,
+    sort_order: 0,
+  }
+
+  const { data, error } = await client
+    .from('events')
+    .insert(payload)
+    .select(EVENT_SELECT)
+    .single()
+
+  if (error) {
+    throw new Error(`Supabase admin event create failed: ${error.message}`)
+  }
+
+  return mapAdminEvent(data)
+}
+
 export async function updateAdminEvent(id: string, event: EventItem): Promise<EventItem> {
   const client = createAdminClient()
   if (!client) {
@@ -85,7 +112,7 @@ export async function updateAdminEvent(id: string, event: EventItem): Promise<Ev
   const { data, error } = await client
     .from('events')
     .update(payload)
-    .eq('slug', id)
+    .eq('id', id)
     .select(EVENT_SELECT)
     .single()
 
@@ -102,7 +129,7 @@ export async function deleteAdminEvent(id: string): Promise<void> {
     throw new Error('ADMIN_DELETE_BLOCKED: Supabase admin service role not configured.')
   }
 
-  const { error } = await client.from('events').delete().eq('slug', id)
+  const { error } = await client.from('events').delete().eq('id', id)
   if (error) {
     throw new Error(`Supabase admin event delete failed: ${error.message}`)
   }
