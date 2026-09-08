@@ -57,29 +57,62 @@ export async function getEvents(): Promise<EventItem[]> {
 
     if (error) {
       console.error('Supabase events read error:', error.message)
-      // Controlled fallback for reads when configured but query fails
+      if (isProduction()) {
+        // Production: never silently fall back to seed data when Supabase configured
+        return []
+      }
+      // Development only: controlled fallback when query fails
       return readJsonFile('events.json', createSeedEvents())
     }
 
     if (!data || data.length === 0) {
+      if (isProduction()) {
+        // Production: empty published table returns empty array
+        return []
+      }
       return readJsonFile('events.json', createSeedEvents())
     }
 
-    return data.map((row: any) => ({
-      id: String(row.id),
-      date: row.starts_at ? `NOV ${new Date(row.starts_at).getDate()}` : 'NOV 17',
-      dayLabel: `DAY ${row.event_number || 1}`,
-      name: row.title || 'Event',
-      type: (row.category || 'NLH') as EventItem['type'],
-      buyInType: row.entry_type || 'INVITATION',
-      buyIn: row.buy_in ? `₩${row.buy_in}` : '₩10,000',
-      gtd: row.guarantee ? `₩${row.guarantee}` : '₩10,000',
-      startingChips: row.starting_stack || 15000,
-      lateReg: row.late_registration || 'LEVEL 8',
-      levelTime: row.level_minutes ? `${row.level_minutes} MIN` : '15 MIN',
-      blindStructure: [{ level: 1, small: 100, big: 200, ante: 200 }],
-      published: row.status === 'published',
-    }))
+    return data.map((row: any) => {
+      // Stable public identifier uses slug, not DB UUID
+      const eventSlug = row.slug || String(row.id)
+      // Date: derive from real timestamptz; never fabricate year
+      let eventDate = 'NOV 17'
+      if (row.starts_at) {
+        try {
+          const d = new Date(row.starts_at)
+          if (!isNaN(d.getTime())) {
+            const month = d.toLocaleString('en-US', { month: 'short' }).toUpperCase()
+            const day = d.getDate()
+            eventDate = `${month} ${day}`
+          }
+        } catch {
+          // Leave default if parsing fails
+        }
+      }
+      // No fabricated tournament operational values
+      const dbBuyIn = row.buy_in
+      const dbGtd = row.guarantee
+      const dbStartingChips = row.starting_stack
+      const dbLateReg = row.late_registration || ''
+      const dbLevelMinutes = row.level_minutes || 0
+
+      return {
+        id: eventSlug,
+        date: eventDate,
+        dayLabel: `DAY ${row.event_number || 1}`,
+        name: row.title || 'Event',
+        type: (row.category || 'NLH') as EventItem['type'],
+        buyInType: row.entry_type || 'INVITATION',
+        buyIn: dbBuyIn ? `₩${dbBuyIn}` : 'PENDING',
+        gtd: dbGtd ? `₩${dbGtd}` : 'PENDING',
+        startingChips: dbStartingChips || 0,
+        lateReg: dbLateReg || 'PENDING',
+        levelTime: dbLevelMinutes ? `${dbLevelMinutes} MIN` : 'PENDING',
+        blindStructure: dbLevelMinutes ? [{ level: 1, small: 100, big: 200, ante: 200 }] : [],
+        published: row.status === 'published',
+      }
+    })
   }
 
   return readJsonFile('events.json', createSeedEvents())
@@ -99,12 +132,31 @@ export async function saveEvents(events: EventItem[]) {
   if (adminClient) {
     // Production/admin persistence path
     for (const event of events) {
+      // Block writes when event.date does not contain enough info for a valid timestamptz
+      if (!event.date || event.date.length < 5) {
+        throw new Error(`PRODUCTION_WRITE_BLOCKED_INVALID_DATE: Event "${event.name}" (slug: ${event.id}) has date "${event.date}" which is insufficient for a valid timestamptz. Provide a full date (e.g., include year) before saving.`)
+      }
+      // Safe conversion: attempt to derive a real date string; never fabricate year
+      let safeStartsAt: string | null = null
+      try {
+        // Try to interpret as a real ISO or standard date
+        const parsed = new Date(event.date)
+        if (!isNaN(parsed.getTime()) && parsed.getFullYear() > 1970) {
+          safeStartsAt = event.date
+        } else {
+          // If only month/day given (e.g. "NOV 17"), we cannot produce a valid timestamptz without a year
+          throw new Error('INSUFFICIENT_DATE')
+        }
+      } catch {
+        throw new Error(`PRODUCTION_WRITE_BLOCKED_INVALID_DATE: Event "${event.name}" (slug: ${event.id}) date "${event.date}" cannot be converted to a valid timestamptz. Add a year or full date.`)
+      }
+
       const payload = {
         slug: event.id,
         title: event.name,
         category: event.type,
         entry_type: event.buyInType,
-        starts_at: event.date,
+        starts_at: safeStartsAt,
         buy_in: parseInt(event.buyIn.replace(/[₩,]/g, '')) || 0,
         fee: 0,
         guarantee: parseInt(event.gtd.replace(/[₩,]/g, '')) || 0,
@@ -142,15 +194,18 @@ export async function getPlayers(): Promise<PlayerItem[]> {
 
     if (error) {
       console.error('Supabase players read error:', error.message)
+      if (isProduction()) return []
       return readJsonFile('players.json', seedPlayers)
     }
 
     if (!data || data.length === 0) {
+      if (isProduction()) return []
       return readJsonFile('players.json', seedPlayers)
     }
 
     return data.map((row: any) => ({
-      id: String(row.id || row.slug || row.name.toLowerCase().replace(/\s/g, '-')),
+      // Stable public identifier uses slug, never DB UUID
+      id: row.slug || String(row.id),
       rank: row.rank || 0,
       name: row.name || row.display_name || '',
       country: row.country || 'KR',
@@ -217,10 +272,12 @@ export async function getNews(): Promise<NewsItem[]> {
 
     if (error) {
       console.error('Supabase news read error:', error.message)
+      if (isProduction()) return []
       return readJsonFile('news.json', seedNews)
     }
 
     if (!data || data.length === 0) {
+      if (isProduction()) return []
       return readJsonFile('news.json', seedNews)
     }
 
@@ -288,13 +345,38 @@ export async function getSiteContent(): Promise<SiteContent> {
 
     if (error) {
       console.error('Supabase site content read error:', error.message)
+      if (isProduction()) {
+        throw new Error('PRODUCTION_READ_ERROR: Site content read failed. Supabase is configured but query returned an error.')
+      }
       return readJsonFile('content.json', seedContent)
     }
 
     if (data && data.value && typeof data.value === 'object') {
-      return { ...seedContent, ...data.value } as SiteContent
+      // Explicit safe mapper: DB site_settings uses snake_case JSON keys
+      // SiteContent interface uses camelCase. Map explicitly.
+      const dbValue = data.value as any
+      const mappedContent: SiteContent = {
+        heroImage: dbValue.hero_image || seedContent.heroImage,
+        logoBlack: dbValue.logo_black || seedContent.logoBlack,
+        logoWhite: dbValue.logo_white || seedContent.logoWhite,
+        seriesDate: dbValue.series_date || seedContent.seriesDate,
+        seriesVenue: dbValue.series_venue || seedContent.seriesVenue,
+        seriesGtd: dbValue.series_gtd || seedContent.seriesGtd,
+        countdownDays: dbValue.countdown_days || seedContent.countdownDays,
+        introTitle: dbValue.intro_title || seedContent.introTitle,
+        introBody: dbValue.intro_body || seedContent.introBody,
+        imageBreakLabel: dbValue.image_break_label || seedContent.imageBreakLabel,
+        imageBreakTitle: dbValue.image_break_title || seedContent.imageBreakTitle,
+        imageBreakEmphasis: dbValue.image_break_emphasis || seedContent.imageBreakEmphasis,
+        copy: seedContent.copy,
+      }
+      return mappedContent
     }
 
+    if (isProduction()) {
+      // Production: empty settings should not silently display seed content
+      return seedContent
+    }
     return readJsonFile('content.json', seedContent)
   }
 
