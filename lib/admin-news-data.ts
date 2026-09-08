@@ -10,8 +10,14 @@ function safeCategory(value: string | null | undefined): NewsCategory {
     : 'FIELD NOTES'
 }
 
+function isUuid(value: string) {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value)
+}
+
 function mapAdminNews(row: any): NewsItem {
   return {
+    // Legacy rows may have an empty slug. In admin, fall back to immutable DB UUID
+    // so they can still be opened, repaired, or deleted safely.
     slug: row.slug || String(row.id),
     category: safeCategory(row.category),
     date: row.published_at ? new Date(row.published_at).toISOString().split('T')[0] : 'DATE PENDING',
@@ -52,15 +58,13 @@ export async function getAdminNews(): Promise<NewsItem[]> {
   return (data || []).map(mapAdminNews)
 }
 
-export async function getAdminNewsItem(slug: string): Promise<NewsItem | undefined> {
+export async function getAdminNewsItem(locator: string): Promise<NewsItem | undefined> {
   const client = createAdminClient()
   if (!client) throw new Error('ADMIN_NEWS_READ_BLOCKED: Supabase admin service role not configured.')
 
-  const { data, error } = await client
-    .from('articles')
-    .select(ARTICLE_SELECT)
-    .eq('slug', slug)
-    .maybeSingle()
+  let query = client.from('articles').select(ARTICLE_SELECT)
+  query = isUuid(locator) ? query.eq('id', locator) : query.eq('slug', locator)
+  const { data, error } = await query.maybeSingle()
 
   if (error) throw new Error(`Supabase admin news read failed: ${error.message}`)
   return data ? mapAdminNews(data) : undefined
@@ -92,32 +96,29 @@ export async function createAdminNews(item: NewsItem): Promise<NewsItem> {
   return mapAdminNews(data)
 }
 
-export async function updateAdminNews(slug: string, item: NewsItem): Promise<NewsItem> {
+export async function updateAdminNews(locator: string, item: NewsItem): Promise<NewsItem> {
   const client = createAdminClient()
   if (!client) throw new Error('ADMIN_NEWS_UPDATE_BLOCKED: Supabase admin service role not configured.')
 
-  const { data: current, error: readError } = await client
-    .from('articles')
-    .select('published_at')
-    .eq('slug', slug)
-    .single()
+  let readQuery = client.from('articles').select('id,slug,published_at')
+  readQuery = isUuid(locator) ? readQuery.eq('id', locator) : readQuery.eq('slug', locator)
+  const { data: current, error: readError } = await readQuery.single()
   if (readError) throw new Error(`Supabase admin news update lookup failed: ${readError.message}`)
 
-  const { data, error } = await client
-    .from('articles')
-    .update(toArticlePayload(item, current?.published_at || null))
-    .eq('slug', slug)
-    .select(ARTICLE_SELECT)
-    .single()
+  let updateQuery = client.from('articles').update(toArticlePayload(item, current?.published_at || null))
+  updateQuery = isUuid(locator) ? updateQuery.eq('id', locator) : updateQuery.eq('slug', locator)
+  const { data, error } = await updateQuery.select(ARTICLE_SELECT).single()
 
   if (error) throw new Error(`Supabase admin news update failed: ${error.message}`)
   return mapAdminNews(data)
 }
 
-export async function deleteAdminNews(slug: string): Promise<void> {
+export async function deleteAdminNews(locator: string): Promise<void> {
   const client = createAdminClient()
   if (!client) throw new Error('ADMIN_NEWS_DELETE_BLOCKED: Supabase admin service role not configured.')
 
-  const { error } = await client.from('articles').delete().eq('slug', slug)
+  let query = client.from('articles').delete()
+  query = isUuid(locator) ? query.eq('id', locator) : query.eq('slug', locator)
+  const { error } = await query
   if (error) throw new Error(`Supabase admin news delete failed: ${error.message}`)
 }
