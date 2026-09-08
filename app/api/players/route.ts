@@ -13,14 +13,12 @@ export async function POST(request: Request) {
   }
 
   const body = await request.json()
-  const { getPlayers: readPlayers, savePlayers } = await import('@/lib/data')
-  const players = await readPlayers()
-  const nextPlayer = {
+  const { createAdminPlayer } = await import('@/lib/admin-player-data')
+  const slug = String(body.id || body.name?.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || '').trim()
+  const player = await createAdminPlayer({
     ...body,
-    id: body.id ?? body.name.toLowerCase().replaceAll(' ', '-'),
-    published: body.published ?? true,
-  }
-  players.push(nextPlayer)
-  await savePlayers(players)
-  return NextResponse.json(nextPlayer, { status: 201 })
+    id: slug,
+    published: body.published ?? false,
+  })
+  return NextResponse.json(player, { status: 201 })
 }
