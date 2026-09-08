@@ -14,7 +14,7 @@ function SocialIcon({ name, src }: { name: string; src: string }) {
 
 export function SiteFooter() {
   const { t, darkMode } = useSite()
-  const logo = darkMode ? '/images/ksop-dark-logo.png' : '/images/ksop-light-logo.png'
+  const logo = darkMode ? '/images/ksop-logo-white.png' : '/images/ksop-logo-black.png'
 
   return (
     <footer className="site-footer" id="social">
