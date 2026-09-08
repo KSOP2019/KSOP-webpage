@@ -9,8 +9,8 @@ const categories: NewsCategory[] = ['FIELD NOTES', 'PLAYER PORTRAIT', 'KSOP JOUR
 
 export function NewsEditor({ initialItem }: { initialItem?: NewsItem }) {
   const router = useRouter()
-  const [item, setItem] = useState<NewsItem>(
-    initialItem ?? {
+  const [item, setItem] = useState<NewsItem & { coverUrl?: string }>(
+    initialItem ? { ...initialItem, coverUrl: (initialItem as any).coverUrl || '' } : {
       slug: '',
       category: 'FIELD NOTES',
       date: 'DATE PENDING',
@@ -18,6 +18,7 @@ export function NewsEditor({ initialItem }: { initialItem?: NewsItem }) {
       excerpt: '',
       body: '',
       published: false,
+      coverUrl: '',
     },
   )
 
@@ -59,6 +60,10 @@ export function NewsEditor({ initialItem }: { initialItem?: NewsItem }) {
       <label>
         Body
         <textarea rows={6} value={item.body} onChange={(e) => setItem({ ...item, body: e.target.value })} />
+      </label>
+      <label>
+        Cover image URL
+        <input value={item.coverUrl || ''} onChange={(e) => setItem({ ...item, coverUrl: e.target.value })} />
       </label>
       <label>
         <input type="checkbox" checked={item.published} onChange={(e) => setItem({ ...item, published: e.target.checked })} />

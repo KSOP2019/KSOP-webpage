@@ -10,25 +10,33 @@ const eventTypes: EventType[] = ['NLH', 'PLO', 'SATELLITE', 'MAIN EVENT', 'HIGH 
 export function EventEditor({ initialEvent }: { initialEvent?: EventItem }) {
   const router = useRouter()
   const [event, setEvent] = useState<EventItem>(
-    initialEvent ?? {
+    initialEvent ?? ({
       id: '',
-      date: 'DATE PENDING',
-      dayLabel: 'DAY 1',
-      name: 'New Event',
-      type: 'NLH',
-      buyInType: 'INVITATION',
-      buyIn: '₩10,000',
-      gtd: '₩10,000',
-      startingChips: 15000,
-      lateReg: 'LEVEL 8',
-      levelTime: '15 MIN',
-      blindStructure: [{ level: 1, small: 100, big: 200, ante: 200 }],
-      published: true,
-    },
+      date: '',
+      dayLabel: '',
+      name: '',
+      type: '' as any,
+      buyInType: '',
+      buyIn: '',
+      gtd: '',
+      startingChips: 0,
+      lateReg: '',
+      levelTime: '',
+      blindStructure: [],
+      published: false,
+    } as EventItem)
   )
 
   async function handleSubmit(formEvent: React.FormEvent) {
     formEvent.preventDefault()
+    if (!event.type || (event.type as string) === '') {
+      alert('Please select an event type')
+      return
+    }
+    if (!event.date || event.date.length < 5) {
+      alert('Please provide a valid event date with explicit year (YYYY-MM-DD)')
+      return
+    }
     const isNew = !initialEvent
     const response = await fetch(isNew ? '/api/events' : `/api/events/${event.id}`, {
       method: isNew ? 'POST' : 'PUT',
@@ -56,8 +64,8 @@ export function EventEditor({ initialEvent }: { initialEvent?: EventItem }) {
         <input value={event.name} onChange={(e) => setEvent({ ...event, name: e.target.value })} />
       </label>
       <label>
-        Date
-        <input value={event.date} onChange={(e) => setEvent({ ...event, date: e.target.value })} />
+        Event date (YYYY-MM-DD)
+        <input type="date" value={event.date} onChange={(e) => setEvent({ ...event, date: e.target.value })} />
       </label>
       <label>
         Day label
@@ -65,7 +73,8 @@ export function EventEditor({ initialEvent }: { initialEvent?: EventItem }) {
       </label>
       <label>
         Type
-        <select value={event.type} onChange={(e) => setEvent({ ...event, type: e.target.value as EventType })}>
+        <select value={event.type} onChange={(e) => setEvent({ ...event, type: e.target.value as EventType })} required>
+          <option value="">Select event type</option>
           {eventTypes.map((type) => (
             <option key={type} value={type}>
               {type}

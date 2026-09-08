@@ -398,7 +398,7 @@ export async function saveNews(news: NewsItem[]) {
         title: item.title,
         excerpt: item.excerpt,
         body: item.body,
-        cover_url: '',
+        cover_url: (item as any).coverUrl || '',
         author: 'KSOP EDITORIAL',
         status: item.published ? 'published' : 'draft',
         sort_order: 0,
