@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import { Reveal } from '@/components/site/reveal'
 import { getSiteContent } from '@/lib/data'
 
 const ABOUT_TOPICS = [
@@ -31,7 +32,7 @@ export default async function AboutDetailPage({ params }: PageProps) {
   return (
     <section className="intro section-pad">
       <div className="section-label">01 / THE SERIES · DETAIL</div>
-      <div className="intro-content">
+      <Reveal className="intro-content">
         <h2>{topic.title}</h2>
         <p className="large-copy">{content.introBody}</p>
         <div className="detail-facts" style={{ marginTop: '24px' }}>
@@ -76,7 +77,7 @@ export default async function AboutDetailPage({ params }: PageProps) {
             Explore the schedule
           </Link>
         </div>
-      </div>
+      </Reveal>
     </section>
   )
 }

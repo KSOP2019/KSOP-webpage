@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import { Reveal } from '@/components/site/reveal'
 import { getEvent, getSiteContent } from '@/lib/data'
 
 type PageProps = { params: Promise<{ id: string }> }
@@ -24,7 +25,7 @@ export default async function EventDetailPage({ params }: PageProps) {
         </div>
       </div>
 
-      <div className="event-detail" style={{ marginTop: 0 }}>
+      <Reveal className="event-detail" style={{ marginTop: 0 }}>
         <div className="detail-facts">
           <div>
             <span>BUY-IN</span>
@@ -88,7 +89,7 @@ export default async function EventDetailPage({ params }: PageProps) {
             Back to schedule
           </Link>
         </div>
-      </div>
+      </Reveal>
 
       <p className="muted-copy" style={{ marginTop: '24px' }}>
         {content.seriesVenue} · {content.seriesDate}

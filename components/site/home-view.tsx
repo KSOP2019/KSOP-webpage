@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useEffect, useMemo, useState } from 'react'
 import { ArrowUpRight, Check, ChevronDown, MapPin } from 'lucide-react'
 import { useSite } from '@/components/site/site-provider'
+import { Reveal } from '@/components/site/reveal'
 import { EVENT_CATEGORIES } from '@/lib/nav'
 import { filterEvents } from '@/lib/event-filters'
 import type { EventItem, NewsItem, PlayerItem } from '@/lib/types'
@@ -118,14 +119,14 @@ export function HomeView({ events, players, news }: HomeViewProps) {
 
       <section className="intro section-pad" id="about">
         <div className="section-label">01 / THE SERIES</div>
-        <div className="intro-content">
+        <Reveal className="intro-content">
           <h2>
             More than
             <br />
             <em>a tournament.</em>
           </h2>
           <p className="large-copy">{content.introBody}</p>
-        </div>
+        </Reveal>
       </section>
 
       <section className="schedule-section section-pad" id="schedule">
@@ -226,7 +227,7 @@ export function HomeView({ events, players, news }: HomeViewProps) {
           </Link>
         </div>
 
-        <div className="podium-grid">
+        <Reveal className="podium-grid">
           {filtered.slice(0, 3).map((player) => (
             <Link href={`/ranking/${player.id}`} className={`podium-card place-0${player.rank}`} key={player.id}>
               <div className="podium-glow" />
@@ -243,7 +244,7 @@ export function HomeView({ events, players, news }: HomeViewProps) {
               <span className="text-link">View profile <ArrowUpRight /></span>
             </Link>
           ))}
-        </div>
+        </Reveal>
       </section>
 
       <section className="news-section section-pad" id="news">
@@ -256,7 +257,7 @@ export function HomeView({ events, players, news }: HomeViewProps) {
             All news <ArrowUpRight />
           </Link>
         </div>
-        <div className="news-grid">
+        <Reveal className="news-grid">
           {news.slice(0, 3).map((item) => (
             <article key={item.slug}>
               <span>
@@ -268,7 +269,7 @@ export function HomeView({ events, players, news }: HomeViewProps) {
               </Link>
             </article>
           ))}
-        </div>
+        </Reveal>
       </section>
 
       <section className="image-break">

@@ -228,3 +228,10 @@ main[class*="lang-"] .intro-content .large-copy { grid-column: 2 !important; wid
 .events-density .schedule-trigger .date > span { display: block; font-size: 10px; letter-spacing: .12em; color: var(--muted-foreground); white-space: nowrap; }
 .events-density .event-title b { white-space: normal; overflow-wrap: anywhere; }
 .events-density .event-title small { flex-wrap: wrap; white-space: normal; row-gap: 2px; }
+
+/* P3-1 subtle scroll reveal — visible by default; hidden pre-reveal only when JS runs. */
+.js .reveal { opacity: 0; transform: translateY(16px); transition: opacity .55s ease, transform .55s ease; }
+.js .reveal.is-visible { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) {
+  .js .reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
+}

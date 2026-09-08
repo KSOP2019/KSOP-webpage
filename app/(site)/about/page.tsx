@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { Reveal } from '@/components/site/reveal'
 import { getSiteContent } from '@/lib/data'
 
 export default async function AboutPage() {
@@ -7,7 +8,7 @@ export default async function AboutPage() {
   return (
     <section className="intro section-pad">
       <div className="section-label">01 / THE SERIES</div>
-      <div className="intro-content">
+      <Reveal className="intro-content">
         <h2>
           More than
           <br />
@@ -30,7 +31,7 @@ export default async function AboutPage() {
             THE VENUE
           </Link>
         </div>
-      </div>
+      </Reveal>
     </section>
   )
 }

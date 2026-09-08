@@ -5,6 +5,7 @@ import { useMemo, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { ArrowUpRight, ChevronDown } from 'lucide-react'
 import { useSite } from '@/components/site/site-provider'
+import { Reveal } from '@/components/site/reveal'
 import { EVENT_CATEGORIES } from '@/lib/nav'
 import { filterEvents } from '@/lib/event-filters'
 import type { EventItem } from '@/lib/types'
@@ -78,7 +79,7 @@ export function EventsPageClient({ events }: { events: EventItem[] }) {
         </div>
       ) : null}
 
-      <div className="schedule-list">
+      <Reveal className="schedule-list">
         {visibleEvents.length > 0 ? (
           <p className="muted-copy" style={{ marginBottom: '12px' }}>
             SHOWING {shownEvents.length} OF {visibleEvents.length} EVENTS
@@ -136,7 +137,7 @@ export function EventsPageClient({ events }: { events: EventItem[] }) {
             </button>
           </div>
         ) : null}
-      </div>
+      </Reveal>
     </section>
   )
 }

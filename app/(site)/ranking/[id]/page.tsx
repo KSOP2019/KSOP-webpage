@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { ArrowUpRight } from 'lucide-react'
+import { Reveal } from '@/components/site/reveal'
 import { getPlayer } from '@/lib/data'
 
 type PageProps = { params: Promise<{ id: string }> }
@@ -24,7 +25,7 @@ export default async function PlayerDetailPage({ params }: PageProps) {
         </div>
       </div>
 
-      <div className="event-detail">
+      <Reveal className="event-detail">
         {player.portrait ? (
           <img src={player.portrait} alt={`${player.name} portrait`} style={{ width: '220px', borderRadius: '16px' }} />
         ) : null}
@@ -57,7 +58,7 @@ export default async function PlayerDetailPage({ params }: PageProps) {
             View events <ArrowUpRight />
           </Link>
         </div>
-      </div>
+      </Reveal>
     </section>
   )
 }
