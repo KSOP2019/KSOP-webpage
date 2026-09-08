@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { getEvents } from '@/lib/data'
 import { isAdminAuthenticated } from '@/lib/auth'
 
 const VALID_EVENT_TYPES = ['NLH', 'PLO', 'SATELLITE', 'MAIN EVENT', 'HIGH ROLLER']
@@ -32,6 +33,23 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Too many rows (max 1000)' }, { status: 400 })
     }
 
+    const { data: existingEventsData, error: existingError } = await (await import('@/lib/supabase-server')).createPublicClient()?.from('events')?.select('slug,status')?.eq('status','published') || { data: null, error: null }
+    // Load existing DB slugs for classification; fall back to JSON if DB unavailable
+    let existingSlugs: Set<string> = new Set()
+    if (existingEventsData) {
+      for (const row of existingEventsData as any[]) {
+        if (row.slug) existingSlugs.add(row.slug)
+      }
+    } else {
+      try {
+        const allEvents = await getEvents()
+        for (const e of allEvents) existingSlugs.add(e.id)
+      } catch {
+        // No existing events reference available
+      }
+    }
+
+    const fileSlugs = new Set<string>()
     const preview: any[] = []
     const errors: string[] = []
 
@@ -40,7 +58,7 @@ export async function POST(request: Request) {
       const rowErrors: string[] = []
       if (!r.name || String(r.name || '').trim() === '') rowErrors.push(`Row ${i + 1}: missing name`)
 
-      // Strict date validation: must contain explicit 4-digit year and be valid calendar date
+      // Strict date validation
       if (!r.date) {
         rowErrors.push(`Row ${i + 1}: missing date`)
       } else {
@@ -48,7 +66,6 @@ export async function POST(request: Request) {
         if (!/\b(19|20)\d{2}\b/.test(dateStr)) {
           rowErrors.push(`Row ${i + 1}: date missing explicit year (${dateStr})`)
         } else {
-          // Validate real calendar date
           try {
             const parsed = new Date(dateStr)
             if (isNaN(parsed.getTime()) || parsed.getFullYear() < 1970) {
@@ -61,19 +78,27 @@ export async function POST(request: Request) {
       }
 
       const typeVal = r.type || ''
-      const safeType = VALID_EVENT_TYPES.includes(typeVal) ? typeVal : 'NLH'
       if (!VALID_EVENT_TYPES.includes(typeVal)) {
         rowErrors.push(`Row ${i + 1}: invalid event type (${typeVal || 'empty'})`)
       }
 
-      const slugSafe = r.slug || String(r.name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-') || `event-${Date.now()}-${i}`
+      const slugRaw = r.slug || String(r.name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-')
+      const slugSafe = slugRaw || `row-${i + 1}-pending`
+      if (fileSlugs.has(slugSafe)) {
+        rowErrors.push(`Row ${i + 1}: duplicate slug in file (${slugSafe})`)
+      } else {
+        fileSlugs.add(slugSafe)
+      }
+
+      const isNewRow = !existingSlugs.has(slugSafe)
+      const isUpdateRow = existingSlugs.has(slugSafe)
 
       preview.push({
         rowIndex: i + 1,
         slug: slugSafe,
         name: String(r.name || ''),
         date: String(r.date || ''),
-        type: safeType,
+        type: VALID_EVENT_TYPES.includes(typeVal) ? typeVal : 'NLH',
         buyIn: r.buyIn || '',
         buyInType: r.buyInType || 'INVITATION',
         gtd: r.gtd || '',
@@ -81,21 +106,28 @@ export async function POST(request: Request) {
         lateReg: r.lateReg || '',
         levelTime: r.levelTime || '',
         published: r.published === true || r.published === 'true' || r.published === 1,
+        classification: isNewRow ? 'NEW' : isUpdateRow ? 'UPDATE_EXISTING' : (rowErrors.length > 0 ? 'INVALID' : 'NEW'),
         errors: rowErrors,
       })
       errors.push(...rowErrors)
     }
+
+    const validOnly = preview.filter((r) => r.errors.length === 0)
+    const newOnly = validOnly.filter((r) => r.classification === 'NEW')
+    const updateOnly = validOnly.filter((r) => r.classification === 'UPDATE_EXISTING')
+    const duplicateOnly = preview.filter((r) => r.errors.some((e: string) => e.includes('duplicate slug')))
+    const invalidOnly = preview.filter((r) => r.errors.length > 0 && r.classification !== 'NEW' && r.classification !== 'UPDATE_EXISTING')
 
     return NextResponse.json({
       preview,
       errors,
       fileName: file.name,
       totalRows: rows.length,
-      validRows: preview.length,
-      invalidRows: preview.filter((r) => r.errors && r.errors.length > 0).length,
-      newRows: preview.filter((r) => !r.slug || (r.slug.length > 0 && r.errors && r.errors.length === 0)).length,
-      updateRows: preview.filter((r) => r.errors && r.errors.length > 0 ? false : r.slug).length,
-      duplicateInFile: false,
+      validRows: validOnly.length,
+      invalidRows: invalidOnly.length + duplicateOnly.length,
+      newRows: newOnly.length,
+      updateRows: updateOnly.length,
+      duplicateInFile: duplicateOnly.length,
     })
   } catch (e: any) {
     console.error('Import preview error:', e.message)

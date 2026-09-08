@@ -92,9 +92,12 @@ export default function AdminImportPage() {
       {preview.length > 0 && (
         <div style={{ marginTop: '24px' }}>
           <h3>Preview ({preview.length} rows)</h3>
+          <p className="muted-copy">
+            Total: {preview.length} | Valid: {preview.filter((r) => !(r.errors && r.errors.length > 0)).length} | Invalid: {preview.filter((r) => r.errors && r.errors.length > 0).length} | New: {preview.filter((r) => r.classification === 'NEW').length} | Update: {preview.filter((r) => r.classification === 'UPDATE_EXISTING').length} | Duplicate: {preview.filter((r) => r.classification === 'DUPLICATE_IN_FILE').length}
+          </p>
           <table className="admin-table">
             <thead>
-              <tr><th>Row</th><th>Slug</th><th>Date</th><th>Name</th><th>Type</th><th>Buy-in</th><th>GTD</th><th>Starting Chips</th><th>Late Reg</th><th>Level Time</th></tr>
+              <tr><th>Row</th><th>Slug</th><th>Date</th><th>Name</th><th>Type</th><th>Buy-in</th><th>GTD</th><th>Starting Chips</th><th>Late Reg</th><th>Level Time</th><th>Action</th><th>Error</th></tr>
             </thead>
             <tbody>
               {preview.map((r: any, i: number) => (
@@ -109,6 +112,8 @@ export default function AdminImportPage() {
                   <td>{r.startingChips || ''}</td>
                   <td>{r.lateReg || ''}</td>
                   <td>{r.levelTime || ''}</td>
+                  <td style={{ fontWeight: 'bold', color: r.classification === 'NEW' ? '#1a6' : r.classification === 'UPDATE_EXISTING' ? '#d90' : r.classification === 'DUPLICATE_IN_FILE' ? '#c5202d' : '#c5202d' }}>{r.classification || 'PENDING'}</td>
+                  <td style={{ color: '#c5202d', fontSize: '11px' }}>{(r.errors || []).join(', ') || '-'}</td>
                 </tr>
               ))}
             </tbody>
