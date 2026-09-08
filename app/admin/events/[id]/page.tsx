@@ -1,12 +1,12 @@
 import { redirect } from 'next/navigation'
-import { getEvent } from '@/lib/data'
+import { getAdminEvent } from '@/lib/admin-data'
 import { EventEditor } from '@/components/admin/event-editor'
 import { isAdminAuthenticated } from '@/lib/auth'
 
 export default async function AdminEditEventPage({ params }: { params: Promise<{ id: string }> }) {
   if (!(await isAdminAuthenticated())) redirect('/admin/login')
   const { id } = await params
-  const event = await getEvent(id)
+  const event = await getAdminEvent(id)
   if (!event) redirect('/admin/events')
   return (
     <section className="admin-card">
