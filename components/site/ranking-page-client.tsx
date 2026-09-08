@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useMemo, useState } from 'react'
 import { ArrowUpRight, Search } from 'lucide-react'
 import { useSite } from '@/components/site/site-provider'
+import { Reveal } from '@/components/site/reveal'
 import type { PlayerItem } from '@/lib/types'
 
 export function RankingPageClient({ players }: { players: PlayerItem[] }) {
@@ -32,7 +33,7 @@ export function RankingPageClient({ players }: { players: PlayerItem[] }) {
         </div>
       </div>
 
-      <div className="podium-grid">
+      <Reveal className="podium-grid">
         {filtered.slice(0, 3).map((player) => (
           <Link href={`/ranking/${player.id}`} className={`podium-card place-0${player.rank}`} key={player.id}>
             <div className="podium-glow" />
@@ -47,9 +48,9 @@ export function RankingPageClient({ players }: { players: PlayerItem[] }) {
             <span className="text-link">View profile <ArrowUpRight /></span>
           </Link>
         ))}
-      </div>
+      </Reveal>
 
-      <div className="ranking-table">
+      <Reveal className="ranking-table">
         {filtered.slice(3).map((player) => (
           <Link className="player-row" href={`/ranking/${player.id}`} key={player.id}>
             <span className="rank">{player.rank}</span>
@@ -58,7 +59,7 @@ export function RankingPageClient({ players }: { players: PlayerItem[] }) {
             <span>{player.earnings}</span>
           </Link>
         ))}
-      </div>
+      </Reveal>
     </section>
   )
 }

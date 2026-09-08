@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import { Reveal } from '@/components/site/reveal'
 import { getEvents, getSiteContent } from '@/lib/data'
 import { getAllSeries, getSeries, getSeriesDateRange, getSeriesEvents } from '@/lib/series'
 
@@ -54,7 +55,7 @@ export default async function SeriesDetailPage({ params }: PageProps) {
         </div>
       </section>
 
-      <section className="detail-list" aria-label={`${series.title.trim()} series details`}>
+      <Reveal as="section" className="detail-list" ariaLabel={`${series.title.trim()} series details`}>
         <div className="detail-facts series-facts">
           <div>
             <span>SERIES</span>
@@ -105,7 +106,7 @@ export default async function SeriesDetailPage({ params }: PageProps) {
             ))}
           </div>
         )}
-      </section>
+      </Reveal>
 
       <footer className="detail-footer">
         <span>THE KOREA SERIES OF POKER · 2026</span>

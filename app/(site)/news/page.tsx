@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { ArrowUpRight } from 'lucide-react'
+import { Reveal } from '@/components/site/reveal'
 import { getNews } from '@/lib/data'
 
 export default async function NewsPage() {
@@ -20,8 +21,8 @@ export default async function NewsPage() {
         <p className="muted-copy">NO PUBLISHED NEWS</p>
       ) : (
         <div className="news-grid">
-          {publishedNews.map((item) => (
-            <article key={item.slug}>
+          {publishedNews.map((item, index) => (
+            <Reveal as="article" key={item.slug} delay={Math.min(index * 70, 210)}>
               <span>
                 {item.date} · {item.category}
               </span>
@@ -32,7 +33,7 @@ export default async function NewsPage() {
               <Link className="text-link" href={`/news/${item.slug}`}>
                 Read the story <ArrowUpRight />
               </Link>
-            </article>
+            </Reveal>
           ))}
         </div>
       )}
