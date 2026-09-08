@@ -1,11 +1,11 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
-import { getNews } from '@/lib/data'
+import { getAdminNews } from '@/lib/admin-news-data'
 import { isAdminAuthenticated } from '@/lib/auth'
 
 export default async function AdminNewsPage() {
   if (!(await isAdminAuthenticated())) redirect('/admin/login')
-  const news = await getNews()
+  const news = await getAdminNews()
   return (
     <section className="admin-card">
       <h2>News</h2>
