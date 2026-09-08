@@ -22,6 +22,55 @@ function safeNewsCategory(value: string | null | undefined): NewsCategory {
   return VALID_NEWS_CATEGORIES.includes(value as NewsCategory) ? (value as NewsCategory) : 'FIELD NOTES'
 }
 
+// --- Site Settings Conversion ---
+// Schema site_settings uses snake_case JSON; SiteContent uses camelCase.
+// These helpers ensure a true round-trip: DB -> interface -> DB.
+
+export function siteContentToSiteSettings(content: SiteContent): any {
+  return {
+    site_title: content.introTitle || seedContent.introTitle,
+    hero_eyebrow: content.copy?.EN?.eyebrow || seedContent.copy.EN.eyebrow,
+    hero_title: content.introTitle || seedContent.introTitle,
+    hero_description: content.introBody || seedContent.introBody,
+    hero_image: content.heroImage || seedContent.heroImage,
+    logo_black: content.logoBlack || seedContent.logoBlack,
+    logo_white: content.logoWhite || seedContent.logoWhite,
+    series_date: content.seriesDate || seedContent.seriesDate,
+    series_venue: content.seriesVenue || seedContent.seriesVenue,
+    series_gtd: content.seriesGtd || seedContent.seriesGtd,
+    countdown_days: content.countdownDays || seedContent.countdownDays,
+    intro_title: content.introTitle || seedContent.introTitle,
+    intro_body: content.introBody || seedContent.introBody,
+    image_break_label: content.imageBreakLabel || seedContent.imageBreakLabel,
+    image_break_title: content.imageBreakTitle || seedContent.imageBreakTitle,
+    image_break_emphasis: content.imageBreakEmphasis || seedContent.imageBreakEmphasis,
+    footer_text: content.introBody || seedContent.introBody,
+    primary_color: '#c5202d',
+    instagram_url: '#',
+    youtube_url: '#',
+    facebook_url: '#',
+    x_url: '#',
+  }
+}
+
+export function siteSettingsToSiteContent(dbValue: any): SiteContent {
+  return {
+    heroImage: dbValue.hero_image || seedContent.heroImage,
+    logoBlack: dbValue.logo_black || seedContent.logoBlack,
+    logoWhite: dbValue.logo_white || seedContent.logoWhite,
+    seriesDate: dbValue.series_date || seedContent.seriesDate,
+    seriesVenue: dbValue.series_venue || seedContent.seriesVenue,
+    seriesGtd: dbValue.series_gtd || seedContent.seriesGtd,
+    countdownDays: dbValue.countdown_days || seedContent.countdownDays,
+    introTitle: dbValue.intro_title || dbValue.hero_title || seedContent.introTitle,
+    introBody: dbValue.intro_body || dbValue.hero_description || seedContent.introBody,
+    imageBreakLabel: dbValue.image_break_label || seedContent.imageBreakLabel,
+    imageBreakTitle: dbValue.image_break_title || seedContent.imageBreakTitle,
+    imageBreakEmphasis: dbValue.image_break_emphasis || seedContent.imageBreakEmphasis,
+    copy: seedContent.copy,
+  }
+}
+
 function supabaseConfigured(): boolean {
   return !!(process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
 }
@@ -395,8 +444,7 @@ export async function getSiteContent(): Promise<SiteContent> {
     }
 
     if (isProduction()) {
-      // Production: empty settings should not silently display seed content
-      return seedContent
+      throw new Error('PRODUCTION_READ_ERROR: Site settings missing or invalid value. Supabase configured but global row missing/non-object.')
     }
     return readJsonFile('content.json', seedContent)
   }
@@ -413,7 +461,7 @@ export async function saveSiteContent(content: SiteContent) {
   if (adminClient) {
     const payload = {
       key: 'global',
-      value: content,
+      value: siteContentToSiteSettings(content),
     }
     const { error } = await adminClient.from('site_settings').upsert(payload, { onConflict: 'key' })
     if (error) {
