@@ -4,6 +4,7 @@ import type { Metadata, Viewport } from 'next'
 
 const notoSansKr = Noto_Sans_KR({ subsets: ['latin'], variable: '--font-korean', display: 'swap' })
 import './globals.css'
+import './header-stability.css'
 
 export const metadata: Metadata = {
   title: 'KSOP — Korea Series of Poker',
