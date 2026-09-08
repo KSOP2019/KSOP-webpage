@@ -13,43 +13,35 @@ function SocialIcon({ name, src }: { name: string; src: string }) {
 }
 
 export function SiteFooter() {
-  const { content, t, darkMode } = useSite()
-  const lightLogo = !content.logoBlack || ['/images/ksop-logo-black.png', '/images/ksop-dark-logo.png', '/images/ksop-light-logo.svg'].includes(content.logoBlack)
-    ? '/images/ksop-light-logo.png'
-    : content.logoBlack
-  const darkLogo = !content.logoWhite || ['/images/ksop-logo-white.png', '/images/ksop-dark-logo.svg'].includes(content.logoWhite)
-    ? '/images/ksop-dark-logo.png'
-    : content.logoWhite
-  const logo = darkMode ? darkLogo : lightLogo
+  const { t, darkMode } = useSite()
+  const logo = darkMode ? '/images/ksop-dark-logo.png' : '/images/ksop-light-logo.png'
 
   return (
-    <>
-      <footer className="site-footer" id="social">
+    <footer className="site-footer" id="social">
+      <div>
+        <img className="footer-logo" src={logo} alt="KSOP Korea Series of Poker" />
+        <p className="footer-note">
+          Korea&apos;s premier live poker series.
+          <br />
+          Designed for the game.
+        </p>
+      </div>
+      <div className="footer-nav">
+        {t.nav.slice(0, 4).map((item, index) => (
+          <Link href={NAV_ROUTES[index]} key={`${NAV_ROUTES[index]}-${index}`}>
+            {item}
+          </Link>
+        ))}
+      </div>
+      <div className="socials">
+        <span>{t.follow}</span>
         <div>
-          <img className="footer-logo" src={logo} alt="KSOP Korea Series of Poker" />
-          <p className="footer-note">
-            Korea&apos;s premier live poker series.
-            <br />
-            Designed for the game.
-          </p>
-        </div>
-        <div className="footer-nav">
-          {t.nav.slice(0, 4).map((item, index) => (
-            <Link href={NAV_ROUTES[index]} key={`${NAV_ROUTES[index]}-${index}`}>
-              {item}
-            </Link>
+          {Object.entries(socials).map(([name, src]) => (
+            <SocialIcon key={name} name={name} src={src} />
           ))}
         </div>
-        <div className="socials">
-          <span>{t.follow}</span>
-          <div>
-            {Object.entries(socials).map(([name, src]) => (
-              <SocialIcon key={name} name={name} src={src} />
-            ))}
-          </div>
-        </div>
-        <div className="copyright">© 2026 KSOP · ALL RIGHTS RESERVED</div>
-      </footer>
-    </>
+      </div>
+      <div className="copyright">© 2026 KSOP · ALL RIGHTS RESERVED</div>
+    </footer>
   )
 }
