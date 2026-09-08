@@ -6,6 +6,7 @@ import { usePathname, useRouter } from 'next/navigation'
 const links = [
   { href: '/admin', label: 'Dashboard' },
   { href: '/admin/content', label: 'Home' },
+  { href: '/admin/schedule', label: 'Schedule' },
   { href: '/admin/events', label: 'Events' },
   { href: '/admin/news', label: 'News' },
   { href: '/admin/players', label: 'Players' },
@@ -27,14 +28,16 @@ export function AdminNav() {
       <h1>KSOP ADMIN</h1>
       <nav className="admin-nav">
         {links.map((link) => (
-          <Link key={link.href} href={link.href} className={pathname === link.href ? 'is-active' : undefined}>
+          <Link
+            key={link.href}
+            href={link.href}
+            className={pathname === link.href || (link.href !== '/admin' && pathname.startsWith(`${link.href}/`)) ? 'is-active' : undefined}
+          >
             {link.label}
           </Link>
         ))}
         <Link href="/">Preview Site</Link>
-        <button type="button" onClick={logout}>
-          Logout
-        </button>
+        <button type="button" onClick={logout}>Logout</button>
       </nav>
     </aside>
   )
