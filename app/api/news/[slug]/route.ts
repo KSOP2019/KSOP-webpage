@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
-import { getNews, getNewsItem, saveNews } from '@/lib/data'
+import { getNewsItem } from '@/lib/data'
+import { deleteAdminNews, getAdminNewsItem, updateAdminNews } from '@/lib/admin-news-data'
 import { isAdminAuthenticated } from '@/lib/auth'
 
 type RouteContext = { params: Promise<{ slug: string }> }
@@ -20,15 +21,13 @@ export async function PUT(request: Request, context: RouteContext) {
 
   const { slug } = await context.params
   const body = await request.json()
-  const news = await getNews()
-  const index = news.findIndex((item) => item.slug === slug)
-  if (index === -1) {
+  const current = await getAdminNewsItem(slug)
+  if (!current) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 })
   }
 
-  news[index] = { ...news[index], ...body, slug: news[index].slug }
-  await saveNews(news)
-  return NextResponse.json(news[index])
+  const updated = await updateAdminNews(slug, { ...current, ...body, slug })
+  return NextResponse.json(updated)
 }
 
 export async function DELETE(_request: Request, context: RouteContext) {
@@ -37,12 +36,11 @@ export async function DELETE(_request: Request, context: RouteContext) {
   }
 
   const { slug } = await context.params
-  const news = await getNews()
-  const nextNews = news.filter((item) => item.slug !== slug)
-  if (nextNews.length === news.length) {
+  const current = await getAdminNewsItem(slug)
+  if (!current) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 })
   }
 
-  await saveNews(nextNews)
+  await deleteAdminNews(slug)
   return NextResponse.json({ ok: true })
 }
