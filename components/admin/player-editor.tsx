@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import type { PlayerItem } from '@/lib/types'
 
-export function PlayerEditor({ initialItem }: { initialItem?: PlayerItem }) {
+export function PlayerEditor({ initialItem, adminId }: { initialItem?: PlayerItem; adminId?: string }) {
   const router = useRouter()
   const [item, setItem] = useState<PlayerItem>(
     initialItem ?? {
@@ -23,8 +23,8 @@ export function PlayerEditor({ initialItem }: { initialItem?: PlayerItem }) {
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault()
     const isNew = !initialItem
-    const slug = item.id || item.name.toLowerCase().replace(/\s/g, '-')
-    const response = await fetch(isNew ? '/api/players' : `/api/players/${slug}`, {
+    const slug = (item.id || item.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')).trim()
+    const response = await fetch(isNew ? '/api/players' : `/api/players/${adminId}`, {
       method: isNew ? 'POST' : 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ ...item, id: slug, published: item.published }),
@@ -39,7 +39,7 @@ export function PlayerEditor({ initialItem }: { initialItem?: PlayerItem }) {
     <form className="admin-form" onSubmit={handleSubmit}>
       <label>
         Slug
-        <input value={item.id} onChange={(e) => setItem({ ...item, id: e.target.value })} />
+        <input value={item.id} onChange={(e) => setItem({ ...item, id: e.target.value })} disabled={!initialItem ? false : true} />
       </label>
       <label>
         Name
