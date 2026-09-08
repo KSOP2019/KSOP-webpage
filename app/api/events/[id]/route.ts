@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
-import { getEvent, saveEvents } from '@/lib/data'
-import { deleteAdminEvent, getAdminEvents } from '@/lib/admin-data'
+import { getEvent } from '@/lib/data'
+import { deleteAdminEvent, getAdminEvents, updateAdminEvent } from '@/lib/admin-data'
 import { isAdminAuthenticated } from '@/lib/auth'
 
 type RouteContext = { params: Promise<{ id: string }> }
@@ -22,14 +22,13 @@ export async function PUT(request: Request, context: RouteContext) {
   const { id } = await context.params
   const body = await request.json()
   const events = await getAdminEvents()
-  const index = events.findIndex((event) => event.id === id)
-  if (index === -1) {
+  const current = events.find((event) => event.id === id)
+  if (!current) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 })
   }
 
-  events[index] = { ...events[index], ...body, id }
-  await saveEvents(events)
-  return NextResponse.json(events[index])
+  const updated = await updateAdminEvent(id, { ...current, ...body, id })
+  return NextResponse.json(updated)
 }
 
 export async function DELETE(_request: Request, context: RouteContext) {
