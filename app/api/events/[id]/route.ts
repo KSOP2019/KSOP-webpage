@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
-import { getEvent, getEvents, saveEvents } from '@/lib/data'
+import { getEvent, saveEvents } from '@/lib/data'
+import { deleteAdminEvent, getAdminEvents } from '@/lib/admin-data'
 import { isAdminAuthenticated } from '@/lib/auth'
 
 type RouteContext = { params: Promise<{ id: string }> }
@@ -20,7 +21,7 @@ export async function PUT(request: Request, context: RouteContext) {
 
   const { id } = await context.params
   const body = await request.json()
-  const events = await getEvents()
+  const events = await getAdminEvents()
   const index = events.findIndex((event) => event.id === id)
   if (index === -1) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 })
@@ -37,12 +38,11 @@ export async function DELETE(_request: Request, context: RouteContext) {
   }
 
   const { id } = await context.params
-  const events = await getEvents()
-  const nextEvents = events.filter((event) => event.id !== id)
-  if (nextEvents.length === events.length) {
+  const events = await getAdminEvents()
+  if (!events.some((event) => event.id === id)) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 })
   }
 
-  await saveEvents(nextEvents)
+  await deleteAdminEvent(id)
   return NextResponse.json({ ok: true })
 }
