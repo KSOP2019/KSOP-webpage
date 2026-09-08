@@ -9,7 +9,14 @@ type PageProps = { params: Promise<{ slug: string }> }
 
 export default async function NewsDetailPage({ params }: PageProps) {
   const { slug } = await params
-  const item = await getNewsItem(slug)
+  let decodedSlug = slug
+  try {
+    decodedSlug = decodeURIComponent(slug)
+  } catch {
+    // Keep the original segment if it is already decoded or malformed.
+  }
+
+  const item = await getNewsItem(decodedSlug)
   if (!item || !item.published) notFound()
 
   return (
