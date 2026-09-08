@@ -29,7 +29,7 @@ export function EventsPageClient({ events }: { events: EventItem[] }) {
   const remainingCount = visibleEvents.length - shownEvents.length
 
   return (
-    <section className="schedule-section section-pad">
+    <section className="schedule-section section-pad events-density">
       <div className="section-top">
         <div>
           <div className="section-label">02 / UPCOMING SERIES</div>
@@ -79,9 +79,11 @@ export function EventsPageClient({ events }: { events: EventItem[] }) {
       ) : null}
 
       <div className="schedule-list">
-        <p className="muted-copy" style={{ marginBottom: '12px' }}>
-          SHOWING {shownEvents.length} OF {visibleEvents.length} EVENTS
-        </p>
+        {visibleEvents.length > 0 ? (
+          <p className="muted-copy" style={{ marginBottom: '12px' }}>
+            SHOWING {shownEvents.length} OF {visibleEvents.length} EVENTS
+          </p>
+        ) : null}
         {visibleEvents.length === 0 ? (
           <div>
             <p className="muted-copy">NO EVENTS MATCH THE SELECTED FILTERS</p>
