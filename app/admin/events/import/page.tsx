@@ -16,32 +16,34 @@ export default function AdminImportPage() {
     const input = (event.target as HTMLFormElement).elements.namedItem('file') as HTMLInputElement
     const file = input.files?.[0]
     if (!file) return
+    if (!file.name.endsWith('.xlsx')) {
+      setErrors(['Only .xlsx files are allowed'])
+      setFileName('')
+      setPreview([])
+      return
+    }
     setFileName(file.name)
     setLoading(true)
     setErrors([])
 
+    const formData = new FormData()
+    formData.append('file', file)
+
     try {
-      // This uses xlsx library for parsing
-      const { read, utils } = await import('xlsx')
-      const data = await file.arrayBuffer()
-      const workbook = read(new Uint8Array(data), { type: 'array' })
-      const sheet = workbook.Sheets[workbook.SheetNames[0]]
-      const rows: any[] = utils.sheet_to_json(sheet) || []
-      const validRows = []
-      const rowErrors: string[] = []
-
-      for (let i = 0; i < rows.length; i++) {
-        const r = rows[i]
-        if (!r.name) rowErrors.push(`Row ${i + 1}: missing name`)
-        if (!r.date) rowErrors.push(`Row ${i + 1}: missing date`)
-        if (r.date && !/\b(19|20)\d{2}\b/.test(String(r.date))) rowErrors.push(`Row ${i + 1}: date missing explicit year`)
-        validRows.push({ ...r, rowIndex: i + 1 })
+      const response = await fetch('/api/admin/events/import/preview', {
+        method: 'POST',
+        body: formData,
+      })
+      const result = await response.json()
+      if (!response.ok) {
+        setErrors([result.error || `Preview failed: ${response.status}`])
+        setPreview([])
+      } else {
+        setPreview(result.preview || [])
+        setErrors(result.errors || [])
       }
-
-      setPreview(validRows)
-      setErrors(rowErrors)
     } catch (e: any) {
-      setErrors([`Parse error: ${e.message}`])
+      setErrors([`Upload error: ${e.message}`])
       setPreview([])
     }
     setLoading(false)
@@ -49,28 +51,21 @@ export default function AdminImportPage() {
 
   async function handleImport(publish: boolean) {
     setLoading(true)
-    const response = await fetch('/api/admin/events/import', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ rows: preview.map((r) => ({
-        slug: r.slug || (r.name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-'),
-        name: r.name,
-        date: r.date,
-        type: r.type || 'NLH',
-        buyInType: r.buyInType || 'INVITATION',
-        buyIn: r.buyIn || '',
-        gtd: r.gtd || '',
-        startingChips: Number(r.startingChips) || 0,
-        lateReg: r.lateReg || '',
-        levelTime: r.levelTime || '',
-        published: publish,
-      })), publish }),
-    })
-    if (response.ok) {
-      router.push('/admin/events')
-      router.refresh()
-    } else {
-      setErrors([`Import failed: ${response.status}`])
+    try {
+      const response = await fetch('/api/admin/events/import/commit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ rows: preview, publish }),
+      })
+      const result = await response.json()
+      if (response.ok) {
+        router.push('/admin/events')
+        router.refresh()
+      } else {
+        setErrors([result.error || `Import failed: ${response.status}`])
+      }
+    } catch (e: any) {
+      setErrors([`Import error: ${e.message}`])
     }
     setLoading(false)
   }
@@ -79,6 +74,7 @@ export default function AdminImportPage() {
     <section className="admin-card">
       <h2>Bulk Import Events</h2>
       <p>Upload an Excel (.xlsx) file with event rows.</p>
+      <p><a href="/api/admin/events/import/template" download>Download Excel Template</a></p>
       <form onSubmit={handleUpload} className="admin-form">
         <label>
           Excel file (.xlsx)
@@ -98,15 +94,21 @@ export default function AdminImportPage() {
           <h3>Preview ({preview.length} rows)</h3>
           <table className="admin-table">
             <thead>
-              <tr><th>Row</th><th>Name</th><th>Date</th><th>Type</th></tr>
+              <tr><th>Row</th><th>Slug</th><th>Date</th><th>Name</th><th>Type</th><th>Buy-in</th><th>GTD</th><th>Starting Chips</th><th>Late Reg</th><th>Level Time</th></tr>
             </thead>
             <tbody>
               {preview.map((r: any, i: number) => (
                 <tr key={i}>
-                  <td>{r.rowIndex}</td>
-                  <td>{r.name || ''}</td>
+                  <td>{r.rowIndex || i + 1}</td>
+                  <td>{r.slug || ''}</td>
                   <td>{r.date || ''}</td>
+                  <td>{r.name || ''}</td>
                   <td>{r.type || ''}</td>
+                  <td>{r.buyIn || ''}</td>
+                  <td>{r.gtd || ''}</td>
+                  <td>{r.startingChips || ''}</td>
+                  <td>{r.lateReg || ''}</td>
+                  <td>{r.levelTime || ''}</td>
                 </tr>
               ))}
             </tbody>

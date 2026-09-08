@@ -470,6 +470,53 @@ export async function saveSiteContent(content: SiteContent) {
   await writeJsonFile('content.json', content)
 }
 
+// --- Bulk Event Import (P5-3 CMS MVP) ---
+// Uses minimal DB operations; does not rewrite entire events table.
+
+export async function bulkUpsertEvents(eventItems: EventItem[]): Promise<number> {
+  const adminClient = createAdminClient()
+  if (isProduction() && !adminClient) {
+    throw new Error('PRODUCTION_WRITE_BLOCKED: Supabase admin service role not configured.')
+  }
+
+  if (!adminClient) {
+    // Local fallback: append to file only in non-production
+    const events = await getEvents()
+    const existingIds = new Set(events.map((e) => e.id))
+    const nextEvents = events.filter((e) => !existingIds.has(e.id))
+    await writeJsonFile('events.json', [...events, ...eventItems.filter((e) => !existingIds.has(e.id))])
+    return eventItems.length
+  }
+
+  const results: string[] = []
+  for (const event of eventItems) {
+    const payload = {
+      slug: event.id,
+      title: event.name,
+      category: event.type,
+      entry_type: event.buyInType,
+      starts_at: event.date,
+      buy_in: parseInt(event.buyIn.replace(/[₩,]/g, '')) || 0,
+      fee: 0,
+      guarantee: parseInt(event.gtd.replace(/[₩,]/g, '')) || 0,
+      starting_stack: event.startingChips,
+      level_minutes: parseInt(event.levelTime) || 15,
+      late_registration: event.lateReg,
+      event_status: 'SCHEDULED',
+      status: event.published ? 'published' : 'draft',
+      event_number: 1,
+      sort_order: 0,
+    }
+    const { error } = await adminClient.from('events').upsert(payload, { onConflict: 'slug' })
+    if (error) {
+      console.error('Bulk event upsert error:', error.message)
+      throw new Error(`Bulk event upsert failed for slug ${event.id}: ${error.message}`)
+    }
+    results.push(event.id)
+  }
+  return results.length
+}
+
 export async function getSiteData(): Promise<SiteData> {
   const [events, players, news, content] = await Promise.all([
     getEvents(),
