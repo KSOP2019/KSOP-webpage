@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { ADMIN_COOKIE, isValidAdminPassword } from '@/lib/auth'
+import { ADMIN_COOKIE, isValidAdminPassword, signToken } from '@/lib/auth'
 
 export async function POST(request: Request) {
   const { password } = await request.json()
@@ -9,7 +9,7 @@ export async function POST(request: Request) {
   }
 
   const response = NextResponse.json({ ok: true })
-  response.cookies.set(ADMIN_COOKIE, 'authenticated', {
+  response.cookies.set(ADMIN_COOKIE, signToken('authenticated'), {
     httpOnly: true,
     sameSite: 'lax',
     secure: process.env.NODE_ENV === 'production',

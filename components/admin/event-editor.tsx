@@ -12,7 +12,7 @@ export function EventEditor({ initialEvent }: { initialEvent?: EventItem }) {
   const [event, setEvent] = useState<EventItem>(
     initialEvent ?? {
       id: '',
-      date: 'NOV 17',
+      date: 'DATE PENDING',
       dayLabel: 'DAY 1',
       name: 'New Event',
       type: 'NLH',
