@@ -1,6 +1,6 @@
 import { promises as fs } from 'fs'
 import path from 'path'
-import type { EventItem, NewsItem, PlayerItem, SiteContent, SiteData } from './types'
+import type { EventItem, NewsItem, PlayerItem, SiteContent, SiteData, EventType, NewsCategory } from './types'
 import { filterEvents } from './event-filters'
 import { createSeedEvents, seedContent, seedNews, seedPlayers } from './seed'
 import { createPublicClient, createAdminClient } from './supabase-server'
@@ -8,6 +8,19 @@ import { createPublicClient, createAdminClient } from './supabase-server'
 export { filterEvents }
 
 const dataDir = path.join(process.cwd(), 'data')
+
+const VALID_EVENT_TYPES: EventType[] = ['NLH', 'PLO', 'SATELLITE', 'MAIN EVENT', 'HIGH ROLLER']
+const VALID_NEWS_CATEGORIES: NewsCategory[] = ['FIELD NOTES', 'PLAYER PORTRAIT', 'KSOP JOURNAL']
+
+function safeEventType(value: string | null | undefined): EventType {
+  if (!value) return 'NLH'
+  return VALID_EVENT_TYPES.includes(value as EventType) ? (value as EventType) : 'NLH'
+}
+
+function safeNewsCategory(value: string | null | undefined): NewsCategory {
+  if (!value) return 'FIELD NOTES'
+  return VALID_NEWS_CATEGORIES.includes(value as NewsCategory) ? (value as NewsCategory) : 'FIELD NOTES'
+}
 
 function supabaseConfigured(): boolean {
   return !!(process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
@@ -77,7 +90,7 @@ export async function getEvents(): Promise<EventItem[]> {
       // Stable public identifier uses slug, not DB UUID
       const eventSlug = row.slug || String(row.id)
       // Date: derive from real timestamptz; never fabricate year
-      let eventDate = 'NOV 17'
+      let eventDate = 'DATE PENDING'
       if (row.starts_at) {
         try {
           const d = new Date(row.starts_at)
@@ -102,7 +115,7 @@ export async function getEvents(): Promise<EventItem[]> {
         date: eventDate,
         dayLabel: `DAY ${row.event_number || 1}`,
         name: row.title || 'Event',
-        type: (row.category || 'NLH') as EventItem['type'],
+        type: safeEventType(row.category),
         buyInType: row.entry_type || 'INVITATION',
         buyIn: dbBuyIn ? `₩${dbBuyIn}` : 'PENDING',
         gtd: dbGtd ? `₩${dbGtd}` : 'PENDING',
@@ -283,8 +296,8 @@ export async function getNews(): Promise<NewsItem[]> {
 
     return data.map((row: any) => ({
       slug: row.slug || String(row.id),
-      category: (row.category || 'ANNOUNCEMENT') as NewsItem['category'],
-      date: row.published_at ? new Date(row.published_at).toISOString().split('T')[0] : '01.01.25',
+      category: safeNewsCategory(row.category),
+      date: row.published_at ? new Date(row.published_at).toISOString().split('T')[0] : 'DATE PENDING',
       title: row.title || '',
       excerpt: row.excerpt || '',
       body: row.body || '',
@@ -308,6 +321,14 @@ export async function saveNews(news: NewsItem[]) {
 
   if (adminClient) {
     for (const item of news) {
+      // Preserve existing published_at where practical; do not reset on every edit
+      let preservePublishedAt: string | undefined
+      try {
+        const { data } = await adminClient.from('articles').select('published_at').eq('slug', item.slug).single()
+        if (data && data.published_at) preservePublishedAt = data.published_at
+      } catch {
+        // No existing article; new publication
+      }
       const payload = {
         slug: item.slug,
         category: item.category,
@@ -318,7 +339,7 @@ export async function saveNews(news: NewsItem[]) {
         author: 'KSOP EDITORIAL',
         status: item.published ? 'published' : 'draft',
         sort_order: 0,
-        published_at: new Date().toISOString(),
+        published_at: preservePublishedAt ? preservePublishedAt : new Date().toISOString(),
       }
       const { error } = await adminClient.from('articles').upsert(payload, { onConflict: 'slug' })
       if (error) {
