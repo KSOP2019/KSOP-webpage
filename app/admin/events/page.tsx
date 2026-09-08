@@ -12,6 +12,7 @@ export default async function AdminEventsPage() {
       <h2>Events</h2>
       <div className="admin-actions" style={{ marginBottom: '16px' }}>
         <Link className="admin-button" href="/admin/events/new">New Event</Link>
+        <Link className="admin-button secondary" href="/admin/events/import">Import Excel</Link>
       </div>
       <table className="admin-table">
         <thead>
