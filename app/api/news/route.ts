@@ -13,14 +13,12 @@ export async function POST(request: Request) {
   }
 
   const body = await request.json()
-  const { getNews: readNews, saveNews } = await import('@/lib/data')
-  const news = await readNews()
-  const nextItem = {
+  const { createAdminNews } = await import('@/lib/admin-news-data')
+  const slug = String(body.slug || body.title?.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || '').trim()
+  const nextItem = await createAdminNews({
     ...body,
-    slug: body.slug ?? body.title.toLowerCase().replaceAll(/[^a-z0-9]+/g, '-'),
-    published: body.published ?? true,
-  }
-  news.unshift(nextItem)
-  await saveNews(news)
+    slug,
+    published: body.published ?? false,
+  })
   return NextResponse.json(nextItem, { status: 201 })
 }
