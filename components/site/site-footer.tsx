@@ -14,11 +14,11 @@ function SocialIcon({ name, src }: { name: string; src: string }) {
 
 export function SiteFooter() {
   const { content, t, darkMode } = useSite()
-  const lightLogo = !content.logoBlack || ['/images/ksop-logo-black.png', '/images/ksop-dark-logo.png'].includes(content.logoBlack)
-    ? '/images/ksop-light-logo.svg'
+  const lightLogo = !content.logoBlack || ['/images/ksop-logo-black.png', '/images/ksop-dark-logo.png', '/images/ksop-light-logo.svg'].includes(content.logoBlack)
+    ? '/images/ksop-light-logo.png'
     : content.logoBlack
-  const darkLogo = !content.logoWhite || content.logoWhite === '/images/ksop-logo-white.png'
-    ? '/images/ksop-dark-logo.svg'
+  const darkLogo = !content.logoWhite || ['/images/ksop-logo-white.png', '/images/ksop-dark-logo.svg'].includes(content.logoWhite)
+    ? '/images/ksop-dark-logo.png'
     : content.logoWhite
   const logo = darkMode ? darkLogo : lightLogo
 
@@ -35,7 +35,7 @@ export function SiteFooter() {
         </div>
         <div className="footer-nav">
           {t.nav.slice(0, 4).map((item, index) => (
-            <Link href={NAV_ROUTES[index]} key={item}>
+            <Link href={NAV_ROUTES[index]} key={`${NAV_ROUTES[index]}-${index}`}>
               {item}
             </Link>
           ))}
