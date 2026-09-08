@@ -1,4 +1,4 @@
-export const NAV_ROUTES = ['/events', '/events', '/ranking', '/news', '/about'] as const
+export const NAV_ROUTES = ['/schedule', '/events', '/ranking', '/news', '/about'] as const
 
 export const EVENT_CATEGORIES = ['ALL EVENT', 'MAIN EVENT', 'HIGH ROLLER', 'DAY'] as const
 
