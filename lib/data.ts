@@ -364,6 +364,7 @@ export async function getNews(): Promise<NewsItem[]> {
       title: row.title || '',
       excerpt: row.excerpt || '',
       body: row.body || '',
+      coverUrl: (row.cover_url as string) || '',
       published: row.status === 'published',
     }))
   }
@@ -399,7 +400,6 @@ export async function saveNews(news: NewsItem[]) {
         excerpt: item.excerpt,
         body: item.body,
         cover_url: (item as any).coverUrl || '',
-        author: 'KSOP EDITORIAL',
         status: item.published ? 'published' : 'draft',
         sort_order: 0,
         published_at: preservePublishedAt ? preservePublishedAt : new Date().toISOString(),

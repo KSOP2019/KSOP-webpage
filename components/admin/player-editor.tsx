@@ -10,10 +10,10 @@ export function PlayerEditor({ initialItem }: { initialItem?: PlayerItem }) {
   const [item, setItem] = useState<PlayerItem>(
     initialItem ?? {
       id: '',
-      rank: 1,
+      rank: 0,
       name: '',
-      country: 'KR',
-      earnings: '₩ 0',
+      country: '',
+      earnings: '',
       portrait: '',
       bio: '',
       published: false,
