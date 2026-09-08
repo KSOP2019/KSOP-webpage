@@ -50,10 +50,14 @@ export function siteContentToSiteSettings(content: SiteContent): any {
     youtube_url: '#',
     facebook_url: '#',
     x_url: '#',
+    copy: content.copy || seedContent.copy,
   }
 }
 
 export function siteSettingsToSiteContent(dbValue: any): SiteContent {
+  const dbCopy = dbValue.copy && typeof dbValue.copy === 'object'
+    ? (dbValue.copy as any)
+    : null;
   return {
     heroImage: dbValue.hero_image || seedContent.heroImage,
     logoBlack: dbValue.logo_black || seedContent.logoBlack,
@@ -67,7 +71,12 @@ export function siteSettingsToSiteContent(dbValue: any): SiteContent {
     imageBreakLabel: dbValue.image_break_label || seedContent.imageBreakLabel,
     imageBreakTitle: dbValue.image_break_title || seedContent.imageBreakTitle,
     imageBreakEmphasis: dbValue.image_break_emphasis || seedContent.imageBreakEmphasis,
-    copy: seedContent.copy,
+    copy: dbCopy ? {
+      EN: { ...seedContent.copy.EN, ...dbCopy.EN },
+      KR: { ...seedContent.copy.KR, ...dbCopy.KR },
+      JP: { ...seedContent.copy.JP, ...dbCopy.JP },
+      CN: { ...seedContent.copy.CN, ...dbCopy.CN },
+    } : seedContent.copy,
   }
 }
 
@@ -171,7 +180,7 @@ export async function getEvents(): Promise<EventItem[]> {
         startingChips: dbStartingChips || 0,
         lateReg: dbLateReg || 'PENDING',
         levelTime: dbLevelMinutes ? `${dbLevelMinutes} MIN` : 'PENDING',
-        blindStructure: dbLevelMinutes ? [{ level: 1, small: 100, big: 200, ante: 200 }] : [],
+        blindStructure: [],
         published: row.status === 'published',
       }
     })
@@ -427,25 +436,7 @@ export async function getSiteContent(): Promise<SiteContent> {
     }
 
     if (data && data.value && typeof data.value === 'object') {
-      // Explicit safe mapper: DB site_settings uses snake_case JSON keys
-      // SiteContent interface uses camelCase. Map explicitly.
-      const dbValue = data.value as any
-      const mappedContent: SiteContent = {
-        heroImage: dbValue.hero_image || seedContent.heroImage,
-        logoBlack: dbValue.logo_black || seedContent.logoBlack,
-        logoWhite: dbValue.logo_white || seedContent.logoWhite,
-        seriesDate: dbValue.series_date || seedContent.seriesDate,
-        seriesVenue: dbValue.series_venue || seedContent.seriesVenue,
-        seriesGtd: dbValue.series_gtd || seedContent.seriesGtd,
-        countdownDays: dbValue.countdown_days || seedContent.countdownDays,
-        introTitle: dbValue.intro_title || seedContent.introTitle,
-        introBody: dbValue.intro_body || seedContent.introBody,
-        imageBreakLabel: dbValue.image_break_label || seedContent.imageBreakLabel,
-        imageBreakTitle: dbValue.image_break_title || seedContent.imageBreakTitle,
-        imageBreakEmphasis: dbValue.image_break_emphasis || seedContent.imageBreakEmphasis,
-        copy: seedContent.copy,
-      }
-      return mappedContent
+      return siteSettingsToSiteContent(data.value)
     }
 
     if (isProduction()) {
