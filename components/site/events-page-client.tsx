@@ -45,11 +45,11 @@ export function EventsPageClient({ events }: { events: EventItem[] }) {
 
       <div className="event-filters" role="tablist" aria-label="Event filters">
         {EVENT_CATEGORIES.map((category) => (
-          <button
-            key={category}
-            type="button"
-            className={selectedCategory === category ? 'is-active' : ''}
-            onClick={() => {
+            <button
+              type="button"
+              className={selectedCategory === category ? 'is-active' : ''}
+              aria-selected={selectedCategory === category}
+              onClick={() => {
               setSelectedCategory(category)
               setSelectedDate('ALL')
               setVisibleCount(PAGE_SIZE)
@@ -71,6 +71,7 @@ export function EventsPageClient({ events }: { events: EventItem[] }) {
               key={date}
               type="button"
               className={selectedDate === date ? 'is-active' : ''}
+              aria-selected={selectedDate === date}
               onClick={() => { setSelectedDate(date); setVisibleCount(PAGE_SIZE); setOpen(-1) }}
             >
               {date}
@@ -106,7 +107,11 @@ export function EventsPageClient({ events }: { events: EventItem[] }) {
         ) : null}
         {shownEvents.map((event, index) => (
           <article className={open === index ? 'schedule-item open' : 'schedule-item'} key={event.id}>
-            <button className="schedule-trigger" type="button" onClick={() => setOpen(open === index ? -1 : index)}>
+            <button
+                className="schedule-trigger"
+                type="button"
+                aria-expanded={open === index}
+                onClick={() => setOpen(open === index ? -1 : index)}>
               <span className="date">
                 <strong>{event.date}</strong>
                 <span>{event.dayLabel}</span>
