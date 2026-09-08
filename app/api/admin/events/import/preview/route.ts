@@ -13,6 +13,31 @@ function isValidDate(value: string) {
   return !Number.isNaN(parsed.getTime()) && parsed.toISOString().slice(0, 10) === value
 }
 
+function normalizeExcelDate(value: unknown): string {
+  if (value instanceof Date && !Number.isNaN(value.getTime())) {
+    return value.toISOString().slice(0, 10)
+  }
+
+  if (typeof value === 'number' && Number.isFinite(value)) {
+    const excelEpoch = Date.UTC(1899, 11, 30)
+    const millis = excelEpoch + Math.round(value * 86400000)
+    const parsed = new Date(millis)
+    return Number.isNaN(parsed.getTime()) ? String(value) : parsed.toISOString().slice(0, 10)
+  }
+
+  const text = String(value ?? '').trim()
+  if (/^\d+(?:\.\d+)?$/.test(text)) {
+    const serial = Number(text)
+    if (Number.isFinite(serial) && serial > 0) {
+      const excelEpoch = Date.UTC(1899, 11, 30)
+      const parsed = new Date(excelEpoch + Math.round(serial * 86400000))
+      if (!Number.isNaN(parsed.getTime())) return parsed.toISOString().slice(0, 10)
+    }
+  }
+
+  return text
+}
+
 function deriveSlug(name: string) {
   return name
     .trim()
@@ -39,9 +64,9 @@ export async function POST(request: Request) {
 
     const { read, utils } = await import('xlsx')
     const data = await file.arrayBuffer()
-    const workbook = read(new Uint8Array(data), { type: 'array' })
+    const workbook = read(new Uint8Array(data), { type: 'array', cellDates: true })
     const sheet = workbook.Sheets[workbook.SheetNames[0]]
-    const rows: any[] = utils.sheet_to_json(sheet, { defval: '' }) || []
+    const rows: any[] = utils.sheet_to_json(sheet, { defval: '', raw: true }) || []
 
     if (rows.length === 0) return NextResponse.json({ error: 'No data rows found' }, { status: 400 })
     if (rows.length > MAX_ROWS) {
@@ -66,7 +91,7 @@ export async function POST(request: Request) {
       const r = rows[i]
       const rowErrors: string[] = []
       const name = String(r.name || '').trim()
-      const date = String(r.date || '').trim()
+      const date = normalizeExcelDate(r.date)
       const type = String(r.type || '').trim()
       const providedSlug = String(r.slug || '').trim()
       const slug = providedSlug || deriveSlug(name)
