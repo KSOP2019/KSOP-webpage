@@ -13,13 +13,20 @@ function SocialIcon({ name, src }: { name: string; src: string }) {
 }
 
 export function SiteFooter() {
-  const { content, t } = useSite()
+  const { content, t, darkMode } = useSite()
+  const lightLogo = !content.logoBlack || ['/images/ksop-logo-black.png', '/images/ksop-dark-logo.png'].includes(content.logoBlack)
+    ? '/images/ksop-light-logo.svg'
+    : content.logoBlack
+  const darkLogo = !content.logoWhite || content.logoWhite === '/images/ksop-logo-white.png'
+    ? '/images/ksop-dark-logo.svg'
+    : content.logoWhite
+  const logo = darkMode ? darkLogo : lightLogo
 
   return (
     <>
       <footer className="site-footer" id="social">
         <div>
-          <img className="footer-logo" src={content.logoBlack} alt="KSOP Korea Series of Poker" />
+          <img className="footer-logo" src={logo} alt="KSOP Korea Series of Poker" />
           <p className="footer-note">
             Korea&apos;s premier live poker series.
             <br />
@@ -41,7 +48,7 @@ export function SiteFooter() {
             ))}
           </div>
         </div>
-        <div className="copyright">© 2025 KSOP · ALL RIGHTS RESERVED</div>
+        <div className="copyright">© 2026 KSOP · ALL RIGHTS RESERVED</div>
       </footer>
     </>
   )
