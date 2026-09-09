@@ -1,56 +1,59 @@
-/* Global header stability overrides. Keep geometry fixed across languages and themes. */
+/* Freeze page geometry across language and theme changes. */
 html {
   overflow-y: scroll;
-  scrollbar-gutter: stable;
+  scrollbar-gutter: stable both-edges;
+  overflow-anchor: none;
   width: 100%;
 }
 body {
   width: 100%;
-  min-width: 0;
+  min-width: 100%;
   overflow-x: hidden;
+  overflow-anchor: none;
 }
 .site-header {
   display: grid !important;
-  grid-template-columns: 190px minmax(568px, 1fr) 220px 170px;
+  grid-template-columns: 190px 568px 220px 170px;
+  justify-content: space-between;
   align-items: center;
   column-gap: 20px;
   min-height: 82px;
   height: 82px;
   padding: 0 4vw !important;
-  contain: layout;
+  overflow-anchor: none;
 }
 .site-header .brand {
   width: 190px;
   min-width: 190px;
   max-width: 190px;
-  height: 58px;
-  min-height: 58px;
-  max-height: 58px;
+  height: 60px;
+  min-height: 60px;
+  max-height: 60px;
   display: flex;
   align-items: center;
   overflow: hidden;
 }
 .site-header .brand img {
   display: block;
-  width: 184px !important;
-  min-width: 184px;
-  max-width: 184px;
-  height: 54px !important;
-  min-height: 54px;
-  max-height: 54px;
+  width: 180px !important;
+  min-width: 180px;
+  max-width: 180px;
+  height: 60px !important;
+  min-height: 60px;
+  max-height: 60px;
   object-fit: contain;
   object-position: left center;
 }
 .site-header .nav-links {
   display: grid !important;
   grid-template-columns: repeat(5, 104px);
+  gap: 12px !important;
+  width: 568px !important;
+  min-width: 568px !important;
+  max-width: 568px !important;
+  margin: 0 !important;
   justify-content: center !important;
   align-items: center;
-  gap: 12px !important;
-  min-width: 568px !important;
-  width: 568px !important;
-  max-width: 568px !important;
-  margin: 0 auto !important;
 }
 .site-header .nav-links a {
   width: 104px;
@@ -74,7 +77,6 @@ body {
   height: 40px;
   margin: 0 !important;
   justify-content: center;
-  overflow: visible;
 }
 .site-header .header-actions {
   width: 170px;
@@ -111,7 +113,6 @@ body {
 .language-menu > summary.language svg {
   width: 14px !important;
   height: 14px !important;
-  flex: none;
 }
 .language-code {
   display: block;
@@ -146,18 +147,38 @@ body {
   flex: 0 0 82px;
 }
 .detail-header {
-  grid-template-columns: 190px minmax(568px, 1fr) 170px !important;
+  grid-template-columns: 190px 568px 170px !important;
 }
 .detail-header .detail-actions {
   width: 170px;
   min-width: 170px;
   max-width: 170px;
-  justify-self: end;
   display: flex;
   align-items: center;
   justify-content: flex-end;
   gap: 10px;
 }
+
+/* Keep multilingual text swaps from changing vertical geometry. */
+.hero-copy,
+.intro-content,
+.section-top,
+.detail-hero-grid,
+.site-footer,
+.detail-row {
+  overflow-anchor: none;
+}
+.hero-copy h1 { min-height: 3.45em; }
+.hero-copy .eyebrow { min-height: 1.5em; }
+.hero-copy p { min-height: 3em; }
+.intro-content h2 { min-height: 2.2em; }
+.intro-content p { min-height: 4.5em; }
+.section-top { min-height: 116px; }
+.section-top h2 { min-height: 1.25em; }
+.section-top > p { min-height: 2.8em; }
+.detail-hero-grid h1 { min-height: 1.2em; }
+.detail-hero-grid p { min-height: 3em; }
+
 @media (max-width: 1180px) {
   .site-header {
     display: flex !important;
@@ -165,11 +186,11 @@ body {
     min-height: 72px;
     padding: 0 20px !important;
     gap: 12px;
-    contain: layout;
   }
   .site-header .brand { width: 150px; min-width: 150px; max-width: 150px; height: 50px; }
-  .site-header .brand img { width: 148px !important; min-width: 148px; max-width: 148px; height: 46px !important; }
+  .site-header .brand img { width: 148px !important; min-width: 148px; max-width: 148px; height: 50px !important; min-height: 50px; max-height: 50px; }
   .site-header .nav-links { min-width: 0 !important; width: auto !important; max-width: none !important; grid-template-columns: none; }
   .site-header .header-socials { display: none; }
   .site-header .header-actions, .detail-header .detail-actions { width: 170px; min-width: 170px; max-width: 170px; margin-left: auto !important; }
+  .hero-copy h1, .hero-copy p, .intro-content h2, .intro-content p, .section-top, .section-top h2, .section-top > p, .detail-hero-grid h1, .detail-hero-grid p { min-height: 0; }
 }

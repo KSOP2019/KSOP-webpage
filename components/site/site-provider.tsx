@@ -16,31 +16,25 @@ type SiteContextValue = {
 
 const SiteContext = createContext<SiteContextValue | null>(null)
 
-export function SiteProvider({
-  children,
-  initialContent,
-}: {
-  children: ReactNode
-  initialContent?: SiteContent
-}) {
-  const [language, setLanguage] = useState<Language>('EN')
+export function SiteProvider({ children, initialContent }: { children: ReactNode; initialContent?: SiteContent }) {
+  const [language, setLanguageState] = useState<Language>('EN')
   const [darkMode, setDarkMode] = useState(false)
   const [content, setContent] = useState<SiteContent>(initialContent ?? seedContent)
+
+  const setLanguage = (nextLanguage: Language) => {
+    if (nextLanguage === language) return
+    const x = window.scrollX
+    const y = window.scrollY
+    setLanguageState(nextLanguage)
+    requestAnimationFrame(() => requestAnimationFrame(() => window.scrollTo({ left: x, top: y, behavior: 'auto' })))
+  }
 
   useEffect(() => {
     document.documentElement.lang = language.toLowerCase()
   }, [language])
 
   const value = useMemo(
-    () => ({
-      language,
-      setLanguage,
-      darkMode,
-      setDarkMode,
-      content,
-      setContent,
-      t: content.copy[language],
-    }),
+    () => ({ language, setLanguage, darkMode, setDarkMode, content, setContent, t: content.copy[language] }),
     [language, darkMode, content],
   )
 
@@ -49,8 +43,6 @@ export function SiteProvider({
 
 export function useSite() {
   const context = useContext(SiteContext)
-  if (!context) {
-    throw new Error('useSite must be used within SiteProvider')
-  }
+  if (!context) throw new Error('useSite must be used within SiteProvider')
   return context
 }
