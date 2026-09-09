@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useSite } from '@/components/site/site-provider'
 import { Reveal } from '@/components/site/reveal'
-import { eventBannerImage } from '@/lib/event-images'
+import { eventDetailMedia } from '@/lib/event-images'
 import type { EventItem } from '@/lib/types'
 
 export function EventDetailClient({
@@ -16,10 +16,11 @@ export function EventDetailClient({
   seriesDate: string
 }) {
   const { t } = useSite()
+  const media = eventDetailMedia(event)
 
   return (
-    <section className="section-pad">
-      <div className="section-top">
+    <section className="section-pad event-detail-page">
+      <div className="section-top event-detail-top">
         <div>
           <div className="section-label">{t.eventDetail ?? 'EVENT DETAIL'}</div>
           <h2>{event.name}</h2>
@@ -31,15 +32,13 @@ export function EventDetailClient({
         </div>
       </div>
 
+      {media.src ? (
+        <figure className={`event-detail-media is-${media.fit}`} style={{ margin: '0 0 28px' }}>
+          <img src={media.src} alt="" loading="lazy" />
+        </figure>
+      ) : null}
+
       <Reveal className="event-detail" style={{ marginTop: 0 }}>
-        {eventBannerImage(event) ? (
-          <img
-            src={eventBannerImage(event)}
-            alt=""
-            loading="lazy"
-            style={{ width: '100%', aspectRatio: '16 / 9', objectFit: 'cover', borderRadius: 12, marginBottom: 18 }}
-          />
-        ) : null}
         <div className="detail-facts">
           <div>
             <span>{t.factBuyin ?? 'BUY-IN'}</span>

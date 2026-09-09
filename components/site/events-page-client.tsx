@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useMemo, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
-import { ArrowUpRight, ChevronDown } from 'lucide-react'
+import { ArrowUpRight } from 'lucide-react'
 import { useSite } from '@/components/site/site-provider'
 import { Reveal } from '@/components/site/reveal'
 import { EVENT_CATEGORIES } from '@/lib/nav'
@@ -19,7 +19,6 @@ export function EventsPageClient({ events }: { events: EventItem[] }) {
   const initialCategory = searchParams.get('category') ?? 'ALL EVENT'
   const [selectedCategory, setSelectedCategory] = useState(initialCategory)
   const [selectedDate, setSelectedDate] = useState('ALL')
-  const [open, setOpen] = useState(-1)
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE)
 
   const dates = Array.from(new Set(events.map((event) => event.date)))
@@ -54,7 +53,6 @@ export function EventsPageClient({ events }: { events: EventItem[] }) {
               setSelectedCategory(category)
               setSelectedDate('ALL')
               setVisibleCount(PAGE_SIZE)
-              setOpen(-1)
             }}
           >
             {category}
@@ -64,7 +62,7 @@ export function EventsPageClient({ events }: { events: EventItem[] }) {
 
       {selectedCategory === 'DAY' ? (
         <div className="date-filter" style={{ display: 'flex', gap: '14px', marginBottom: '20px' }}>
-          <button type="button" className={selectedDate === 'ALL' ? 'is-active' : ''} onClick={() => { setSelectedDate('ALL'); setVisibleCount(PAGE_SIZE); setOpen(-1) }}>
+          <button type="button" className={selectedDate === 'ALL' ? 'is-active' : ''} onClick={() => { setSelectedDate('ALL'); setVisibleCount(PAGE_SIZE); }}>
             {t.allDates ?? 'ALL DATES'}
           </button>
           {dates.map((date) => (
@@ -73,7 +71,7 @@ export function EventsPageClient({ events }: { events: EventItem[] }) {
               type="button"
               className={selectedDate === date ? 'is-active' : ''}
               aria-selected={selectedDate === date}
-              onClick={() => { setSelectedDate(date); setVisibleCount(PAGE_SIZE); setOpen(-1) }}
+              onClick={() => { setSelectedDate(date); setVisibleCount(PAGE_SIZE) }}
             >
               {date}
             </button>
@@ -100,7 +98,6 @@ export function EventsPageClient({ events }: { events: EventItem[] }) {
                   setSelectedCategory('ALL EVENT')
                   setSelectedDate('ALL')
                   setVisibleCount(PAGE_SIZE)
-                  setOpen(-1)
                 }}
               >
                 {t.clearFilters ?? 'CLEAR FILTERS'}
@@ -108,13 +105,12 @@ export function EventsPageClient({ events }: { events: EventItem[] }) {
             </div>
           </div>
         ) : null}
-        {shownEvents.map((event, index) => (
-          <article className={open === index ? 'schedule-item open' : 'schedule-item'} key={event.id}>
-            <button
-                className="schedule-trigger"
-                type="button"
-                aria-expanded={open === index}
-                onClick={() => setOpen(open === index ? -1 : index)}>
+        {shownEvents.map((event) => (
+          <article className="schedule-item event-row" key={event.id}>
+            <Link
+              className="schedule-trigger event-row-link"
+              href={`/events/${event.id}`}
+              aria-label={`${event.name} event detail`}>
               <span className="date">
                 <strong>{event.date}</strong>
                 <span>{event.dayLabel}</span>
@@ -133,17 +129,8 @@ export function EventsPageClient({ events }: { events: EventItem[] }) {
                   {event.type} · {t.buyin ?? 'BUY-IN'} {event.buyInType} · {event.gtd} GTD
                 </small>
               </span>
-              <ChevronDown className="chevron" />
-            </button>
-            {open === index && (
-              <div className="event-detail">
-                <div className="detail-actions">
-                  <Link className="primary-cta" href={`/events/${event.id}`}>
-                    {t.openEvent ?? 'Open event page'} <ArrowUpRight />
-                  </Link>
-                </div>
-              </div>
-            )}
+              <ArrowUpRight className="chevron" aria-hidden="true" />
+            </Link>
           </article>
         ))}
         {remainingCount > 0 ? (

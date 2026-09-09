@@ -18,3 +18,14 @@ export function eventBannerImage(event: Pick<EventItem, 'bannerUrl' | 'posterUrl
 export function eventPosterImage(event: Pick<EventItem, 'posterUrl' | 'bannerUrl'>): string {
   return clean(event.posterUrl) || clean(event.bannerUrl)
 }
+
+/** Detail media frame: banner (cover) wins; otherwise poster (contain, never cropped). */
+export function eventDetailMedia(event: Pick<EventItem, 'bannerUrl' | 'posterUrl'>): {
+  src: string
+  fit: 'cover' | 'contain'
+} {
+  const banner = clean(event.bannerUrl)
+  if (banner) return { src: banner, fit: 'cover' }
+  const poster = clean(event.posterUrl)
+  return { src: poster, fit: 'contain' }
+}
