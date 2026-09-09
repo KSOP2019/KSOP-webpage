@@ -30,11 +30,20 @@ body {
   padding: 0 16px !important;
   margin: 0 auto !important;
   box-sizing: border-box !important;
-  overflow: hidden;
+  /* Dropdown must escape the header: never clip absolutely-positioned panels. */
+  overflow: visible;
   overflow-anchor: none;
   flex: none !important;
   gap: 0 !important;
   column-gap: 12px !important;
+  /* Always above hero/poster/cards/sections/glass overlays. Keep sticky. */
+  position: sticky;
+  top: 0;
+  z-index: 100 !important;
+  /* Avoid transform/contain stacking traps; keep backdrop-filter visuals from globals. */
+  animation: none !important;
+  transform: none !important;
+  contain: none !important;
 }
 
 /* Logo: fixed visual box, approved theme assets, contain fit. */
@@ -144,6 +153,8 @@ body {
   gap: 8px !important;
   flex: none !important;
   overflow: visible;
+  position: relative;
+  z-index: 101;
 }
 
 /* Detail headers use the exact same 4-column grid as the main header. */
@@ -154,6 +165,8 @@ body {
 /* Language button: fixed width independent of EN/KR/JP/CN. */
 .language-menu {
   position: relative;
+  z-index: 101;
+  overflow: visible;
   width: 56px;
   min-width: 56px;
   max-width: 56px;
@@ -204,10 +217,23 @@ body {
   position: absolute;
   top: calc(100% + 8px);
   right: 0;
+  left: auto;
   width: 56px;
   min-width: 56px;
   max-width: 56px;
-  z-index: 40;
+  z-index: 102;
+  /* Light mode: solid near-opaque panel, no white-on-white glass. */
+  background: rgba(255, 255, 255, 0.98);
+  color: #171a24;
+  border: 1px solid rgba(20, 30, 50, 0.14);
+  border-radius: 12px;
+  box-shadow: 0 14px 36px rgba(20, 30, 50, 0.16);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  padding: 6px;
+  display: grid;
+  gap: 3px;
+  overflow: hidden;
 }
 
 .language-menu .language-options button {
@@ -220,6 +246,47 @@ body {
   line-height: 1 !important;
   white-space: nowrap;
   overflow: hidden;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: #171a24;
+  cursor: pointer;
+}
+
+.language-menu .language-options button:hover,
+.language-menu .language-options button:focus-visible {
+  background: rgba(20, 30, 50, 0.08);
+  color: #171a24;
+  outline: none;
+}
+
+/* Dark mode: dark solid panel with light readable text. */
+.theme-dark .language-menu .language-options,
+main.theme-dark .language-menu .language-options,
+.detail-page.theme-dark .language-menu .language-options {
+  background: rgba(18, 24, 36, 0.98);
+  color: #f4f7ff;
+  border: 1px solid rgba(220, 230, 255, 0.16);
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.45);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.theme-dark .language-menu .language-options button,
+main.theme-dark .language-menu .language-options button,
+.detail-page.theme-dark .language-menu .language-options button {
+  background: transparent;
+  color: #f4f7ff;
+}
+
+.theme-dark .language-menu .language-options button:hover,
+.theme-dark .language-menu .language-options button:focus-visible,
+main.theme-dark .language-menu .language-options button:hover,
+main.theme-dark .language-menu .language-options button:focus-visible,
+.detail-page.theme-dark .language-menu .language-options button:hover,
+.detail-page.theme-dark .language-menu .language-options button:focus-visible {
+  background: rgba(220, 230, 255, 0.14);
+  color: #ffffff;
 }
 
 /* Theme button: fixed width. */
