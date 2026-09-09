@@ -117,14 +117,34 @@ async function writeJsonFile<T>(filename: string, value: T) {
 
 // --- Events ---
 
+const EVENT_PUBLIC_SELECT = 'id,slug,series_id,event_number,title,category,game_type,entry_type,starts_at,buy_in,fee,guarantee,starting_stack,level_minutes,late_registration,reentry,description,structure_url,registration_url,event_status,status,sort_order,created_at,updated_at,updated_by,poster_url,banner_url,thumbnail_url'
+const EVENT_PUBLIC_SELECT_LEGACY = 'id,slug,series_id,event_number,title,category,game_type,entry_type,starts_at,buy_in,fee,guarantee,starting_stack,level_minutes,late_registration,reentry,description,structure_url,registration_url,event_status,status,sort_order,created_at,updated_at,updated_by'
+
+function isMissingImageColumnError(message: string): boolean {
+  return /poster_url|banner_url|thumbnail_url/.test(message || '')
+}
+
 export async function getEvents(): Promise<EventItem[]> {
   const client = createPublicClient()
   if (client) {
-    const { data, error } = await client
+    const baseQuery = () => client
       .from('events')
-      .select('id,slug,series_id,event_number,title,category,game_type,entry_type,starts_at,buy_in,fee,guarantee,starting_stack,level_minutes,late_registration,reentry,description,structure_url,registration_url,event_status,status,sort_order,created_at,updated_at,updated_by')
+      .select(EVENT_PUBLIC_SELECT)
       .eq('status', 'published')
       .order('starts_at', { ascending: true })
+
+    let result: any = await baseQuery()
+    // Safe rollout: if the image-column migration has not been applied yet,
+    // fall back to the legacy column list instead of emptying the event list.
+    if (result.error && isMissingImageColumnError(result.error.message)) {
+      console.warn('Events image columns missing; using legacy select until migration is applied.')
+      result = await client
+        .from('events')
+        .select(EVENT_PUBLIC_SELECT_LEGACY)
+        .eq('status', 'published')
+        .order('starts_at', { ascending: true })
+    }
+    const { data, error } = result
 
     if (error) {
       console.error('Supabase events read error:', error.message)
@@ -182,6 +202,9 @@ export async function getEvents(): Promise<EventItem[]> {
         levelTime: dbLevelMinutes ? `${dbLevelMinutes} MIN` : 'PENDING',
         blindStructure: [],
         published: row.status === 'published',
+        posterUrl: row.poster_url || '',
+        bannerUrl: row.banner_url || '',
+        thumbnailUrl: row.thumbnail_url || '',
       }
     })
   }
@@ -243,6 +266,9 @@ export async function saveEvents(events: EventItem[]) {
         status: event.published ? 'published' : 'draft',
         event_number: 1,
         sort_order: 0,
+        poster_url: event.posterUrl || '',
+        banner_url: event.bannerUrl || '',
+        thumbnail_url: event.thumbnailUrl || '',
       }
       const { error } = await adminClient.from('events').upsert(payload, { onConflict: 'slug' })
       if (error) {
@@ -490,7 +516,7 @@ export async function bulkUpsertEvents(eventItems: EventItem[]): Promise<number>
 
   const results: string[] = []
   for (const event of eventItems) {
-    const payload = {
+    const payload: Record<string, any> = {
       slug: event.id,
       title: event.name,
       category: event.type,
@@ -507,6 +533,11 @@ export async function bulkUpsertEvents(eventItems: EventItem[]): Promise<number>
       event_number: 1,
       sort_order: 0,
     }
+    // Import rows carry no image data: omit empty image keys so re-imports
+    // never wipe image URLs previously set through the event CMS.
+    if (event.posterUrl) payload.poster_url = event.posterUrl
+    if (event.bannerUrl) payload.banner_url = event.bannerUrl
+    if (event.thumbnailUrl) payload.thumbnail_url = event.thumbnailUrl
     const { error } = await adminClient.from('events').upsert(payload, { onConflict: 'slug' })
     if (error) {
       console.error('Bulk event upsert error:', error.message)

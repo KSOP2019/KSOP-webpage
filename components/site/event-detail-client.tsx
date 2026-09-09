@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { useSite } from '@/components/site/site-provider'
 import { Reveal } from '@/components/site/reveal'
+import { eventBannerImage } from '@/lib/event-images'
 import type { EventItem } from '@/lib/types'
 
 export function EventDetailClient({
@@ -31,6 +32,14 @@ export function EventDetailClient({
       </div>
 
       <Reveal className="event-detail" style={{ marginTop: 0 }}>
+        {eventBannerImage(event) ? (
+          <img
+            src={eventBannerImage(event)}
+            alt=""
+            loading="lazy"
+            style={{ width: '100%', aspectRatio: '16 / 9', objectFit: 'cover', borderRadius: 12, marginBottom: 18 }}
+          />
+        ) : null}
         <div className="detail-facts">
           <div>
             <span>{t.factBuyin ?? 'BUY-IN'}</span>

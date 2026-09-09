@@ -7,6 +7,7 @@ import { ArrowUpRight, ChevronDown } from 'lucide-react'
 import { useSite } from '@/components/site/site-provider'
 import { Reveal } from '@/components/site/reveal'
 import { EVENT_CATEGORIES } from '@/lib/nav'
+import { eventCardImage } from '@/lib/event-images'
 import { filterEvents } from '@/lib/event-filters'
 import type { EventItem } from '@/lib/types'
 
@@ -118,6 +119,14 @@ export function EventsPageClient({ events }: { events: EventItem[] }) {
                 <strong>{event.date}</strong>
                 <span>{event.dayLabel}</span>
               </span>
+              {eventCardImage(event) ? (
+                <img
+                  src={eventCardImage(event)}
+                  alt=""
+                  loading="lazy"
+                  style={{ width: 56, height: 56, borderRadius: 10, objectFit: 'cover', flex: '0 0 56px' }}
+                />
+              ) : null}
               <span className="event-title">
                 <b>{event.name}</b>
                 <small>

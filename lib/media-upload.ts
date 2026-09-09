@@ -23,12 +23,15 @@ const EXT_BY_TYPE: Record<string, string> = {
   'image/avif': 'avif',
 }
 
-/** Storage folders addressable through the upload API (first segment of the object path). */
+/** Storage folders addressable through the upload API (object path prefix). */
 export const MEDIA_FOLDERS = [
   'home',
   'schedule',
   'news',
   'events',
+  'events/posters',
+  'events/banners',
+  'events/thumbnails',
   'logos',
   'players',
   'media',

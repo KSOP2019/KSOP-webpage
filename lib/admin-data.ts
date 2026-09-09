@@ -1,7 +1,21 @@
 import type { EventItem } from './types'
 import { createAdminClient } from './supabase-server'
 
-const EVENT_SELECT = 'id,slug,series_id,event_number,title,category,game_type,entry_type,starts_at,buy_in,fee,guarantee,starting_stack,level_minutes,late_registration,reentry,description,structure_url,registration_url,event_status,status,sort_order,created_at,updated_at,updated_by'
+const EVENT_SELECT = 'id,slug,series_id,event_number,title,category,game_type,entry_type,starts_at,buy_in,fee,guarantee,starting_stack,level_minutes,late_registration,reentry,description,structure_url,registration_url,event_status,status,sort_order,created_at,updated_at,updated_by,poster_url,banner_url,thumbnail_url'
+const EVENT_SELECT_LEGACY = 'id,slug,series_id,event_number,title,category,game_type,entry_type,starts_at,buy_in,fee,guarantee,starting_stack,level_minutes,late_registration,reentry,description,structure_url,registration_url,event_status,status,sort_order,created_at,updated_at,updated_by'
+
+const IMAGE_COLUMNS = ['poster_url', 'banner_url', 'thumbnail_url'] as const
+
+function isMissingImageColumnError(message: string): boolean {
+  return /poster_url|banner_url|thumbnail_url/.test(message || '')
+}
+
+/** Drop image keys when the migration has not been applied yet (deploy-safe). */
+function withoutImageColumns<T extends Record<string, any>>(payload: T): T {
+  const next: Record<string, any> = { ...payload }
+  for (const key of IMAGE_COLUMNS) delete next[key]
+  return next as T
+}
 
 function mapAdminEvent(row: any): EventItem {
   const date = row.starts_at
@@ -23,6 +37,9 @@ function mapAdminEvent(row: any): EventItem {
     levelTime: row.level_minutes ? String(row.level_minutes) : '',
     blindStructure: [],
     published: row.status === 'published',
+    posterUrl: row.poster_url || '',
+    bannerUrl: row.banner_url || '',
+    thumbnailUrl: row.thumbnail_url || '',
   } as EventItem
 }
 
@@ -50,6 +67,9 @@ function toAdminEventPayload(event: EventItem) {
     late_registration: event.lateReg || '',
     event_status: 'SCHEDULED',
     status: event.published ? 'published' : 'draft',
+    poster_url: event.posterUrl || '',
+    banner_url: event.bannerUrl || '',
+    thumbnail_url: event.thumbnailUrl || '',
   }
 }
 
@@ -59,10 +79,18 @@ export async function getAdminEvents(): Promise<EventItem[]> {
     throw new Error('ADMIN_READ_BLOCKED: Supabase admin service role not configured.')
   }
 
-  const { data, error } = await client
+  const baseQuery = (columns: string) => client
     .from('events')
-    .select(EVENT_SELECT)
+    .select(columns)
     .order('starts_at', { ascending: true })
+
+  let result: any = await baseQuery(EVENT_SELECT)
+  // Safe rollout: fall back to the legacy column list until the migration is applied.
+  if (result.error && isMissingImageColumnError(result.error.message)) {
+    console.warn('Admin events image columns missing; using legacy select until migration is applied.')
+    result = await baseQuery(EVENT_SELECT_LEGACY)
+  }
+  const { data, error } = result
 
   if (error) {
     throw new Error(`Supabase admin events read failed: ${error.message}`)
@@ -89,11 +117,23 @@ export async function createAdminEvent(event: EventItem): Promise<EventItem> {
     sort_order: 0,
   }
 
-  const { data, error } = await client
+  const attempt = (body: Record<string, any>) => client
     .from('events')
-    .insert(payload)
+    .insert(body)
     .select(EVENT_SELECT)
     .single()
+
+  let result: any = await attempt(payload)
+  // Safe rollout: retry without image columns when the migration is pending.
+  if (result.error && isMissingImageColumnError(result.error.message)) {
+    console.warn('Admin event create retried without image columns (migration pending).')
+    result = await client
+      .from('events')
+      .insert(withoutImageColumns(payload))
+      .select(EVENT_SELECT_LEGACY)
+      .single()
+  }
+  const { data, error } = result
 
   if (error) {
     throw new Error(`Supabase admin event create failed: ${error.message}`)
@@ -109,12 +149,25 @@ export async function updateAdminEvent(id: string, event: EventItem): Promise<Ev
   }
 
   const payload = toAdminEventPayload(event)
-  const { data, error } = await client
+  const attempt = (body: Record<string, any>) => client
     .from('events')
-    .update(payload)
+    .update(body)
     .eq('id', id)
     .select(EVENT_SELECT)
     .single()
+
+  let result: any = await attempt(payload)
+  // Safe rollout: retry without image columns when the migration is pending.
+  if (result.error && isMissingImageColumnError(result.error.message)) {
+    console.warn('Admin event update retried without image columns (migration pending).')
+    result = await client
+      .from('events')
+      .update(withoutImageColumns(payload))
+      .eq('id', id)
+      .select(EVENT_SELECT_LEGACY)
+      .single()
+  }
+  const { data, error } = result
 
   if (error) {
     throw new Error(`Supabase admin event update failed: ${error.message}`)

@@ -11,7 +11,7 @@ type MediaItem = {
   createdAt: string | null
 }
 
-const FOLDERS = ['misc', 'home', 'schedule', 'news', 'events', 'logos', 'players', 'media'] as const
+const FOLDERS = ['misc', 'home', 'schedule', 'news', 'events', 'events/posters', 'events/banners', 'events/thumbnails', 'logos', 'players', 'media'] as const
 
 function formatBytes(size: number | null): string {
   if (size == null) return '—'

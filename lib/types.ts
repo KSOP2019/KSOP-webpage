@@ -27,6 +27,9 @@ export interface EventItem {
   levelTime: string
   blindStructure: BlindLevel[]
   published: boolean
+  posterUrl?: string
+  bannerUrl?: string
+  thumbnailUrl?: string
 }
 
 export interface PlayerItem {

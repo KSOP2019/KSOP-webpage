@@ -38,6 +38,9 @@ export function createSeedEvents(): EventItem[] {
         { level: 2, small: 200, big: 400, ante: 400 },
       ],
       published: true,
+      posterUrl: '',
+      bannerUrl: '',
+      thumbnailUrl: '',
     }
   })
 }

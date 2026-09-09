@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import type { EventItem, EventType } from '@/lib/types'
+import { AdminImageField } from '@/components/admin/admin-image-field'
 
 const eventTypes: EventType[] = ['NLH', 'PLO', 'SATELLITE', 'MAIN EVENT', 'HIGH ROLLER']
 
@@ -98,6 +99,27 @@ export function EventEditor({ initialEvent }: { initialEvent?: EventItem }) {
           onChange={(e) => setEvent({ ...event, startingChips: Number(e.target.value) })}
         />
       </label>
+      <AdminImageField
+        label="Poster image"
+        value={event.posterUrl || ''}
+        onChange={(url) => setEvent({ ...event, posterUrl: url })}
+        folder="events/posters"
+        aspectHint="권장: 세로형 포스터. 이벤트 상세 포스터 영역과 목록 썸네일 대체 이미지로 사용됩니다."
+      />
+      <AdminImageField
+        label="Banner image"
+        value={event.bannerUrl || ''}
+        onChange={(url) => setEvent({ ...event, bannerUrl: url })}
+        folder="events/banners"
+        aspectHint="권장: 16:9 와이드 배너. 이벤트 상세 상단 배너로 사용됩니다."
+      />
+      <AdminImageField
+        label="Thumbnail image"
+        value={event.thumbnailUrl || ''}
+        onChange={(url) => setEvent({ ...event, thumbnailUrl: url })}
+        folder="events/thumbnails"
+        aspectHint="권장: 정사각형 썸네일. 이벤트 목록 카드에 우선 표시됩니다."
+      />
       <label>
         <input
           type="checkbox"
