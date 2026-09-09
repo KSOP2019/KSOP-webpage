@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { SeriesDetailClient } from '@/components/site/series-detail-client'
 import { getEvents, getSiteContent } from '@/lib/data'
@@ -11,11 +12,15 @@ export function generateStaticParams() {
   return getAllSeries().map((series) => ({ 'series-slug': series.slug }))
 }
 
-export async function generateMetadata({ params }: PageProps) {
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { 'series-slug': slug } = await params
   const series = getSeries(slug)
   if (!series) return { title: 'Series not found · KSOP' }
-  return { title: `${series.title.trim()} · KSOP Schedule` }
+  return {
+    title: series.title.trim(),
+    description: `${series.title.trim()} — KSOP schedule series.`,
+    alternates: { canonical: `/schedule/${slug}` },
+  }
 }
 
 export default async function SeriesDetailPage({ params }: PageProps) {

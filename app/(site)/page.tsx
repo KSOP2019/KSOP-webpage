@@ -1,8 +1,15 @@
+import type { Metadata } from 'next'
 import { HomeView } from '@/components/site/home-view'
 import { getEvents, getNews, getPlayers } from '@/lib/data'
+import { SITE_DESCRIPTION } from '@/lib/site-url'
 
 // CMS images (hero/logos) refresh without redeploy.
 export const revalidate = 120
+
+export const metadata: Metadata = {
+  description: SITE_DESCRIPTION,
+  alternates: { canonical: '/' },
+}
 
 export default async function HomePage() {
   const [events, players, news] = await Promise.all([getEvents(), getPlayers(), getNews()])
