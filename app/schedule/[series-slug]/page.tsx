@@ -1,18 +1,11 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { Reveal } from '@/components/site/reveal'
+import { StandaloneDetailHeader } from '@/components/site/standalone-detail-header'
 import { getEvents, getSiteContent } from '@/lib/data'
 import { getAllSeries, getSeries, getSeriesDateRange, getSeriesEvents } from '@/lib/series'
 
 type PageProps = { params: Promise<{ 'series-slug': string }> }
-
-const nav = [
-  ['SCHEDULE', '/schedule'],
-  ['EVENT', '/events'],
-  ['RANKING', '/ranking'],
-  ['NEWS', '/news'],
-  ['ABOUT', '/about'],
-] as const
 
 export function generateStaticParams() {
   return getAllSeries().map((series) => ({ 'series-slug': series.slug }))
@@ -37,10 +30,7 @@ export default async function SeriesDetailPage({ params }: PageProps) {
 
   return (
     <main className="detail-page series-detail">
-      <header className="site-header detail-header">
-        <Link href="/" className="brand"><img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/%EB%88%84%EB%81%BC%EB%A1%9C%EA%B3%A02-OT3NlxHk30TAmPPpNIcNvNtvTVM74n.png" alt="KSOP Korea Series of Poker" /></Link>
-        <nav className="nav-links">{nav.map(([label, href]) => <Link key={href} href={href} className={href === '/schedule' ? 'active' : ''}>{label}</Link>)}</nav>
-      </header>
+      <StandaloneDetailHeader activeHref="/schedule" />
 
       <section className="detail-hero">
         <div className="detail-kicker">01 / SCHEDULE · SERIES</div>

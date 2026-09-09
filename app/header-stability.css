@@ -1,65 +1,93 @@
-/* Freeze page geometry across language and theme changes. */
+/* KSOP header stability — ONE authoritative desktop header geometry.
+   Desktop >= 1181px: fully fixed pixel-stable grid used everywhere.
+   Tablet/mobile <= 1180px: existing dropdown menu behavior, still language-stable. */
+
 html {
   overflow-y: scroll;
   scrollbar-gutter: stable both-edges;
   overflow-anchor: none;
   width: 100%;
 }
+
 body {
   width: 100%;
   min-width: 100%;
-  overflow-x: hidden;
+  overflow-x: clip;
   overflow-anchor: none;
 }
+
+/* ---------- Desktop fixed header (>= 1181px) ---------- */
 .site-header {
   display: grid !important;
-  grid-template-columns: 190px 568px 220px 170px;
-  justify-content: space-between;
+  grid-template-columns: 170px 560px 220px 160px;
+  justify-content: center;
   align-items: center;
-  column-gap: 20px;
+  column-gap: 12px;
+  width: 100%;
   min-height: 82px;
   height: 82px;
-  padding: 0 4vw !important;
+  max-height: 82px;
+  padding: 0 16px !important;
+  margin: 0 auto !important;
+  box-sizing: border-box !important;
+  overflow: hidden;
   overflow-anchor: none;
+  flex: none !important;
+  gap: 0 !important;
+  column-gap: 12px !important;
 }
+
+/* Logo: fixed visual box, approved theme assets, contain fit. */
 .site-header .brand {
-  width: 190px;
-  min-width: 190px;
-  max-width: 190px;
+  width: 170px;
+  min-width: 170px;
+  max-width: 170px;
   height: 60px;
   min-height: 60px;
   max-height: 60px;
   display: flex;
   align-items: center;
+  justify-content: flex-start;
   overflow: hidden;
+  flex: none !important;
+  margin: 0 !important;
 }
+
 .site-header .brand img {
   display: block;
-  width: 180px !important;
-  min-width: 180px;
-  max-width: 180px;
-  height: 60px !important;
-  min-height: 60px;
-  max-height: 60px;
+  width: 160px !important;
+  min-width: 160px;
+  max-width: 160px;
+  height: 54px !important;
+  min-height: 54px;
+  max-height: 54px;
   object-fit: contain;
   object-position: left center;
+  flex: none;
 }
+
+/* Center nav: 5 fixed equal-width cells. Content width never affects geometry. */
 .site-header .nav-links {
   display: grid !important;
   grid-template-columns: repeat(5, 104px);
-  gap: 12px !important;
-  width: 568px !important;
-  min-width: 568px !important;
-  max-width: 568px !important;
+  gap: 10px !important;
+  width: 560px !important;
+  min-width: 560px !important;
+  max-width: 560px !important;
   margin: 0 !important;
+  padding: 0 !important;
   justify-content: center !important;
   align-items: center;
+  flex: none !important;
 }
+
 .site-header .nav-links a {
   width: 104px;
   min-width: 104px !important;
   max-width: 104px;
   height: 40px;
+  min-height: 40px;
+  max-height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -69,36 +97,76 @@ body {
   text-overflow: ellipsis;
   font-size: 14px !important;
   line-height: 1 !important;
+  letter-spacing: 0.04em;
+  flex: none;
 }
+
+/* Social icons: fixed width area. */
 .site-header .header-socials {
   width: 220px;
   min-width: 220px;
   max-width: 220px;
   height: 40px;
+  min-height: 40px;
+  max-height: 40px;
   margin: 0 !important;
+  padding: 0 !important;
+  display: flex !important;
+  align-items: center;
   justify-content: center;
+  gap: 6px !important;
+  flex: none !important;
+  overflow: hidden;
 }
-.site-header .header-actions {
-  width: 170px;
-  min-width: 170px;
-  max-width: 170px;
+
+/* Detail pages reserve the identical socials slot so nav geometry matches exactly. */
+.site-header .header-socials--placeholder {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* Language/theme area: fixed width. */
+.site-header .header-actions,
+.site-header .detail-actions,
+.detail-header .detail-actions,
+.detail-header .header-actions {
+  width: 160px;
+  min-width: 160px;
+  max-width: 160px;
   height: 40px;
+  min-height: 40px;
+  max-height: 40px;
   margin: 0 !important;
+  padding: 0 !important;
+  display: flex !important;
+  align-items: center;
   justify-content: flex-end;
-  gap: 10px !important;
+  gap: 8px !important;
+  flex: none !important;
+  overflow: visible;
 }
+
+/* Detail headers use the exact same 4-column grid as the main header. */
+.detail-header {
+  grid-template-columns: 170px 560px 220px 160px !important;
+}
+
+/* Language button: fixed width independent of EN/KR/JP/CN. */
 .language-menu {
   position: relative;
-  width: 58px;
-  min-width: 58px;
-  max-width: 58px;
+  width: 56px;
+  min-width: 56px;
+  max-width: 56px;
   height: 36px;
-  flex: 0 0 58px;
+  min-height: 36px;
+  max-height: 36px;
+  flex: 0 0 56px;
 }
+
 .language-menu > summary.language {
-  width: 58px;
-  min-width: 58px;
-  max-width: 58px;
+  width: 56px;
+  min-width: 56px;
+  max-width: 56px;
   height: 36px;
   min-height: 36px;
   max-height: 36px;
@@ -109,54 +177,84 @@ body {
   gap: 4px;
   white-space: nowrap;
   overflow: hidden;
+  font-size: 10px !important;
+  line-height: 1 !important;
+  text-align: center;
 }
+
 .language-menu > summary.language svg {
   width: 14px !important;
   height: 14px !important;
+  min-width: 14px;
+  flex: none;
 }
+
 .language-code {
   display: block;
   width: 24px;
   min-width: 24px;
   max-width: 24px;
   text-align: center;
-  font-size: 10px;
-  line-height: 1;
+  font-size: 10px !important;
+  line-height: 1 !important;
+  overflow: hidden;
 }
+
 .language-menu .language-options {
   position: absolute;
   top: calc(100% + 8px);
   right: 0;
-  width: 58px;
-  min-width: 58px;
-  max-width: 58px;
+  width: 56px;
+  min-width: 56px;
+  max-width: 56px;
   z-index: 40;
 }
+
 .language-menu .language-options button {
-  width: 58px;
-  min-width: 58px;
-  max-width: 58px;
+  width: 44px;
+  min-width: 44px;
+  max-width: 44px;
   height: 32px;
   text-align: center;
+  font-size: 10px !important;
+  line-height: 1 !important;
+  white-space: nowrap;
+  overflow: hidden;
 }
+
+/* Theme button: fixed width. */
 .theme-switch {
-  width: 82px;
-  min-width: 82px;
-  max-width: 82px;
+  width: 80px;
+  min-width: 80px;
+  max-width: 80px;
   height: 34px;
-  flex: 0 0 82px;
-}
-.detail-header {
-  grid-template-columns: 190px 568px 170px !important;
-}
-.detail-header .detail-actions {
-  width: 170px;
-  min-width: 170px;
-  max-width: 170px;
-  display: flex;
+  min-height: 34px;
+  max-height: 34px;
+  flex: 0 0 80px;
+  display: inline-flex !important;
   align-items: center;
-  justify-content: flex-end;
-  gap: 10px;
+  justify-content: center;
+  gap: 4px !important;
+  overflow: hidden;
+  font-size: 8px !important;
+  line-height: 1 !important;
+}
+
+.menu-toggle {
+  flex: none;
+}
+
+/* Footer uses the same approved theme logo rule with a fixed box. */
+.site-footer .footer-logo {
+  width: 160px !important;
+  min-width: 160px;
+  max-width: 160px;
+  height: 54px !important;
+  min-height: 54px;
+  max-height: 54px;
+  object-fit: contain;
+  object-position: left center;
+  display: block;
 }
 
 /* Keep multilingual text swaps from changing vertical geometry. */
@@ -179,18 +277,38 @@ body {
 .detail-hero-grid h1 { min-height: 1.2em; }
 .detail-hero-grid p { min-height: 3em; }
 
+/* ---------- Tablet/mobile (<= 1180px): dropdown menu, still language-stable ---------- */
 @media (max-width: 1180px) {
-  .site-header {
+  .site-header,
+  .detail-header {
     display: flex !important;
+    grid-template-columns: none !important;
     height: 72px;
     min-height: 72px;
+    max-height: 72px;
     padding: 0 20px !important;
-    gap: 12px;
+    margin: 0 !important;
+    gap: 12px !important;
+    justify-content: flex-start !important;
   }
-  .site-header .brand { width: 150px; min-width: 150px; max-width: 150px; height: 50px; }
-  .site-header .brand img { width: 148px !important; min-width: 148px; max-width: 148px; height: 50px !important; min-height: 50px; max-height: 50px; }
-  .site-header .nav-links { min-width: 0 !important; width: auto !important; max-width: none !important; grid-template-columns: none; }
-  .site-header .header-socials { display: none; }
-  .site-header .header-actions, .detail-header .detail-actions { width: 170px; min-width: 170px; max-width: 170px; margin-left: auto !important; }
+  .site-header .brand { width: 150px; min-width: 150px; max-width: 150px; height: 50px; min-height: 50px; max-height: 50px; }
+  .site-header .brand img { width: 140px !important; min-width: 140px; max-width: 140px; height: 46px !important; min-height: 46px; max-height: 46px; }
+  .site-header .nav-links {
+    min-width: 0 !important;
+    width: auto !important;
+    max-width: none !important;
+    grid-template-columns: none;
+  }
+  .site-header .header-socials,
+  .site-header .header-socials--placeholder { display: none !important; }
+  .site-header .header-actions,
+  .site-header .detail-actions,
+  .detail-header .detail-actions,
+  .detail-header .header-actions {
+    width: 160px;
+    min-width: 160px;
+    max-width: 160px;
+    margin-left: auto !important;
+  }
   .hero-copy h1, .hero-copy p, .intro-content h2, .intro-content p, .section-top, .section-top h2, .section-top > p, .detail-hero-grid h1, .detail-hero-grid p { min-height: 0; }
 }

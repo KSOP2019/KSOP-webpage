@@ -87,8 +87,8 @@ export const seedNews: NewsItem[] = [
 
 export const seedContent: SiteContent = {
   heroImage: '/images/ksop-hero-arena.png',
-  logoBlack: '/images/ksop-logo-black.png',
-  logoWhite: '/images/ksop-logo-white.png',
+  logoBlack: '/images/ksop-light-approved.png',
+  logoWhite: '/images/ksop-dark-approved.png',
   seriesDate: '17 NOV 2026',
   seriesVenue: 'SEOUL · GRAND HYATT',
   seriesGtd: '₩1,500,000,000 GTD',

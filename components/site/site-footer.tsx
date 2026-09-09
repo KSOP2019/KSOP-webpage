@@ -14,12 +14,12 @@ function SocialIcon({ name, src }: { name: string; src: string }) {
 
 export function SiteFooter() {
   const { t, darkMode } = useSite()
-  const logo = darkMode ? '/images/ksop-logo-white.png' : '/images/ksop-logo-black.png'
+  const logo = darkMode ? '/images/ksop-dark-approved.png' : '/images/ksop-light-approved.png'
 
   return (
     <footer className="site-footer" id="social">
       <div>
-        <img className="footer-logo" src={logo} alt="KSOP Korea Series of Poker" />
+        <img className="footer-logo" src={logo} alt="KSOP Korea Series of Poker" width={160} height={53} />
         <p className="footer-note">
           Korea&apos;s premier live poker series.
           <br />

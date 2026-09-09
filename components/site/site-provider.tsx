@@ -23,10 +23,7 @@ export function SiteProvider({ children, initialContent }: { children: ReactNode
 
   const setLanguage = (nextLanguage: Language) => {
     if (nextLanguage === language) return
-    const x = window.scrollX
-    const y = window.scrollY
     setLanguageState(nextLanguage)
-    requestAnimationFrame(() => requestAnimationFrame(() => window.scrollTo({ left: x, top: y, behavior: 'auto' })))
   }
 
   useEffect(() => {

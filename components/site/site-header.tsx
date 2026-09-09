@@ -8,8 +8,8 @@ import { useSite } from '@/components/site/site-provider'
 import { NAV_ROUTES } from '@/lib/nav'
 import type { Language } from '@/lib/types'
 
-const LIGHT_LOGO = '/images/ksop-logo-black.png'
-const DARK_LOGO = '/images/ksop-logo-white.png'
+const LIGHT_LOGO = '/images/ksop-light-approved.png'
+const DARK_LOGO = '/images/ksop-dark-approved.png'
 
 export function SiteHeader() {
   const { language, setLanguage, darkMode, setDarkMode, t } = useSite()
@@ -20,7 +20,7 @@ export function SiteHeader() {
   return (
     <header className="site-header">
       <Link href="/" className="brand">
-        <img src={logo} alt="KSOP Korea Series of Poker" />
+        <img src={logo} alt="KSOP Korea Series of Poker" width={180} height={60} />
       </Link>
 
       <nav className={menuOpen ? 'nav-links is-open' : 'nav-links'}>
