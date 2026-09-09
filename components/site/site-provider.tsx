@@ -17,7 +17,7 @@ type SiteContextValue = {
 const SiteContext = createContext<SiteContextValue | null>(null)
 
 export function SiteProvider({ children, initialContent }: { children: ReactNode; initialContent?: SiteContent }) {
-  const [language, setLanguageState] = useState<Language>('EN')
+  const [language, setLanguageState] = useState<Language>('KR')
   const [darkMode, setDarkMode] = useState(false)
   const [content, setContent] = useState<SiteContent>(initialContent ?? seedContent)
 

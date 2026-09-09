@@ -365,6 +365,38 @@ main.theme-dark .language-menu .language-options button:focus-visible,
 .detail-hero-grid h1 { min-height: 1.2em; }
 .detail-hero-grid p { min-height: 3em; }
 
+/* ---------- Home hero lock: poster/background sized by viewport only (KR master base) ----------
+   The poster (.hero-visual inset bottom:0) and telemetry (bottom:34px) anchor to the
+   hero section box. That box must never be sized by translated text: lock its height
+   to viewport units. Text wraps inside the reserved .hero-copy box only. */
+@media (min-width: 1181px) {
+  .hero {
+    height: calc(100svh - 116px) !important;
+    min-height: 600px !important;
+  }
+  .hero-copy {
+    min-height: 0 !important;
+    height: 100% !important;
+  }
+  .hero-actions {
+    flex-wrap: nowrap !important;
+  }
+}
+
+@media (min-width: 721px) and (max-width: 1180px) {
+  .hero {
+    height: calc(100svh - 116px) !important;
+    min-height: 560px !important;
+  }
+  .hero-copy {
+    min-height: 0 !important;
+    height: 100% !important;
+  }
+  .hero-actions {
+    flex-wrap: nowrap !important;
+  }
+}
+
 /* ---------- Tablet/mobile (<= 1180px): dropdown menu, still language-stable ---------- */
 @media (max-width: 1180px) {
   .site-header,
