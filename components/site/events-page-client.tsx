@@ -33,7 +33,7 @@ export function EventsPageClient({ events }: { events: EventItem[] }) {
     <section className="schedule-section section-pad events-density">
       <div className="section-top">
         <div>
-          <div className="section-label">02 / UPCOMING SERIES</div>
+          <div className="section-label">{t.scheduleLabel ?? '02 / UPCOMING SERIES'}</div>
           <h2>{t.schedule}</h2>
         </div>
         <div className="series-meta">
@@ -64,7 +64,7 @@ export function EventsPageClient({ events }: { events: EventItem[] }) {
       {selectedCategory === 'DAY' ? (
         <div className="date-filter" style={{ display: 'flex', gap: '14px', marginBottom: '20px' }}>
           <button type="button" className={selectedDate === 'ALL' ? 'is-active' : ''} onClick={() => { setSelectedDate('ALL'); setVisibleCount(PAGE_SIZE); setOpen(-1) }}>
-            ALL DATES
+            {t.allDates ?? 'ALL DATES'}
           </button>
           {dates.map((date) => (
             <button
@@ -83,12 +83,14 @@ export function EventsPageClient({ events }: { events: EventItem[] }) {
       <Reveal className="schedule-list">
         {visibleEvents.length > 0 ? (
           <p className="muted-copy" style={{ marginBottom: '12px' }}>
-            SHOWING {shownEvents.length} OF {visibleEvents.length} EVENTS
+            {(t.showing ?? 'SHOWING {shown} OF {total} EVENTS')
+              .replace('{shown}', String(shownEvents.length))
+              .replace('{total}', String(visibleEvents.length))}
           </p>
         ) : null}
         {visibleEvents.length === 0 ? (
           <div>
-            <p className="muted-copy">NO EVENTS MATCH THE SELECTED FILTERS</p>
+            <p className="muted-copy">{t.noEvents ?? 'NO EVENTS MATCH THE SELECTED FILTERS'}</p>
             <div className="detail-actions" style={{ marginTop: '16px' }}>
               <button
                 type="button"
@@ -100,7 +102,7 @@ export function EventsPageClient({ events }: { events: EventItem[] }) {
                   setOpen(-1)
                 }}
               >
-                CLEAR FILTERS
+                {t.clearFilters ?? 'CLEAR FILTERS'}
               </button>
             </div>
           </div>
@@ -119,7 +121,7 @@ export function EventsPageClient({ events }: { events: EventItem[] }) {
               <span className="event-title">
                 <b>{event.name}</b>
                 <small>
-                  {event.type} · Buy-in {event.buyInType} · {event.gtd} GTD
+                  {event.type} · {t.buyin ?? 'BUY-IN'} {event.buyInType} · {event.gtd} GTD
                 </small>
               </span>
               <ChevronDown className="chevron" />
@@ -128,7 +130,7 @@ export function EventsPageClient({ events }: { events: EventItem[] }) {
               <div className="event-detail">
                 <div className="detail-actions">
                   <Link className="primary-cta" href={`/events/${event.id}`}>
-                    Open event page <ArrowUpRight />
+                    {t.openEvent ?? 'Open event page'} <ArrowUpRight />
                   </Link>
                 </div>
               </div>
@@ -138,7 +140,7 @@ export function EventsPageClient({ events }: { events: EventItem[] }) {
         {remainingCount > 0 ? (
           <div className="detail-actions" style={{ marginTop: '20px' }}>
             <button type="button" className="ghost-button" onClick={() => setVisibleCount((count) => count + PAGE_SIZE)}>
-              SHOW MORE ({remainingCount} REMAINING)
+              {(t.showMore ?? 'SHOW MORE ({remaining} REMAINING)').replace('{remaining}', String(remainingCount))}
             </button>
           </div>
         ) : null}

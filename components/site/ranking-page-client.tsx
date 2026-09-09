@@ -19,7 +19,7 @@ export function RankingPageClient({ players }: { players: PlayerItem[] }) {
     <section className="ranking-section section-pad">
       <div className="section-top">
         <div>
-          <div className="section-label">03 / PLAYER RANKING</div>
+          <div className="section-label">{t.rankingLabel ?? '03 / PLAYER RANKING'}</div>
           <h2>{t.ranking}</h2>
         </div>
         <div className="search-box">
@@ -27,8 +27,8 @@ export function RankingPageClient({ players }: { players: PlayerItem[] }) {
           <input
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            placeholder="Search player"
-            aria-label="Search player ranking"
+            placeholder={t.searchPlayer ?? 'Search player'}
+            aria-label={t.searchPlayer ?? 'Search player ranking'}
           />
         </div>
       </div>
@@ -45,7 +45,7 @@ export function RankingPageClient({ players }: { players: PlayerItem[] }) {
             <strong className="player-name">{player.name}</strong>
             <span className="podium-country">{player.country} · KSOP RANKING</span>
             <b>{player.earnings}</b>
-            <span className="text-link">View profile <ArrowUpRight /></span>
+            <span className="text-link">{t.viewProfile ?? 'View profile'} <ArrowUpRight /></span>
           </Link>
         ))}
       </Reveal>

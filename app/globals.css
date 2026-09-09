@@ -176,10 +176,10 @@ article.podium-card:nth-child(1) .podium-rank { color: transparent !important; f
 article.podium-card.place-1 .podium-rank::before { content: 'GOLD TROPHY' !important; color: #b28a35 !important; font-size: 10px !important; display: inline-block !important; }article.podium-card.place-2 .podium-rank::before { content: 'SILVER TROPHY' !important; color: #77808d !important; font-size: 10px !important; display: inline-block !important; }article.podium-card.place-3 .podium-rank::before { content: 'BRONZE TROPHY' !important; color: #a66e48 !important; font-size: 10px !important; display: inline-block !important; }article.podium-card .podium-medal > span { display: none !important; }article.podium-card.place-1 .podium-medal::before { content: '♛' !important; color: #b28a35 !important; display: block !important; font-size: 28px !important; }article.podium-card.place-2 .podium-medal::before { content: '♛' !important; color: #77808d !important; display: block !important; font-size: 28px !important; }article.podium-card.place-3 .podium-medal::before { content: '♛' !important; color: #a66e48 !important; display: block !important; font-size: 28px !important; }
 /* EN is the geometry reference: translations change copy only, never box metrics. */
 /* nav cell width owned by header-stability.css */
-main[class*="lang-"] .hero-copy h1 { width: 100% !important; height: 476px !important; min-height: 476px !important; max-height: 476px !important; flex: 0 0 476px !important; overflow: hidden; display: block; white-space: nowrap; }
+/* hero h1 geometry owned by header-stability.css + base hero rules */
 main[class*="lang-"] .hero-intro { min-height: 3.2em; max-width: 38ch; overflow: hidden; }
 main[class*="lang-"] .hero-actions a, main[class*="lang-"] .hero-actions button { min-width: 152px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-main[class*="lang-"] h2 { display: block; width: 100% !important; min-height: 1.2em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* h2 wrapping owned by header-stability.css + base rules */
 main[class*="lang-"] .section-label, main[class*="lang-"] .eyebrow { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 main[class*="lang-"] .event-title b { width: 100%; overflow: hidden; text-overflow: ellipsis; }
 main[class*="lang-"] .series-meta { min-width: 150px; }
@@ -189,10 +189,10 @@ main[class*="lang-"] .site-header { min-width: 0; }
 }
 
 /* Fixed EN geometry across all language copies. */
-main[class*="lang-"] .hero-copy h1 { width: 100% !important; height: 476px !important; min-height: 476px !important; max-height: 476px !important; flex: 0 0 476px !important; overflow: hidden; display: block; white-space: nowrap; }
+/* hero h1 geometry owned by header-stability.css + base hero rules */
 main[class*="lang-"] .hero-intro { min-height: 3.2em; max-width: 38ch; overflow: hidden; }
 main[class*="lang-"] .hero-actions a, main[class*="lang-"] .hero-actions button { min-width: 152px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-main[class*="lang-"] h2 { display: block; width: 100% !important; min-height: 1.2em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* h2 wrapping owned by header-stability.css + base rules */
 /* nav cell width owned by header-stability.css */
 main[class*="lang-"] .section-label, main[class*="lang-"] .eyebrow { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 main[class*="lang-"] .event-title b { width: 100%; overflow: hidden; text-overflow: ellipsis; }

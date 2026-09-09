@@ -1,6 +1,9 @@
-/* KSOP header stability — ONE authoritative desktop header geometry.
-   Desktop >= 1181px: fully fixed pixel-stable grid used everywhere.
-   Tablet/mobile <= 1180px: existing dropdown menu behavior, still language-stable. */
+/* KSOP header — SINGLE authoritative source of truth for header geometry.
+   Desktop >= 1181px: fixed pixel-stable grid used by every public header.
+   Grid: 170px logo | 592px nav (5 x 112px cells) | 200px socials (6 x 30px) | 160px actions.
+   Total: 170 + 592 + 200 + 160 + 3 x 10px gaps + 2 x 12px padding = 1176px (fits 1180px).
+   Language text swaps glyphs only; no box below may depend on text width.
+   Tablet/mobile <= 1180px: dropdown menu behavior, same fixed control widths. */
 
 html {
   overflow-y: scroll;
@@ -19,34 +22,33 @@ body {
 /* ---------- Desktop fixed header (>= 1181px) ---------- */
 .site-header {
   display: grid !important;
-  grid-template-columns: 170px 560px 220px 160px;
+  grid-template-columns: 170px 592px 200px 160px;
   justify-content: center;
   align-items: center;
-  column-gap: 12px;
   width: 100%;
   min-height: 82px;
   height: 82px;
   max-height: 82px;
-  padding: 0 16px !important;
+  padding: 0 12px !important;
   margin: 0 auto !important;
   box-sizing: border-box !important;
-  /* Dropdown must escape the header: never clip absolutely-positioned panels. */
+  /* Language popup must escape the header: never clip absolutely-positioned panels. */
   overflow: visible;
   overflow-anchor: none;
   flex: none !important;
   gap: 0 !important;
-  column-gap: 12px !important;
+  column-gap: 10px !important;
   /* Always above hero/poster/cards/sections/glass overlays. Keep sticky. */
   position: sticky;
   top: 0;
   z-index: 100 !important;
-  /* Avoid transform/contain stacking traps; keep backdrop-filter visuals from globals. */
+  /* Avoid transform/contain stacking traps; backdrop-filter visuals come from globals. */
   animation: none !important;
   transform: none !important;
   contain: none !important;
 }
 
-/* Logo: fixed visual box, approved theme assets, contain fit. */
+/* Logo: fixed 170px area; 160x54 visual box; approved theme PNG; contain, left. */
 .site-header .brand {
   width: 170px;
   min-width: 170px;
@@ -73,16 +75,20 @@ body {
   object-fit: contain;
   object-position: left center;
   flex: none;
+  opacity: 1 !important;
+  filter: none;
+  mix-blend-mode: normal;
+  mask: none;
 }
 
-/* Center nav: 5 fixed equal-width cells. Content width never affects geometry. */
+/* Center nav: fixed 592px area, 5 equal 112px cells. Text never resizes boxes. */
 .site-header .nav-links {
   display: grid !important;
-  grid-template-columns: repeat(5, 104px);
-  gap: 10px !important;
-  width: 560px !important;
-  min-width: 560px !important;
-  max-width: 560px !important;
+  grid-template-columns: repeat(5, 112px);
+  gap: 8px !important;
+  width: 592px !important;
+  min-width: 592px !important;
+  max-width: 592px !important;
   margin: 0 !important;
   padding: 0 !important;
   justify-content: center !important;
@@ -91,9 +97,9 @@ body {
 }
 
 .site-header .nav-links a {
-  width: 104px;
-  min-width: 104px !important;
-  max-width: 104px;
+  width: 112px;
+  min-width: 112px !important;
+  max-width: 112px;
   height: 40px;
   min-height: 40px;
   max-height: 40px;
@@ -104,17 +110,18 @@ body {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  font-size: 14px !important;
-  line-height: 1 !important;
-  letter-spacing: 0.04em;
+  /* Restored pre-regression desktop size; 112px cells hold the longest CJK labels. */
+  font-size: 16px !important;
+  line-height: 1.25 !important;
+  letter-spacing: 0.035em;
   flex: none;
 }
 
-/* Social icons: fixed width area. */
+/* Six SNS icons: one fixed 200px group between nav and actions. Hover uses transform only. */
 .site-header .header-socials {
-  width: 220px;
-  min-width: 220px;
-  max-width: 220px;
+  width: 200px;
+  min-width: 200px;
+  max-width: 200px;
   height: 40px;
   min-height: 40px;
   max-height: 40px;
@@ -123,9 +130,25 @@ body {
   display: flex !important;
   align-items: center;
   justify-content: center;
-  gap: 6px !important;
+  gap: 4px !important;
   flex: none !important;
-  overflow: hidden;
+  flex-wrap: nowrap !important;
+  overflow: visible;
+}
+
+.site-header .header-socials .social-icon {
+  width: 30px !important;
+  min-width: 30px !important;
+  max-width: 30px !important;
+  height: 30px !important;
+  min-height: 30px !important;
+  max-height: 30px !important;
+  flex: 0 0 30px !important;
+  margin: 0 !important;
+}
+
+.site-header .header-socials .social-tooltip {
+  z-index: 103;
 }
 
 /* Detail pages reserve the identical socials slot so nav geometry matches exactly. */
@@ -134,7 +157,7 @@ body {
   pointer-events: none;
 }
 
-/* Language/theme area: fixed width. */
+/* Language/theme area: fixed 160px. */
 .site-header .header-actions,
 .site-header .detail-actions,
 .detail-header .detail-actions,
@@ -159,10 +182,10 @@ body {
 
 /* Detail headers use the exact same 4-column grid as the main header. */
 .detail-header {
-  grid-template-columns: 170px 560px 220px 160px !important;
+  grid-template-columns: 170px 592px 200px 160px !important;
 }
 
-/* Language button: fixed width independent of EN/KR/JP/CN. */
+/* Language control: fixed 56px box, globe icon only when closed. */
 .language-menu {
   position: relative;
   z-index: 101;
@@ -183,44 +206,38 @@ body {
   height: 36px;
   min-height: 36px;
   max-height: 36px;
-  display: grid;
-  grid-template-columns: 14px 24px;
+  display: flex;
   align-items: center;
   justify-content: center;
-  gap: 4px;
   white-space: nowrap;
   overflow: hidden;
   font-size: 10px !important;
   line-height: 1 !important;
   text-align: center;
+  cursor: pointer;
+  list-style: none;
+}
+
+.language-menu > summary.language::-webkit-details-marker {
+  display: none;
 }
 
 .language-menu > summary.language svg {
-  width: 14px !important;
-  height: 14px !important;
-  min-width: 14px;
+  width: 18px !important;
+  height: 18px !important;
+  min-width: 18px;
   flex: none;
 }
 
-.language-code {
-  display: block;
-  width: 24px;
-  min-width: 24px;
-  max-width: 24px;
-  text-align: center;
-  font-size: 10px !important;
-  line-height: 1 !important;
-  overflow: hidden;
-}
-
+/* Popup: fixed 96px panel directly below the globe, full native option names. */
 .language-menu .language-options {
   position: absolute;
   top: calc(100% + 8px);
   right: 0;
   left: auto;
-  width: 56px;
-  min-width: 56px;
-  max-width: 56px;
+  width: 96px;
+  min-width: 96px;
+  max-width: 96px;
   z-index: 102;
   /* Light mode: solid near-opaque panel, no white-on-white glass. */
   background: rgba(255, 255, 255, 0.98);
@@ -237,15 +254,17 @@ body {
 }
 
 .language-menu .language-options button {
-  width: 44px;
-  min-width: 44px;
-  max-width: 44px;
+  width: 84px;
+  min-width: 84px;
+  max-width: 84px;
   height: 32px;
   text-align: center;
-  font-size: 10px !important;
-  line-height: 1 !important;
+  font-size: 11px !important;
+  line-height: 1.2 !important;
+  letter-spacing: 0.04em;
   white-space: nowrap;
   overflow: hidden;
+  text-overflow: ellipsis;
   border: 0;
   border-radius: 7px;
   background: transparent;
@@ -289,7 +308,7 @@ main.theme-dark .language-menu .language-options button:focus-visible,
   color: #ffffff;
 }
 
-/* Theme button: fixed width. */
+/* Theme button: fixed 80px. */
 .theme-switch {
   width: 80px;
   min-width: 80px;
@@ -322,9 +341,11 @@ main.theme-dark .language-menu .language-options button:focus-visible,
   object-fit: contain;
   object-position: left center;
   display: block;
+  opacity: 1 !important;
+  filter: none;
 }
 
-/* Keep multilingual text swaps from changing vertical geometry. */
+/* Stable multilingual content boxes: text wraps inside fixed grids, never resizes them. */
 .hero-copy,
 .intro-content,
 .section-top,

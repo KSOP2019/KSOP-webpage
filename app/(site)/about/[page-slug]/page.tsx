@@ -1,6 +1,5 @@
-import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { Reveal } from '@/components/site/reveal'
+import { AboutTopicClient } from '@/components/site/about-page-client'
 import { getSiteContent } from '@/lib/data'
 
 const ABOUT_TOPICS = [
@@ -27,57 +26,6 @@ export default async function AboutDetailPage({ params }: PageProps) {
   if (!topic) notFound()
 
   const content = await getSiteContent()
-  const isVenue = topic.slug === 'venue'
 
-  return (
-    <section className="intro section-pad">
-      <div className="section-label">01 / THE SERIES · DETAIL</div>
-      <Reveal className="intro-content">
-        <h2>{topic.title}</h2>
-        <p className="large-copy">{content.introBody}</p>
-        <div className="detail-facts" style={{ marginTop: '24px' }}>
-          {isVenue ? (
-            <>
-              <div>
-                <span>VENUE</span>
-                <strong>{content.seriesVenue}</strong>
-              </div>
-              <div>
-                <span>DATE</span>
-                <strong>{content.seriesDate}</strong>
-              </div>
-            </>
-          ) : (
-            <>
-              <div>
-                <span>DATE</span>
-                <strong>{content.seriesDate}</strong>
-              </div>
-              <div>
-                <span>VENUE</span>
-                <strong>{content.seriesVenue}</strong>
-              </div>
-              <div>
-                <span>GUARANTEED</span>
-                <strong>{content.seriesGtd}</strong>
-              </div>
-            </>
-          )}
-        </div>
-        {isVenue ? (
-          <p className="muted-copy" style={{ marginTop: '24px' }}>
-            CONTENT PENDING
-          </p>
-        ) : null}
-        <div className="detail-actions" style={{ marginTop: '32px' }}>
-          <Link className="ghost-button" href="/about">
-            Back to about
-          </Link>
-          <Link className="text-link" href="/events">
-            Explore the schedule
-          </Link>
-        </div>
-      </Reveal>
-    </section>
-  )
+  return <AboutTopicClient content={content} slug={topic.slug} />
 }

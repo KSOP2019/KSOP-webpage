@@ -19,11 +19,11 @@ export function SiteFooter() {
   return (
     <footer className="site-footer" id="social">
       <div>
-        <img className="footer-logo" src={logo} alt="KSOP Korea Series of Poker" width={160} height={53} />
+        <img className="footer-logo" src={logo} alt="KSOP Korea Series of Poker" width={160} height={54} />
         <p className="footer-note">
-          Korea&apos;s premier live poker series.
+          {t.footerLine1 ?? "Korea's premier live poker series."}
           <br />
-          Designed for the game.
+          {t.footerLine2 ?? 'Designed for the game.'}
         </p>
       </div>
       <div className="footer-nav">

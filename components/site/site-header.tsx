@@ -2,17 +2,17 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Globe2, Menu, X } from 'lucide-react'
+import { Menu, X } from 'lucide-react'
 import { useState } from 'react'
 import { useSite } from '@/components/site/site-provider'
+import { LanguageMenu, ThemeSwitch } from '@/components/site/header-controls'
 import { NAV_ROUTES } from '@/lib/nav'
-import type { Language } from '@/lib/types'
 
 const LIGHT_LOGO = '/images/ksop-light-approved.png'
 const DARK_LOGO = '/images/ksop-dark-approved.png'
 
 export function SiteHeader() {
-  const { language, setLanguage, darkMode, setDarkMode, t } = useSite()
+  const { darkMode, t } = useSite()
   const [menuOpen, setMenuOpen] = useState(false)
   const pathname = usePathname()
   const logo = darkMode ? DARK_LOGO : LIGHT_LOGO
@@ -20,7 +20,7 @@ export function SiteHeader() {
   return (
     <header className="site-header">
       <Link href="/" className="brand">
-        <img src={logo} alt="KSOP Korea Series of Poker" width={180} height={60} />
+        <img src={logo} alt="KSOP Korea Series of Poker" width={160} height={54} />
       </Link>
 
       <nav className={menuOpen ? 'nav-links is-open' : 'nav-links'}>
@@ -54,31 +54,8 @@ export function SiteHeader() {
       </div>
 
       <div className="header-actions">
-        <details className="language-menu">
-          <summary className="language" aria-label={`Language ${language}`}>
-            <Globe2 aria-hidden="true" />
-            <span className="language-code">{language}</span>
-          </summary>
-          <div className="language-options">
-            {(['EN', 'KR', 'JP', 'CN'] as Language[]).map((code) => (
-              <button key={code} type="button" onClick={() => setLanguage(code)}>
-                {code}
-              </button>
-            ))}
-          </div>
-        </details>
-
-        <button
-          className={darkMode ? 'theme-switch is-dark' : 'theme-switch'}
-          type="button"
-          aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
-          aria-pressed={darkMode}
-          onClick={() => setDarkMode(!darkMode)}
-        >
-          <span className="theme-sun" aria-hidden="true">☀</span>
-          <span className="theme-track"><span /></span>
-          <span className="theme-moon" aria-hidden="true">☾</span>
-        </button>
+        <LanguageMenu />
+        <ThemeSwitch />
 
         <button className="menu-toggle" aria-label="Toggle menu" type="button" onClick={() => setMenuOpen(!menuOpen)}>
           {menuOpen ? <X /> : <Menu />}

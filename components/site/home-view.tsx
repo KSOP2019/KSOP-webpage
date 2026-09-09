@@ -16,7 +16,7 @@ type HomeViewProps = {
 }
 
 export function HomeView({ events, players, news }: HomeViewProps) {
-  const { language, content, t } = useSite()
+  const { content, t } = useSite()
   const [open, setOpen] = useState(-1)
   const [query, setQuery] = useState('')
   const [selectedDate, setSelectedDate] = useState('ALL')
@@ -67,7 +67,7 @@ export function HomeView({ events, players, news }: HomeViewProps) {
             <button className="primary-cta" type="button" onClick={() => setRegistered(true)}>
               {registered ? (
                 <>
-                  <Check /> {language === 'KR' ? '좌석 예약됨' : 'SEAT RESERVED'}
+                  <Check /> {t.seatReserved ?? 'SEAT RESERVED'}
                 </>
               ) : (
                 <>
@@ -86,7 +86,7 @@ export function HomeView({ events, players, news }: HomeViewProps) {
           <div className="hero-stamp">
             <span>SEOUL</span>
             <strong>17</strong>
-            <span>NOVEMBER</span>
+            <span>{t.posterMonth ?? 'NOVEMBER'}</span>
             <div className="poster-details">
               <a
                 className="poster-location"
@@ -96,7 +96,7 @@ export function HomeView({ events, players, news }: HomeViewProps) {
               >
                 <MapPin /> SEOUL · GRAND HYATT
               </a>
-              <small>COUNTDOWN {countdownText}</small>
+              <small>{t.countdown ?? 'COUNTDOWN'} {countdownText}</small>
             </div>
           </div>
         </div>
@@ -107,7 +107,7 @@ export function HomeView({ events, players, news }: HomeViewProps) {
             <span>{t.guaranteed}</span>
           </div>
           <div>
-            <strong>INVITATION</strong>
+            <strong>{t.invitation}</strong>
             <span>{t.invitation}</span>
           </div>
           <div>
@@ -118,12 +118,12 @@ export function HomeView({ events, players, news }: HomeViewProps) {
       </section>
 
       <section className="intro section-pad" id="about">
-        <div className="section-label">01 / THE SERIES</div>
+        <div className="section-label">{t.seriesLabel ?? '01 / THE SERIES'}</div>
         <Reveal className="intro-content">
           <h2>
-            More than
+            {t.introTitle ?? 'More than'}
             <br />
-            <em>a tournament.</em>
+            <em>{t.introEmphasis ?? 'a tournament.'}</em>
           </h2>
           <p className="large-copy">{content.introBody}</p>
         </Reveal>
@@ -148,7 +148,7 @@ export function HomeView({ events, players, news }: HomeViewProps) {
 
         <div className="section-top">
           <div>
-            <div className="section-label">02 / UPCOMING SERIES</div>
+            <div className="section-label">{t.scheduleLabel ?? '02 / UPCOMING SERIES'}</div>
             <h2>{t.schedule}</h2>
           </div>
           <div className="series-meta">
@@ -169,7 +169,7 @@ export function HomeView({ events, players, news }: HomeViewProps) {
                 <span className="event-title">
                   <b>{event.name}</b>
                   <small>
-                    {event.type} · Buy-in {event.buyInType} · {event.gtd} GTD
+                    {event.type} · {t.buyin ?? 'BUY-IN'} {event.buyInType} · {event.gtd} GTD
                   </small>
                 </span>
                 <span className="event-type">{event.type}</span>
@@ -179,28 +179,28 @@ export function HomeView({ events, players, news }: HomeViewProps) {
                 <div className="event-detail">
                   <div className="detail-facts">
                     <div>
-                      <span>STARTING CHIPS</span>
+                      <span>{t.factChips ?? 'STARTING CHIPS'}</span>
                       <strong>{event.startingChips.toLocaleString()}</strong>
                     </div>
                     <div>
-                      <span>LATE REG.</span>
+                      <span>{t.factLate ?? 'LATE REG.'}</span>
                       <strong>{event.lateReg}</strong>
                     </div>
                     <div>
-                      <span>LEVEL TIME</span>
+                      <span>{t.factLevel ?? 'LEVEL TIME'}</span>
                       <strong>{event.levelTime}</strong>
                     </div>
                     <div>
-                      <span>TYPE</span>
+                      <span>{t.factType ?? 'TYPE'}</span>
                       <strong>{event.type}</strong>
                     </div>
                   </div>
                   <div className="detail-actions">
                     <Link className="primary-cta" href={`/events/${event.id}`}>
-                      View event <ArrowUpRight />
+                      {t.viewEvent ?? 'View event'} <ArrowUpRight />
                     </Link>
                     <button className="ghost-button" type="button" onClick={() => setRegistered(true)}>
-                      Register
+                      {t.registerShort ?? 'Register'}
                     </button>
                   </div>
                 </div>
@@ -211,7 +211,7 @@ export function HomeView({ events, players, news }: HomeViewProps) {
 
         <div style={{ marginTop: '24px' }}>
           <Link className="text-link" href="/events">
-            View all events <ArrowUpRight />
+            {t.viewAllEvents ?? 'View all events'} <ArrowUpRight />
           </Link>
         </div>
       </section>
@@ -219,11 +219,11 @@ export function HomeView({ events, players, news }: HomeViewProps) {
       <section className="ranking-section section-pad" id="ranking">
         <div className="section-top">
           <div>
-            <div className="section-label">03 / PLAYER RANKING</div>
+            <div className="section-label">{t.rankingLabel ?? '03 / PLAYER RANKING'}</div>
             <h2>{t.ranking}</h2>
           </div>
           <Link className="text-link" href="/ranking">
-            Full ranking <ArrowUpRight />
+            {t.fullRanking ?? 'Full ranking'} <ArrowUpRight />
           </Link>
         </div>
 
@@ -241,7 +241,7 @@ export function HomeView({ events, players, news }: HomeViewProps) {
               <strong className="player-name">{player.name}</strong>
               <span className="podium-country">{player.country} · KSOP RANKING</span>
               <b>{player.earnings}</b>
-              <span className="text-link">View profile <ArrowUpRight /></span>
+              <span className="text-link">{t.viewProfile ?? 'View profile'} <ArrowUpRight /></span>
             </Link>
           ))}
         </Reveal>
@@ -250,11 +250,11 @@ export function HomeView({ events, players, news }: HomeViewProps) {
       <section className="news-section section-pad" id="news">
         <div className="section-top">
           <div>
-            <div className="section-label">04 / FROM THE SERIES</div>
+            <div className="section-label">{t.newsLabel ?? '04 / FROM THE SERIES'}</div>
             <h2>{t.news}</h2>
           </div>
           <Link className="text-link" href="/news">
-            All news <ArrowUpRight />
+            {t.allNews ?? 'All news'} <ArrowUpRight />
           </Link>
         </div>
         <Reveal className="news-grid">
@@ -265,7 +265,7 @@ export function HomeView({ events, players, news }: HomeViewProps) {
               </span>
               <h3>{item.title}</h3>
               <Link className="text-link" href={`/news/${item.slug}`}>
-                Read the story <ArrowUpRight />
+                {t.readStory ?? 'Read the story'} <ArrowUpRight />
               </Link>
             </article>
           ))}
@@ -282,7 +282,7 @@ export function HomeView({ events, players, news }: HomeViewProps) {
             <em>{content.imageBreakEmphasis}</em>
           </h2>
           <button className="button-link" type="button" onClick={() => setRegistered(true)}>
-            {registered ? 'SEAT RESERVED' : t.register} <ArrowUpRight />
+            {registered ? (t.seatReserved ?? 'SEAT RESERVED') : t.register} <ArrowUpRight />
           </button>
         </div>
       </section>
