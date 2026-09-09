@@ -416,11 +416,16 @@ main.theme-dark .language-menu .language-options button:focus-visible,
   }
   .site-header .brand { width: 150px; min-width: 150px; max-width: 150px; height: 50px; min-height: 50px; max-height: 50px; }
   .site-header .brand img { width: 140px !important; min-width: 140px; max-width: 140px; height: 46px !important; min-height: 46px; max-height: 46px; }
+  .site-header .menu-toggle { display: block !important; }
   .site-header .nav-links {
+    display: none !important;
     min-width: 0 !important;
     width: auto !important;
     max-width: none !important;
     grid-template-columns: none;
+  }
+  .site-header .nav-links.is-open {
+    display: flex !important;
   }
   .site-header .header-socials,
   .site-header .header-socials--placeholder { display: none !important; }
@@ -434,4 +439,31 @@ main.theme-dark .language-menu .language-options button:focus-visible,
     margin-left: auto !important;
   }
   .hero-copy h1, .hero-copy p, .intro-content h2, .intro-content p, .section-top, .section-top h2, .section-top > p, .detail-hero-grid h1, .detail-hero-grid p { min-height: 0; }
+}
+
+/* Tablet dropdown panel (721-1180px): same visual language as the phone menu. */
+@media (min-width: 721px) and (max-width: 1180px) {
+  .site-header .nav-links.is-open {
+    position: absolute;
+    top: 72px;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+    padding: 20px;
+    background: var(--background);
+    border-bottom: 1px solid var(--border);
+    z-index: 99;
+  }
+  .site-header .nav-links.is-open a {
+    width: auto;
+    min-width: 0;
+    max-width: none;
+    height: 44px;
+    min-height: 44px;
+    max-height: 44px;
+    justify-content: flex-start;
+    padding: 0 8px;
+  }
 }
