@@ -15,5 +15,8 @@ export async function PUT(request: Request) {
   }
   const body = await request.json()
   const saved = await saveScheduleContent(body)
+  const { revalidateSchedulePages, revalidateSeriesPages } = await import('@/lib/revalidate')
+  revalidateSchedulePages()
+  revalidateSeriesPages()
   return NextResponse.json(saved)
 }

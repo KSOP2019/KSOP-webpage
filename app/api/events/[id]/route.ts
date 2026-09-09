@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { getEvent } from '@/lib/data'
 import { deleteAdminEvent, getAdminEvents, updateAdminEvent } from '@/lib/admin-data'
+import { revalidateEventPages } from '@/lib/revalidate'
 import { isAdminAuthenticated } from '@/lib/auth'
 
 type RouteContext = { params: Promise<{ id: string }> }
@@ -28,6 +29,7 @@ export async function PUT(request: Request, context: RouteContext) {
   }
 
   const updated = await updateAdminEvent(id, { ...current, ...body, id })
+  revalidateEventPages()
   return NextResponse.json(updated)
 }
 
@@ -43,5 +45,6 @@ export async function DELETE(_request: Request, context: RouteContext) {
   }
 
   await deleteAdminEvent(id)
+  revalidateEventPages()
   return NextResponse.json({ ok: true })
 }

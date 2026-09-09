@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { getPlayer } from '@/lib/data'
 import { deleteAdminPlayer, getAdminPlayer, updateAdminPlayer } from '@/lib/admin-player-data'
+import { revalidatePlayerPages } from '@/lib/revalidate'
 import { isAdminAuthenticated } from '@/lib/auth'
 
 type RouteContext = { params: Promise<{ id: string }> }
@@ -25,6 +26,7 @@ export async function PUT(request: Request, context: RouteContext) {
   if (!current) return NextResponse.json({ error: 'Not found' }, { status: 404 })
 
   const updated = await updateAdminPlayer(id, { ...current, ...body, id: current.id })
+  revalidatePlayerPages()
   return NextResponse.json(updated)
 }
 
@@ -38,5 +40,6 @@ export async function DELETE(_request: Request, context: RouteContext) {
   if (!current) return NextResponse.json({ error: 'Not found' }, { status: 404 })
 
   await deleteAdminPlayer(id)
+  revalidatePlayerPages()
   return NextResponse.json({ ok: true })
 }

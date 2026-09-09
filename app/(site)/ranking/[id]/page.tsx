@@ -5,6 +5,9 @@ import { getPlayer } from '@/lib/data'
 
 type PageProps = { params: Promise<{ id: string }> }
 
+// Player CMS edits refresh without redeploy.
+export const revalidate = 120
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { id } = await params
   const player = await getPlayer(id)

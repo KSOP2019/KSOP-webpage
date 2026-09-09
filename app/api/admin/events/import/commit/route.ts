@@ -78,6 +78,8 @@ export async function POST(request: Request) {
     }
 
     const importedCount = await bulkUpsertEvents(eventsToUpsert)
+    const { revalidateEventPages } = await import('@/lib/revalidate')
+    revalidateEventPages()
     return NextResponse.json({ imported: importedCount, mode })
   } catch (e: any) {
     console.error('Batch import commit error:', e.message)

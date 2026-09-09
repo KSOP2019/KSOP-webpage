@@ -6,6 +6,9 @@ import { SITE_OG_IMAGE } from '@/lib/site-url'
 
 type PageProps = { params: Promise<{ id: string }> }
 
+// Event CMS edits (title/content/images/publish) refresh without redeploy.
+export const revalidate = 120
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { id } = await params
   const event = await getEvent(id)

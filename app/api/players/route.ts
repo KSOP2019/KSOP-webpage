@@ -20,5 +20,7 @@ export async function POST(request: Request) {
     id: slug,
     published: body.published ?? false,
   })
+  const { revalidatePlayerPages } = await import('@/lib/revalidate')
+  revalidatePlayerPages()
   return NextResponse.json(player, { status: 201 })
 }

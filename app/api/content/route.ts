@@ -16,5 +16,7 @@ export async function PUT(request: Request) {
   const current = await getSiteContent()
   const nextContent = { ...current, ...body, copy: { ...current.copy, ...body.copy } }
   await saveSiteContent(nextContent)
+  const { revalidateContentPages } = await import('@/lib/revalidate')
+  revalidateContentPages()
   return NextResponse.json(nextContent)
 }

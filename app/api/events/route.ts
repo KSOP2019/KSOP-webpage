@@ -14,6 +14,8 @@ export async function POST(request: Request) {
 
   const body = await request.json()
   const { createAdminEvent } = await import('@/lib/admin-data')
+  const { revalidateEventPages } = await import('@/lib/revalidate')
   const created = await createAdminEvent(body)
+  revalidateEventPages()
   return NextResponse.json(created, { status: 201 })
 }

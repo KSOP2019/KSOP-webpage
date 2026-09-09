@@ -38,6 +38,8 @@ export async function POST(request: Request) {
     }
 
     const importedCount = await bulkUpsertEvents(newEvents)
+    const { revalidateEventPages } = await import('@/lib/revalidate')
+    revalidateEventPages()
     return NextResponse.json({ imported: importedCount })
   } catch (e: any) {
     console.error('Bulk import error:', e.message)

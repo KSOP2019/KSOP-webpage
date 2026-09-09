@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { getNewsItem } from '@/lib/data'
 import { deleteAdminNews, getAdminNewsItem, updateAdminNews } from '@/lib/admin-news-data'
+import { revalidateNewsPages } from '@/lib/revalidate'
 import { isAdminAuthenticated } from '@/lib/auth'
 
 type RouteContext = { params: Promise<{ slug: string }> }
@@ -27,6 +28,7 @@ export async function PUT(request: Request, context: RouteContext) {
   }
 
   const updated = await updateAdminNews(slug, { ...current, ...body, slug })
+  revalidateNewsPages(updated.slug)
   return NextResponse.json(updated)
 }
 
@@ -42,5 +44,6 @@ export async function DELETE(_request: Request, context: RouteContext) {
   }
 
   await deleteAdminNews(slug)
+  revalidateNewsPages(current.slug)
   return NextResponse.json({ ok: true })
 }
