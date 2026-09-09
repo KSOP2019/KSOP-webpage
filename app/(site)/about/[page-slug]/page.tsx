@@ -9,6 +9,8 @@ const ABOUT_TOPICS = [
 
 type PageProps = { params: Promise<{ 'page-slug': string }> }
 
+export const revalidate = 120
+
 export function generateStaticParams() {
   return ABOUT_TOPICS.map((topic) => ({ 'page-slug': topic.slug }))
 }

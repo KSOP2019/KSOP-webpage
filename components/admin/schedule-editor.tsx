@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import type { ScheduleContent } from '@/lib/schedule-content'
+import { AdminImageField } from '@/components/admin/admin-image-field'
 
 export function ScheduleEditor({ initialContent }: { initialContent: ScheduleContent }) {
   const [content, setContent] = useState(initialContent)
@@ -57,10 +58,13 @@ export function ScheduleEditor({ initialContent }: { initialContent: ScheduleCon
             Label / title
             <input value={item.label} onChange={(e) => updateItem(index, 'label', e.target.value)} />
           </label>
-          <label>
-            Background image URL
-            <input value={item.image} onChange={(e) => updateItem(index, 'image', e.target.value)} />
-          </label>
+          <AdminImageField
+            label="Background image"
+            value={item.image}
+            onChange={(url) => updateItem(index, 'image', url)}
+            folder="schedule"
+            aspectHint="권장: 기존 스케줄 카드 비율. 저장 버튼을 눌러야 공개 페이지에 반영됩니다."
+          />
           <button className="admin-button secondary" type="button" onClick={() => removeItem(index)}>Remove card</button>
         </fieldset>
       ))}

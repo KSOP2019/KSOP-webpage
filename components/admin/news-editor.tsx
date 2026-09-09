@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import type { NewsItem, NewsCategory } from '@/lib/types'
+import { AdminImageField } from '@/components/admin/admin-image-field'
 
 const categories: NewsCategory[] = ['FIELD NOTES', 'PLAYER PORTRAIT', 'KSOP JOURNAL']
 
@@ -62,10 +63,13 @@ export function NewsEditor({ initialItem, adminLocator }: { initialItem?: NewsIt
         Body
         <textarea rows={6} value={item.body} onChange={(e) => setItem({ ...item, body: e.target.value })} />
       </label>
-      <label>
-        Cover image URL
-        <input value={item.coverUrl || ''} onChange={(e) => setItem({ ...item, coverUrl: e.target.value })} />
-      </label>
+      <AdminImageField
+        label="Cover image"
+        value={item.coverUrl || ''}
+        onChange={(url) => setItem({ ...item, coverUrl: url })}
+        folder="news"
+        aspectHint="권장: 16:9. 목록 썸네일과 상세 커버에 사용됩니다."
+      />
       <label>
         <input type="checkbox" checked={item.published} onChange={(e) => setItem({ ...item, published: e.target.checked })} />
         Published

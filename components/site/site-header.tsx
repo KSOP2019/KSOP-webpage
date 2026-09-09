@@ -20,7 +20,7 @@ export function SiteHeader() {
   return (
     <header className="site-header">
       <Link href="/" className="brand">
-        <img src={logo} alt="KSOP Korea Series of Poker" width={160} height={54} />
+        <img src={logo} alt="KSOP Korea Series of Poker" width={170} height={54} />
       </Link>
 
       <nav className={menuOpen ? 'nav-links is-open' : 'nav-links'}>

@@ -21,7 +21,7 @@ export function DetailHeader({ activeHref }: { activeHref?: string }) {
         <img
           src={darkMode ? DARK_LOGO : LIGHT_LOGO}
           alt="KSOP Korea Series of Poker"
-          width={160}
+          width={170}
           height={54}
         />
       </Link>

@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import type { Language, LocaleCopy, SiteContent } from '@/lib/types'
+import { AdminImageField } from '@/components/admin/admin-image-field'
 
 const languages: Language[] = ['EN', 'KR', 'JP', 'CN']
 const copyFields: Array<{ key: keyof LocaleCopy; label: string }> = [
@@ -55,18 +56,27 @@ export function ContentEditor({ initialContent }: { initialContent: SiteContent 
   return (
     <form className="admin-form" onSubmit={handleSubmit}>
       <h3>Images & logos</h3>
-      <label>
-        Hero / poster image URL
-        <input value={content.heroImage} onChange={(event) => setContent({ ...content, heroImage: event.target.value })} />
-      </label>
-      <label>
-        Light mode logo URL
-        <input value={content.logoBlack} onChange={(event) => setContent({ ...content, logoBlack: event.target.value })} />
-      </label>
-      <label>
-        Dark mode logo URL
-        <input value={content.logoWhite} onChange={(event) => setContent({ ...content, logoWhite: event.target.value })} />
-      </label>
+      <AdminImageField
+        label="Hero / poster image"
+        value={content.heroImage}
+        onChange={(url) => setContent({ ...content, heroImage: url })}
+        folder="home"
+        aspectHint="권장: 현재 히어로 이미지 비율(가로형 와이드). 저장 버튼을 눌러야 공개 페이지에 반영됩니다."
+      />
+      <AdminImageField
+        label="Light mode logo"
+        value={content.logoBlack}
+        onChange={(url) => setContent({ ...content, logoBlack: url })}
+        folder="logos"
+        aspectHint="권장: 투명 배경 PNG/WebP. 공개 헤더는 승인된 로고를 사용하므로, 변경 후 반드시 미리보기로 확인하세요."
+      />
+      <AdminImageField
+        label="Dark mode logo"
+        value={content.logoWhite}
+        onChange={(url) => setContent({ ...content, logoWhite: url })}
+        folder="logos"
+        aspectHint="권장: 투명 배경 PNG/WebP (밝은 글자). 공개 헤더는 승인된 로고를 사용하므로, 변경 후 반드시 미리보기로 확인하세요."
+      />
 
       <h3>Series information</h3>
       <label>

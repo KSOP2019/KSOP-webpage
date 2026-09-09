@@ -5,6 +5,8 @@ import { getAllSeries, getSeries, getSeriesDateRange, getSeriesEvents } from '@/
 
 type PageProps = { params: Promise<{ 'series-slug': string }> }
 
+export const revalidate = 120
+
 export function generateStaticParams() {
   return getAllSeries().map((series) => ({ 'series-slug': series.slug }))
 }

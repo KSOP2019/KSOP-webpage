@@ -1,7 +1,7 @@
 /* KSOP header — SINGLE authoritative source of truth for header geometry.
    Desktop >= 1181px: fixed pixel-stable grid used by every public header.
-   Grid: 170px logo | 592px nav (5 x 112px cells) | 200px socials (6 x 30px) | 160px actions.
-   Total: 170 + 592 + 200 + 160 + 3 x 10px gaps + 2 x 12px padding = 1176px (fits 1180px).
+   Grid: 190px logo | 600px nav (5 x 112px cells, 10px gaps) | 220px socials (6 x 30px, 8px gaps) | 120px actions.
+   Main gaps: 24px. Total: 190 + 600 + 220 + 120 + 3 x 24px = 1202px, centered.
    Language text swaps glyphs only; no box below may depend on text width.
    Tablet/mobile <= 1180px: dropdown menu behavior, same fixed control widths. */
 
@@ -22,14 +22,14 @@ body {
 /* ---------- Desktop fixed header (>= 1181px) ---------- */
 .site-header {
   display: grid !important;
-  grid-template-columns: 170px 592px 200px 160px;
+  grid-template-columns: 190px 600px 220px 120px;
   justify-content: center;
   align-items: center;
   width: 100%;
   min-height: 82px;
   height: 82px;
   max-height: 82px;
-  padding: 0 12px !important;
+  padding: 0 !important;
   margin: 0 auto !important;
   box-sizing: border-box !important;
   /* Language popup must escape the header: never clip absolutely-positioned panels. */
@@ -37,7 +37,7 @@ body {
   overflow-anchor: none;
   flex: none !important;
   gap: 0 !important;
-  column-gap: 10px !important;
+  column-gap: 24px !important;
   /* Always above hero/poster/cards/sections/glass overlays. Keep sticky. */
   position: sticky;
   top: 0;
@@ -48,11 +48,11 @@ body {
   contain: none !important;
 }
 
-/* Logo: fixed 170px area; 160x54 visual box; approved theme PNG; contain, left. */
+/* Logo: fixed 190px area; 170x54 visual box; approved theme PNG; contain, left. */
 .site-header .brand {
-  width: 170px;
-  min-width: 170px;
-  max-width: 170px;
+  width: 190px;
+  min-width: 190px;
+  max-width: 190px;
   height: 60px;
   min-height: 60px;
   max-height: 60px;
@@ -66,9 +66,9 @@ body {
 
 .site-header .brand img {
   display: block;
-  width: 160px !important;
-  min-width: 160px;
-  max-width: 160px;
+  width: 170px !important;
+  min-width: 170px;
+  max-width: 170px;
   height: 54px !important;
   min-height: 54px;
   max-height: 54px;
@@ -81,14 +81,14 @@ body {
   mask: none;
 }
 
-/* Center nav: fixed 592px area, 5 equal 112px cells. Text never resizes boxes. */
+/* Center nav: fixed 600px area, 5 equal 112px cells with 10px gaps. Text never resizes boxes. */
 .site-header .nav-links {
   display: grid !important;
   grid-template-columns: repeat(5, 112px);
-  gap: 8px !important;
-  width: 592px !important;
-  min-width: 592px !important;
-  max-width: 592px !important;
+  gap: 10px !important;
+  width: 600px !important;
+  min-width: 600px !important;
+  max-width: 600px !important;
   margin: 0 !important;
   padding: 0 !important;
   justify-content: center !important;
@@ -110,18 +110,20 @@ body {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  /* Restored pre-regression desktop size; 112px cells hold the longest CJK labels. */
+  /* Identical metrics in KR/EN/JP/CN; one CJK-capable stack for the header. */
   font-size: 16px !important;
+  font-weight: 400 !important;
   line-height: 1.25 !important;
-  letter-spacing: 0.035em;
+  letter-spacing: 0.035em !important;
+  font-family: 'Noto Sans KR', 'Noto Sans JP', 'Noto Sans SC', 'Apple SD Gothic Neo', 'Malgun Gothic', 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', 'PingFang SC', 'Microsoft YaHei', Arial, 'Helvetica Neue', sans-serif !important;
   flex: none;
 }
 
-/* Six SNS icons: one fixed 200px group between nav and actions. Hover uses transform only. */
+/* Six SNS icons: one fixed 220px group between nav and actions. Hover uses transform only. */
 .site-header .header-socials {
-  width: 200px;
-  min-width: 200px;
-  max-width: 200px;
+  width: 220px;
+  min-width: 220px;
+  max-width: 220px;
   height: 40px;
   min-height: 40px;
   max-height: 40px;
@@ -130,7 +132,7 @@ body {
   display: flex !important;
   align-items: center;
   justify-content: center;
-  gap: 4px !important;
+  gap: 8px !important;
   flex: none !important;
   flex-wrap: nowrap !important;
   overflow: visible;
@@ -157,14 +159,14 @@ body {
   pointer-events: none;
 }
 
-/* Language/theme area: fixed 160px. */
+/* Language/theme area: one fixed 120px group (36px globe + 68px theme + 16px gap). */
 .site-header .header-actions,
 .site-header .detail-actions,
 .detail-header .detail-actions,
 .detail-header .header-actions {
-  width: 160px;
-  min-width: 160px;
-  max-width: 160px;
+  width: 120px;
+  min-width: 120px;
+  max-width: 120px;
   height: 40px;
   min-height: 40px;
   max-height: 40px;
@@ -173,7 +175,7 @@ body {
   display: flex !important;
   align-items: center;
   justify-content: flex-end;
-  gap: 8px !important;
+  gap: 16px !important;
   flex: none !important;
   overflow: visible;
   position: relative;
@@ -182,30 +184,31 @@ body {
 
 /* Detail headers use the exact same 4-column grid as the main header. */
 .detail-header {
-  grid-template-columns: 170px 592px 200px 160px !important;
+  grid-template-columns: 190px 600px 220px 120px !important;
 }
 
-/* Language control: fixed 56px box, globe icon only when closed. */
+/* Language control: fixed 36px box, globe icon only when closed. */
 .language-menu {
   position: relative;
   z-index: 101;
   overflow: visible;
-  width: 56px;
-  min-width: 56px;
-  max-width: 56px;
+  width: 36px;
+  min-width: 36px;
+  max-width: 36px;
   height: 36px;
   min-height: 36px;
   max-height: 36px;
-  flex: 0 0 56px;
+  flex: 0 0 36px;
 }
 
 .language-menu > summary.language {
-  width: 56px;
-  min-width: 56px;
-  max-width: 56px;
+  width: 36px;
+  min-width: 36px;
+  max-width: 36px;
   height: 36px;
   min-height: 36px;
   max-height: 36px;
+  flex: 0 0 36px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -308,15 +311,15 @@ main.theme-dark .language-menu .language-options button:focus-visible,
   color: #ffffff;
 }
 
-/* Theme button: fixed 80px. */
+/* Theme button: fixed 68px. */
 .theme-switch {
-  width: 80px;
-  min-width: 80px;
-  max-width: 80px;
+  width: 68px;
+  min-width: 68px;
+  max-width: 68px;
   height: 34px;
   min-height: 34px;
   max-height: 34px;
-  flex: 0 0 80px;
+  flex: 0 0 68px;
   display: inline-flex !important;
   align-items: center;
   justify-content: center;

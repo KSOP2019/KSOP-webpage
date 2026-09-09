@@ -1,6 +1,6 @@
 import { handleMediaUpload } from '@/lib/media-upload'
 
-/** Canonical CMS image upload endpoint (multipart/form-data: file + optional folder). */
+/** Preferred CMS image upload path (same implementation as /api/admin/upload). */
 export async function POST(request: Request) {
   return handleMediaUpload(request)
 }

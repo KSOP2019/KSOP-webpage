@@ -2,6 +2,8 @@ import { Suspense } from 'react'
 import { EventsPageClient } from '@/components/site/events-page-client'
 import { getEvents } from '@/lib/data'
 
+export const revalidate = 120
+
 export default async function EventsPage() {
   const events = await getEvents()
 
