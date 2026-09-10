@@ -51,9 +51,11 @@ h1 em, h2 em { color: var(--primary); font-style: italic; }
 .lang-en .hero-title-box h1 { font-size: clamp(3.8rem, 7.5vw, 7.5rem); line-height: .92; letter-spacing: -.055em; }
 .lang-ja .hero-title-box h1 { font-size: clamp(3.8rem, 7.5vw, 7.5rem); line-height: .92; letter-spacing: -.055em; }
 .lang-zh .hero-title-box h1 { font-size: clamp(3.8rem, 7.5vw, 7.5rem); line-height: .92; letter-spacing: -.055em; }
-.hero-title-box { position: absolute; left: 4vw; top: 80px; width: min(680px, 52vw); max-width: 680px; height: 340px; overflow: hidden; z-index: 3; }
+.hero-title-box { position: absolute; left: 4vw; top: 80px; width: min(680px, 52vw); max-width: 680px; height: 340px; overflow: visible; z-index: 3; }
 .hero-lower-copy-row { position: absolute; left: 4vw; bottom: 145px; z-index: 5; display: flex; align-items: flex-end; gap: 28px; max-width: 720px; }
 .hero-lower-copy-row .hero-intro { max-width: 420px; line-height: 1.55; margin: 0; color: rgba(255,255,255,.78); font-size: 17px; }
+.hero .hero-lower-copy-row .text-link { color: rgba(255,255,255,.94) !important; opacity: 1 !important; visibility: visible !important; display: inline-flex; }
+.hero .hero-lower-copy-row .text-link:hover { color: #ffffff !important; }
 .hero-actions { display: flex; align-items: center; gap: 22px; flex-wrap: wrap; position: relative; z-index: 4; }
 .primary-cta { display: inline-flex; align-items: center; gap: 10px; border: 0; background: var(--primary); color: var(--primary-foreground); padding: 15px 18px; font-size: 11px; letter-spacing: .08em; }
 .primary-cta:hover { background: #171717; transition: background .15s ease; }
