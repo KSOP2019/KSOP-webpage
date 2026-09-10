@@ -15,6 +15,7 @@ export interface BlindLevel {
 
 export interface EventItem {
   id: string
+  dbId?: string // DB UUID for foreign key references
   date: string
   dayLabel: string
   name: string
@@ -33,8 +34,11 @@ export interface EventItem {
 }
 
 export interface PlayerItem {
-  id: string
+  id: string // public slug / route identifier
+  dbId?: string // actual DB UUID from players.id
   rank: number
+  titles?: number
+  finalTables?: number
   name: string
   country: string
   earnings: string
@@ -165,6 +169,7 @@ export interface SiteContent {
 export interface PlayerResultItem {
   id: string
   eventId?: string | null
+  eventSlug?: string // public event route identifier
   eventName: string
   eventDate: string
   position: number
@@ -193,10 +198,13 @@ export interface PlayerScoreRow {
 
 export interface RankedPlayer {
   rank: number
-  playerId: string
+  playerId: string // public slug
+  dbId?: string // DB UUID
   name: string
   country: string
   portrait?: string
+  titles?: number
+  finalTables?: number
   score: number
   scoreSource: 'calculated' | 'legacy'
   results: PlayerResultItem[]

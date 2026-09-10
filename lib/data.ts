@@ -6,6 +6,7 @@ import { createSeedEvents, seedContent, seedNews, seedPlayers } from './seed'
 import { createPublicClient, createAdminClient } from './supabase-server'
 import {
   calculateRankingScore,
+  calculateEventScore,
   buildPlayerScoreBreakdown,
   type RankingResultInput,
   type ScoreBreakdownRow,
@@ -197,6 +198,7 @@ export async function getEvents(): Promise<EventItem[]> {
 
       return {
         id: eventSlug,
+        dbId: String(row.id || ''),
         date: eventDate,
         dayLabel: `DAY ${row.event_number || 1}`,
         name: row.title || 'Event',
@@ -315,6 +317,7 @@ export async function getPlayers(): Promise<PlayerItem[]> {
     return data.map((row: any) => ({
       // Stable public identifier uses slug, never DB UUID
       id: row.slug || String(row.id),
+      dbId: String(row.id || ''),
       rank: row.rank || 0,
       name: row.name || row.display_name || '',
       country: row.country || 'KR',
@@ -322,6 +325,8 @@ export async function getPlayers(): Promise<PlayerItem[]> {
       portrait: row.portrait_url ? row.portrait_url : undefined,
       bio: row.bio || undefined,
       published: row.status === 'published',
+      titles: row.titles != null ? Number(row.titles) : undefined,
+      finalTables: row.final_tables != null ? Number(row.final_tables) : undefined,
     }))
   }
 
@@ -575,17 +580,46 @@ export async function getPlayerResults(playerId: string): Promise<PlayerResultIt
         .select('id,event_id,event_name,event_date,position,field_size,buy_in,earnings,created_at')
         .eq('player_id', playerId)
       if (!error) {
-        const mapped: PlayerResultItem[] = (data || []).map((row: any) => ({
-          id: String(row.id || ''),
-          eventId: row.event_id ? String(row.event_id) : undefined,
-          eventName: String(row.event_name || ''),
-          eventDate: String(row.event_date || ''),
-          position: Number(row.position) || 1,
-          fieldSize: Number(row.field_size) || 1,
-          buyIn: Number(row.buy_in) || 0,
-          earnings: row.earnings != null ? Number(row.earnings) : undefined,
-          createdAt: row.created_at ? String(row.created_at) : undefined,
-        }))
+        const eventIds = (data || [])
+          .map((row: any) => row.event_id ? String(row.event_id) : null)
+          .filter(Boolean)
+        // Resolve event UUID -> event slug for public links
+        let eventSlugMap: Record<string, string> = {}
+        if (eventIds.length > 0) {
+          const { data: eventData, error: eventError } = await client
+            .from('events')
+            .select('id,slug')
+            .in('id', eventIds)
+          if (!eventError && eventData) {
+            for (const e of eventData) {
+              eventSlugMap[String(e.id)] = String(e.slug || e.id)
+            }
+          }
+        }
+        const mapped: PlayerResultItem[] = (data || []).map((row: any) => {
+          const eventScoreResult = calculateEventScore({
+            eventId: row.event_id ? String(row.event_id) : undefined,
+            eventName: String(row.event_name || ''),
+            eventDate: String(row.event_date || ''),
+            position: Number(row.position) || 1,
+            fieldSize: Number(row.field_size) || 1,
+            buyIn: Number(row.buy_in) || 0,
+            earnings: row.earnings != null ? Number(row.earnings) : undefined,
+          })
+          return {
+            id: String(row.id || ''),
+            eventId: row.event_id ? String(row.event_id) : undefined,
+            eventSlug: row.event_id && eventSlugMap[String(row.event_id)] ? eventSlugMap[String(row.event_id)] : undefined,
+            eventName: String(row.event_name || ''),
+            eventDate: String(row.event_date || ''),
+            position: Number(row.position) || 1,
+            fieldSize: Number(row.field_size) || 1,
+            buyIn: Number(row.buy_in) || 0,
+            earnings: row.earnings != null ? Number(row.earnings) : undefined,
+            eventScore: eventScoreResult.eventScore,
+            createdAt: row.created_at ? String(row.created_at) : undefined,
+          }
+        })
         return mapped
       }
     }
@@ -603,7 +637,7 @@ export async function getRankedPlayers(limit = 100): Promise<RankedPlayer[]> {
   const ranked: RankedPlayer[] = []
 
   for (const player of published) {
-    const resultsRaw = await getPlayerResults(player.id)
+    const resultsRaw = await getPlayerResults(player.dbId || player.id)
 
     // Convert to RankingResultInput for scoring engine
     const inputs: RankingResultInput[] = resultsRaw.map((r) => ({
@@ -642,7 +676,9 @@ export async function getRankedPlayers(limit = 100): Promise<RankedPlayer[]> {
       }))
     } else {
       // Fallback to legacy points/rank only when NO results exist
-      score = Math.round((player.rank || 0) * 10)
+      // Preserve manual rank order: lower rank number = higher fallback score.
+      const legacyRank = Number(player.rank) || 99999
+      score = Math.max(0, 100000 - legacyRank)
       scoreSource = 'legacy'
       breakdownRows = []
     }
@@ -650,9 +686,12 @@ export async function getRankedPlayers(limit = 100): Promise<RankedPlayer[]> {
     ranked.push({
       rank: 0, // assigned after sort
       playerId: player.id,
+      dbId: player.dbId,
       name: player.name,
       country: player.country,
       portrait: player.portrait,
+      titles: player.titles,
+      finalTables: player.finalTables,
       score,
       scoreSource,
       results: resultsRaw,

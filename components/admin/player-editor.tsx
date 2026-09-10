@@ -2,8 +2,10 @@
 
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import type { PlayerItem } from '@/lib/types'
+import { createPublicClient } from '@/lib/supabase-server'
+import type { EventItem } from '@/lib/types'
 
 interface PlayerResultForm {
   eventName: string
@@ -12,7 +14,8 @@ interface PlayerResultForm {
   fieldSize: number
   buyIn: number
   earnings: number
-  eventId?: string
+  eventId?: string // event UUID (optional)
+  resultId?: string // DB result row UUID
 }
 
 export function PlayerEditor({ initialItem, adminId }: { initialItem?: PlayerItem; adminId?: string }) {
@@ -31,7 +34,56 @@ export function PlayerEditor({ initialItem, adminId }: { initialItem?: PlayerIte
   )
 
   const [results, setResults] = useState<PlayerResultForm[]>([])
-  const [newResult, setNewResult] = useState<PlayerResultForm>({ eventName: '', eventDate: '', position: 1, fieldSize: 10, buyIn: 5000, earnings: 0, eventId: '' })
+  const [newResult, setNewResult] = useState<PlayerResultForm>({ eventName: '', eventDate: '', position: 1, fieldSize: 10, buyIn: 5000, earnings: 0 })
+  const [adminError, setAdminError] = useState<string | null>(null)
+  const [events, setEvents] = useState<EventItem[]>([])
+
+  useEffect(() => {
+    async function loadEvents() {
+      try {
+        const res = await fetch('/api/events')
+        if (res.ok) {
+          const evs: EventItem[] = await res.json()
+          setEvents(evs.filter((e: EventItem) => e.published))
+        }
+      } catch {
+        // Load failed; continue without events
+      }
+    }
+    loadEvents()
+  }, [])
+
+  useEffect(() => {
+    async function load() {
+      if (!initialItem) return
+      try {
+        const dbId = initialItem.dbId || initialItem.id
+        if (!dbId) return
+        const client = createPublicClient()
+        let raw: any[] = []
+        if (client) {
+          const { data, error } = await client
+            .from('player_results')
+            .select('id,event_id,event_name,event_date,position,field_size,buy_in,earnings,created_at')
+            .eq('player_id', dbId)
+          if (!error && data) raw = data
+        }
+        setResults(raw.map((r: any) => ({
+          eventName: r.event_name || '',
+          eventDate: r.event_date || '',
+          position: Number(r.position) || 1,
+          fieldSize: Number(r.field_size) || 1,
+          buyIn: Number(r.buy_in) || 0,
+          earnings: r.earnings != null ? Number(r.earnings) : 0,
+          eventId: r.event_id ? String(r.event_id) : undefined,
+          resultId: r.id ? String(r.id) : undefined,
+        })))
+      } catch {
+        // Load failed; continue without existing results
+      }
+    }
+    load()
+  }, [initialItem])
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault()
@@ -85,6 +137,32 @@ export function PlayerEditor({ initialItem, adminId }: { initialItem?: PlayerIte
 
       <div style={{ borderTop: '1px solid #333', paddingTop: '16px', marginTop: '16px' }}>
         <h4>RESULT HISTORY</h4>
+        {adminError && <div style={{ color: '#c00', marginTop: '8px', fontWeight: 600 }}>{adminError}</div>}
+        <div style={{ marginTop: '8px' }}>
+          <label style={{ fontSize: '12px', marginBottom: '4px', display: 'block' }}>Select Event</label>
+          <select
+            value={newResult.eventId || ''}
+            onChange={(e) => {
+              const ev = events.find((ev: EventItem) => ev.dbId === e.target.value)
+              if (ev) {
+                setNewResult({
+                  ...newResult,
+                  eventName: ev.name || '',
+                  eventDate: ev.date || '',
+                  eventId: ev.dbId || ev.id || '',
+                })
+              } else {
+                setNewResult({ ...newResult, eventName: '', eventDate: '', eventId: '' })
+              }
+            }}
+            style={{ padding: '4px', width: '240px', marginRight: '8px' }}
+          >
+            <option value="">-- Select existing event --</option>
+            {events.map((ev: EventItem) => (
+              <option key={ev.dbId || ev.id} value={ev.dbId || ev.id}>{ev.name} ({ev.id})</option>
+            ))}
+          </select>
+        </div>
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '8px' }}>
           <input placeholder="Event name" value={newResult.eventName} onChange={(e) => setNewResult({ ...newResult, eventName: e.target.value })} style={{ padding: '4px' }} />
           <input placeholder="Event date" value={newResult.eventDate} onChange={(e) => setNewResult({ ...newResult, eventDate: e.target.value })} style={{ padding: '4px' }} />
@@ -93,11 +171,14 @@ export function PlayerEditor({ initialItem, adminId }: { initialItem?: PlayerIte
           <input type="number" placeholder="Buy-in" value={newResult.buyIn} onChange={(e) => setNewResult({ ...newResult, buyIn: Number(e.target.value) })} style={{ padding: '4px', width: '100px' }} />
           <input type="number" placeholder="Earnings" value={newResult.earnings} onChange={(e) => setNewResult({ ...newResult, earnings: Number(e.target.value) })} style={{ padding: '4px', width: '100px' }} />
           <button type="button" onClick={async () => {
-            const res = await fetch('/api/player-results', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...newResult, playerId: item.id || adminId }) })
+            setAdminError(null)
+            const res = await fetch('/api/player-results', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...newResult, playerId: item.dbId || item.id || adminId }) })
             if (res.ok) {
               const data = await res.json()
-              setResults([...results, { ...newResult, eventId: data.eventId || undefined }])
-              setNewResult({ eventName: '', eventDate: '', position: 1, fieldSize: 10, buyIn: 5000, earnings: 0, eventId: '' })
+              setResults([...results, { ...newResult, resultId: data.id ? String(data.id) : undefined }])
+              setNewResult({ eventName: '', eventDate: '', position: 1, fieldSize: 10, buyIn: 5000, earnings: 0 })
+            } else {
+              setAdminError('Failed to save result. Check admin permissions.')
             }
           }}>Add</button>
         </div>
@@ -107,8 +188,13 @@ export function PlayerEditor({ initialItem, adminId }: { initialItem?: PlayerIte
               <li key={idx} style={{ marginBottom: '4px' }}>
                 {res.eventName} ({res.eventDate}) — Pos {res.position}, Field {res.fieldSize}, Buy-In {res.buyIn}, Earnings {res.earnings}
                 <button type="button" onClick={async () => {
-                  if (res.eventId) {
-                    await fetch('/api/player-results', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: res.eventId }) })
+                  setAdminError(null)
+                  if (res.resultId) {
+                    const delRes = await fetch('/api/player-results', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: res.resultId }) })
+                    if (!delRes.ok) {
+                      setAdminError('Failed to delete result.')
+                      return
+                    }
                   }
                   setResults(results.filter((_, i) => i !== idx))
                 }} style={{ marginLeft: '8px', fontSize: '12px' }}>Delete</button>

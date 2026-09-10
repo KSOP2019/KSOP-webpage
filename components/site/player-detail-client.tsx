@@ -7,9 +7,9 @@ import { Reveal } from '@/components/site/reveal'
 import { RankingFormula } from '@/components/site/ranking-formula'
 import type { RankedPlayer } from '@/lib/types'
 
-function safeEventLink(eventId?: string | null, eventName?: string) {
-  if (eventId && eventId.trim().length > 0) {
-    return `/events/${eventId}`
+function safeEventLink(eventSlug?: string | null, eventName?: string) {
+  if (eventSlug && eventSlug.trim().length > 0) {
+    return `/events/${eventSlug}`
   }
   return null
 }
@@ -18,9 +18,9 @@ export function PlayerDetailClient({ ranked }: { ranked: RankedPlayer }) {
   const { t } = useSite()
 
   const stats = {
-    eventsPlayed: ranked.scoreBreakdown?.filter((r) => r.counted).length || 0,
-    titles: 0, // Not tracked by current model; placeholder
-    finalTables: 0, // Not tracked; placeholder
+    eventsPlayed: ranked.results?.length || 0,
+    titles: ranked.titles ?? 0,
+    finalTables: ranked.finalTables ?? 0,
     bestFinish: ranked.scoreBreakdown?.length ? Math.min(...ranked.scoreBreakdown.map((r) => r.position)) : 0,
     recordedEarnings: ranked.results?.reduce((sum, r) => sum + (r.earnings || 0), 0) || 0,
   }
@@ -94,7 +94,7 @@ export function PlayerDetailClient({ ranked }: { ranked: RankedPlayer }) {
                   <td style={{ padding: '8px 4px' }}>{res.eventDate || '-'}</td>
                   <td style={{ padding: '8px 4px' }}>
                     {(() => {
-                      const link = safeEventLink(res.eventId, res.eventName)
+                      const link = safeEventLink(res.eventSlug, res.eventName)
                       return link ? (<Link href={link} className="text-link">{res.eventName}</Link>) : <span>{res.eventName}</span>
                     })()}
                   </td>
