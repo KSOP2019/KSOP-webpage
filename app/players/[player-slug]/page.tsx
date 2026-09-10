@@ -1,5 +1,6 @@
-import DetailPage from '../../detail-page'
+import { redirect } from 'next/navigation'
 
-export default function PlayerDetailPage() {
-  return <DetailPage section="ranking" />
+export default async function PlayerDetailPage({ params }: { params: Promise<{ 'player-slug': string }> }) {
+  const { 'player-slug': slug } = await params
+  redirect(`/ranking/${slug}`)
 }

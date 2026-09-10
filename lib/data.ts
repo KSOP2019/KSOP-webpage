@@ -4,6 +4,13 @@ import type { EventItem, NewsItem, PlayerItem, SiteContent, SiteData, EventType,
 import { filterEvents } from './event-filters'
 import { createSeedEvents, seedContent, seedNews, seedPlayers } from './seed'
 import { createPublicClient, createAdminClient } from './supabase-server'
+import {
+  calculateRankingScore,
+  buildPlayerScoreBreakdown,
+  type RankingResultInput,
+  type ScoreBreakdownRow,
+} from './ranking-score'
+import type { RankedPlayer, PlayerResultItem, PlayerScoreRow } from './types'
 
 export { filterEvents }
 
@@ -557,4 +564,113 @@ export async function getSiteData(): Promise<SiteData> {
   ])
 
   return { events, players, news, content }
+}
+
+export async function getPlayerResults(playerId: string): Promise<PlayerResultItem[]> {
+  const client = createPublicClient()
+  try {
+    if (client) {
+      const { data, error } = await client
+        .from('player_results')
+        .select('id,event_id,event_name,event_date,position,field_size,buy_in,earnings,created_at')
+        .eq('player_id', playerId)
+      if (!error) {
+        const mapped: PlayerResultItem[] = (data || []).map((row: any) => ({
+          id: String(row.id || ''),
+          eventId: row.event_id ? String(row.event_id) : undefined,
+          eventName: String(row.event_name || ''),
+          eventDate: String(row.event_date || ''),
+          position: Number(row.position) || 1,
+          fieldSize: Number(row.field_size) || 1,
+          buyIn: Number(row.buy_in) || 0,
+          earnings: row.earnings != null ? Number(row.earnings) : undefined,
+          createdAt: row.created_at ? String(row.created_at) : undefined,
+        }))
+        return mapped
+      }
+    }
+  } catch {
+    // DB read failed; fall through
+  }
+  // Fallback: no DB results yet
+  return []
+}
+
+export async function getRankedPlayers(limit = 100): Promise<RankedPlayer[]> {
+  const players = await getPlayers()
+  const published = players.filter((p) => p.published)
+
+  const ranked: RankedPlayer[] = []
+
+  for (const player of published) {
+    const resultsRaw = await getPlayerResults(player.id)
+
+    // Convert to RankingResultInput for scoring engine
+    const inputs: RankingResultInput[] = resultsRaw.map((r) => ({
+      eventId: r.eventId || undefined,
+      eventName: r.eventName,
+      eventDate: r.eventDate,
+      position: r.position,
+      fieldSize: r.fieldSize,
+      buyIn: r.buyIn,
+      earnings: r.earnings,
+    }))
+
+    const hasResults = inputs.length > 0
+    let score = 0
+    let scoreSource: 'calculated' | 'legacy' = 'calculated'
+    let breakdownRows: PlayerScoreRow[] = []
+
+    if (hasResults) {
+      const breakdown = buildPlayerScoreBreakdown(player.id, inputs, { bestResultsCount: 10 })
+      score = breakdown.totalScore
+      scoreSource = 'calculated'
+      breakdownRows = breakdown.rows.map((r) => ({
+        eventId: r.eventId,
+        eventName: r.eventName,
+        eventScore: r.eventScore,
+        finishFactor: r.finishFactor,
+        fieldFactor: r.fieldFactor,
+        buyInFactor: r.buyInFactor,
+        recencyFactor: r.recencyFactor,
+        counted: r.counted,
+        position: r.position,
+        fieldSize: r.fieldSize,
+        buyIn: r.buyIn,
+        eventDate: r.eventDate,
+        earnings: r.earnings,
+      }))
+    } else {
+      // Fallback to legacy points/rank only when NO results exist
+      score = Math.round((player.rank || 0) * 10)
+      scoreSource = 'legacy'
+      breakdownRows = []
+    }
+
+    ranked.push({
+      rank: 0, // assigned after sort
+      playerId: player.id,
+      name: player.name,
+      country: player.country,
+      portrait: player.portrait,
+      score,
+      scoreSource,
+      results: resultsRaw,
+      scoreBreakdown: breakdownRows,
+      bio: player.bio,
+    })
+  }
+
+  // Sort DESC by calculated score; assign rank after sorting
+  ranked.sort((a, b) => b.score - a.score)
+  for (let i = 0; i < ranked.length; i++) {
+    ranked[i].rank = i + 1
+  }
+
+  return ranked.slice(0, Math.max(0, limit))
+}
+
+export async function getPlayerRankingDetail(playerId: string): Promise<RankedPlayer | undefined> {
+  const all = await getRankedPlayers(10000)
+  return all.find((p) => p.playerId === playerId)
 }

@@ -106,7 +106,7 @@ export function EventsPageClient({ events }: { events: EventItem[] }) {
           </div>
         ) : null}
         {shownEvents.map((event) => (
-          <article className="schedule-item event-row" key={event.id}>
+          <article className="schedule-item event-row-hover" key={event.id}>
             <Link
               className="schedule-trigger event-row-link"
               href={`/events/${event.id}`}

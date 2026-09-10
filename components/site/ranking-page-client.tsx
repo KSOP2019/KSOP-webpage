@@ -5,22 +5,32 @@ import { useMemo, useState } from 'react'
 import { ArrowUpRight, Search } from 'lucide-react'
 import { useSite } from '@/components/site/site-provider'
 import { Reveal } from '@/components/site/reveal'
-import type { PlayerItem } from '@/lib/types'
+import type { RankedPlayer } from '@/lib/types'
 
-export function RankingPageClient({ players }: { players: PlayerItem[] }) {
+function normalizeSearch(text: string): string {
+  return text.normalize('NFKC').toLocaleLowerCase('en')
+}
+
+export function RankingPageClient({ ranked }: { ranked: RankedPlayer[] }) {
   const { t } = useSite()
   const [query, setQuery] = useState('')
-  const filtered = useMemo(
-    () => players.filter((player) => player.name.includes(query.toUpperCase())),
-    [players, query],
-  )
+
+  const normalizedQuery = normalizeSearch(query)
+
+  const filtered = useMemo(() => {
+    if (!normalizedQuery) return ranked
+    return ranked.filter((p) => normalizeSearch(p.name).includes(normalizedQuery))
+  }, [ranked, normalizedQuery])
+
+  const top3 = filtered.slice(0, 3)
+  const rest = filtered.slice(3)
 
   return (
     <section className="ranking-section section-pad">
       <div className="section-top">
         <div>
           <div className="section-label">{t.rankingLabel ?? '03 / PLAYER RANKING'}</div>
-          <h2>{t.ranking}</h2>
+          <h2>TOP 100</h2>
         </div>
         <div className="search-box">
           <Search />
@@ -34,8 +44,8 @@ export function RankingPageClient({ players }: { players: PlayerItem[] }) {
       </div>
 
       <Reveal className="podium-grid">
-        {filtered.slice(0, 3).map((player) => (
-          <Link href={`/ranking/${player.id}`} className={`podium-card place-0${player.rank}`} key={player.id}>
+        {top3.map((player) => (
+          <Link href={`/ranking/${player.playerId}`} className={`podium-card place-0${player.rank}`} key={player.playerId}>
             <div className="podium-glow" />
             <span className="podium-rank">{player.rank}</span>
             <div className="podium-medal">
@@ -44,19 +54,19 @@ export function RankingPageClient({ players }: { players: PlayerItem[] }) {
             {player.portrait ? <img className="podium-portrait" src={player.portrait} alt={`${player.name} portrait`} /> : null}
             <strong className="player-name">{player.name}</strong>
             <span className="podium-country">{player.country} · KSOP RANKING</span>
-            <b>{player.earnings}</b>
+            <b>{player.score}</b>
             <span className="text-link">{t.viewProfile ?? 'View profile'} <ArrowUpRight /></span>
           </Link>
         ))}
       </Reveal>
 
       <Reveal className="ranking-table">
-        {filtered.slice(3).map((player) => (
-          <Link className="player-row" href={`/ranking/${player.id}`} key={player.id}>
+        {rest.map((player) => (
+          <Link className="player-row" href={`/ranking/${player.playerId}`} key={player.playerId}>
             <span className="rank">{player.rank}</span>
             <strong className="player-name">{player.name}</strong>
             <span>{player.country}</span>
-            <span>{player.earnings}</span>
+            <span>{player.score}</span>
           </Link>
         ))}
       </Reveal>

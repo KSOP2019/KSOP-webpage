@@ -8,18 +8,18 @@ import { Reveal } from '@/components/site/reveal'
 import { EVENT_CATEGORIES } from '@/lib/nav'
 import { eventCardImage } from '@/lib/event-images'
 import { filterEvents } from '@/lib/event-filters'
-import type { EventItem, NewsItem, PlayerItem } from '@/lib/types'
+import type { EventItem, NewsItem, PlayerItem, RankedPlayer } from '@/lib/types'
 
 type HomeViewProps = {
   events: EventItem[]
   players: PlayerItem[]
   news: NewsItem[]
+  ranked: RankedPlayer[]
 }
 
-export function HomeView({ events, players, news }: HomeViewProps) {
+export function HomeView({ events, players, news, ranked }: HomeViewProps) {
   const { content, t } = useSite()
   const [open, setOpen] = useState(-1)
-  const [query, setQuery] = useState('')
   const [selectedDate, setSelectedDate] = useState('ALL')
   const [selectedCategory, setSelectedCategory] = useState('ALL EVENT')
   const [registered, setRegistered] = useState(false)
@@ -51,10 +51,6 @@ export function HomeView({ events, players, news }: HomeViewProps) {
   const visibleEvents = useMemo(
     () => filterEvents(events, selectedCategory, selectedDate).slice(0, 12),
     [events, selectedCategory, selectedDate],
-  )
-  const filtered = useMemo(
-    () => players.filter((player) => player.name.includes(query.toUpperCase())),
-    [players, query],
   )
 
   return (
@@ -237,8 +233,8 @@ export function HomeView({ events, players, news }: HomeViewProps) {
         </div>
 
         <Reveal className="podium-grid">
-          {filtered.slice(0, 3).map((player) => (
-            <Link href={`/ranking/${player.id}`} className={`podium-card place-0${player.rank}`} key={player.id}>
+          {ranked.slice(0, 3).map((player) => (
+            <Link href={`/ranking/${player.playerId}`} className={`podium-card place-0${player.rank}`} key={player.playerId}>
               <div className="podium-glow" />
               <span className="podium-rank">{player.rank}</span>
               <div className="podium-medal">
@@ -249,11 +245,22 @@ export function HomeView({ events, players, news }: HomeViewProps) {
               ) : null}
               <strong className="player-name">{player.name}</strong>
               <span className="podium-country">{player.country} · KSOP RANKING</span>
-              <b>{player.earnings}</b>
+              <b>{player.score}</b>
               <span className="text-link">{t.viewProfile ?? 'View profile'} <ArrowUpRight /></span>
             </Link>
           ))}
         </Reveal>
+
+        <div className="ranking-table" style={{ marginTop: '24px' }}>
+          {ranked.slice(3, 10).map((player) => (
+            <Link className="player-row" href={`/ranking/${player.playerId}`} key={player.playerId}>
+              <span className="rank">#{player.rank}</span>
+              <strong className="player-name">{player.name}</strong>
+              <span>{player.country}</span>
+              <span>{player.score}</span>
+            </Link>
+          ))}
+        </div>
       </section>
 
       <section className="news-section section-pad" id="news">

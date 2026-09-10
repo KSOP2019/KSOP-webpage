@@ -1,5 +1,5 @@
 import type { MetadataRoute } from 'next'
-import { getEvents, getNews } from '@/lib/data'
+import { getEvents, getNews, getRankedPlayers } from '@/lib/data'
 import { getAllSeries } from '@/lib/series'
 import { SITE_URL } from '@/lib/site-url'
 
@@ -15,7 +15,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }))
 
   try {
-    const [events, news] = await Promise.all([getEvents(), getNews()])
+    const [events, news, ranked] = await Promise.all([getEvents(), getNews(), getRankedPlayers(100)])
     for (const event of events.filter((item) => item.published)) {
       entries.push({
         url: `${SITE_URL}/events/${event.id}`,
@@ -27,6 +27,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     for (const item of news.filter((entry) => entry.published)) {
       entries.push({
         url: `${SITE_URL}/news/${item.slug}`,
+        lastModified: now,
+        changeFrequency: 'weekly',
+        priority: 0.6,
+      })
+    }
+    for (const player of ranked) {
+      entries.push({
+        url: `${SITE_URL}/ranking/${player.playerId}`,
         lastModified: now,
         changeFrequency: 'weekly',
         priority: 0.6,

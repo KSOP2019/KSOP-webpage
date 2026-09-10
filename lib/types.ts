@@ -162,6 +162,48 @@ export interface SiteContent {
   copy: Record<Language, LocaleCopy>
 }
 
+export interface PlayerResultItem {
+  id: string
+  eventId?: string | null
+  eventName: string
+  eventDate: string
+  position: number
+  fieldSize: number
+  buyIn: number
+  earnings?: number
+  eventScore?: number
+  createdAt?: string
+}
+
+export interface PlayerScoreRow {
+  eventId?: string
+  eventName: string
+  eventScore: number
+  finishFactor: number
+  fieldFactor: number
+  buyInFactor: number
+  recencyFactor: number
+  counted: boolean
+  position: number
+  fieldSize: number
+  buyIn: number
+  eventDate: string
+  earnings?: number
+}
+
+export interface RankedPlayer {
+  rank: number
+  playerId: string
+  name: string
+  country: string
+  portrait?: string
+  score: number
+  scoreSource: 'calculated' | 'legacy'
+  results: PlayerResultItem[]
+  scoreBreakdown: PlayerScoreRow[]
+  bio?: string
+}
+
 export interface SiteData {
   events: EventItem[]
   players: PlayerItem[]

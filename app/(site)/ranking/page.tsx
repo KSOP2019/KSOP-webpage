@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import { RankingPageClient } from '@/components/site/ranking-page-client'
-import { getPlayers } from '@/lib/data'
+import { getRankedPlayers } from '@/lib/data'
 
 export const revalidate = 120
 
@@ -11,6 +11,6 @@ export const metadata: Metadata = {
 }
 
 export default async function RankingPage() {
-  const players = await getPlayers()
-  return <RankingPageClient players={players.filter((player) => player.published)} />
+  const ranked = await getRankedPlayers(100)
+  return <RankingPageClient ranked={ranked} />
 }
