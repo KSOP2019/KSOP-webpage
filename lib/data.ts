@@ -11,6 +11,8 @@ import {
   type RankingResultInput,
   type ScoreBreakdownRow,
 } from './ranking-score'
+const RANKING_TEST_MODE = true
+
 import type { RankedPlayer, PlayerResultItem, PlayerScoreRow } from './types'
 
 export { filterEvents }
@@ -295,6 +297,9 @@ export async function saveEvents(events: EventItem[]) {
 // --- Players ---
 
 export async function getPlayers(): Promise<PlayerItem[]> {
+  if (RANKING_TEST_MODE) {
+    return seedPlayers
+  }
   const client = createPublicClient()
   if (client) {
     const { data, error } = await client
