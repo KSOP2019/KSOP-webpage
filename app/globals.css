@@ -47,6 +47,9 @@ h1 em, h2 em { color: var(--primary); font-style: italic; }
 .hero-visual::after { content: ''; position: absolute; inset: 0; border: 0; border-radius: inherit; pointer-events: none; }.hero { background: transparent !important; border: 0 !important; box-shadow: none !important; }.hero-foot { border: 0 !important; background: transparent !important; }.hero-visual + * { border-top: 0 !important; }.hero-visual img { border-radius: inherit; display: block; }.hero-visual { isolation: isolate; }
 .hero-stamp { position: absolute; right: 24px; bottom: 24px; display: grid; grid-template-columns: auto auto auto; align-items: baseline; justify-content: center; gap: 10px; text-align: center; color: white; font-size: 9px; letter-spacing: .2em; line-height: 1.5; border: 1px solid rgba(255,255,255,.7); padding: 13px; }.hero-stamp > span, .hero-stamp > strong { white-space: nowrap; }.hero-stamp > span:first-of-type { display: none !important; }.hero-stamp .poster-details { grid-column: 3; display: flex; flex-direction: column; justify-content: flex-start; align-items: flex-end; gap: 5px; margin-top: 0; white-space: nowrap; }.hero-stamp .poster-details .poster-location { order: 1; }.hero-stamp .poster-details small { order: 2; border-top: 1px solid rgba(255,255,255,.65); padding-top: 5px; }
 .hero-stamp strong { font: 32px Georgia, serif; letter-spacing: -.08em; }
+.lang-ja .hero-title-box { height: 390px; }
+.lang-ja .hero-title-box h1 { font-size: clamp(3.2rem, 6.4vw, 6.4rem); line-height: 0.92; letter-spacing: -0.02em; }
+.lang-ja .hero-lower-copy-row { bottom: 118px; }
 .lang-kr .hero-title-box h1 { font-size: clamp(4.5rem, 9vw, 9.5rem); line-height: .92; letter-spacing: -.055em; }
 .lang-en .hero-title-box h1 { font-size: clamp(3.8rem, 7.5vw, 7.5rem); line-height: .92; letter-spacing: -.055em; }
 .lang-ja .hero-title-box h1 { font-size: clamp(3.8rem, 7.5vw, 7.5rem); line-height: .92; letter-spacing: -.055em; }
