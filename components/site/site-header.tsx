@@ -40,26 +40,28 @@ export function SiteHeader() {
         })}
       </nav>
 
-      <div className="header-socials">
-        {[['FLOPIN', 'F'], ['Instagram', '◎'], ['X', '𝕏'], ['Discord', '◌'], ['Facebook', 'f'], ['YouTube', '▶']].map(
-          ([name, symbol]) => (
-            <a className="social-icon social-text" key={name} href="/#social" aria-label={name}>
-              <span aria-hidden="true">{symbol}</span>
-              <span className="social-tooltip">
-                {name === 'X' ? 'X SPACE' : name === 'Instagram' ? 'INSTAR GRAM' : name.toUpperCase()}
-              </span>
-            </a>
-          ),
-        )}
-      </div>
+      <div className="header-right">
+        <div className="header-socials">
+          {[['FLOPIN', 'F'], ['Instagram', '◎'], ['X', '𝕏'], ['Discord', '◌'], ['Facebook', 'f'], ['YouTube', '▶']].map(
+            ([name, symbol]) => (
+              <a className="social-icon social-text" key={name} href="/#social" aria-label={name}>
+                <span aria-hidden="true">{symbol}</span>
+                <span className="social-tooltip">
+                  {name === 'X' ? 'X SPACE' : name === 'Instagram' ? 'INSTAR GRAM' : name.toUpperCase()}
+                </span>
+              </a>
+            ),
+          )}
+        </div>
 
-      <div className="header-actions">
-        <LanguageMenu />
-        <ThemeSwitch />
+        <div className="header-actions">
+          <LanguageMenu />
+          <ThemeSwitch />
 
-        <button className="menu-toggle" aria-label="Toggle menu" type="button" onClick={() => setMenuOpen(!menuOpen)}>
-          {menuOpen ? <X /> : <Menu />}
-        </button>
+          <button className="menu-toggle" aria-label="Toggle menu" type="button" onClick={() => setMenuOpen(!menuOpen)}>
+            {menuOpen ? <X /> : <Menu />}
+          </button>
+        </div>
       </div>
     </header>
   )

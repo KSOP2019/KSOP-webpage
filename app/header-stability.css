@@ -21,15 +21,13 @@ body {
 
 /* ---------- Desktop fixed header (>= 1181px) ---------- */
 .site-header {
-  display: grid !important;
-  grid-template-columns: 190px 600px 220px 120px;
-  justify-content: center;
+  display: flex !important;
   align-items: center;
   width: 100%;
   min-height: 82px;
   height: 82px;
   max-height: 82px;
-  padding: 0 !important;
+  padding: 0 4vw !important;
   margin: 0 auto !important;
   box-sizing: border-box !important;
   /* Language popup must escape the header: never clip absolutely-positioned panels. */
@@ -37,7 +35,6 @@ body {
   overflow-anchor: none;
   flex: none !important;
   gap: 0 !important;
-  column-gap: 24px !important;
   /* Always above hero/poster/cards/sections/glass overlays. Keep sticky. */
   position: sticky;
   top: 0;
@@ -83,6 +80,9 @@ body {
 
 /* Center nav: fixed 600px area, 5 equal 112px cells with 10px gaps. Text never resizes boxes. */
 .site-header .nav-links {
+  position: absolute !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
   display: grid !important;
   grid-template-columns: repeat(5, 112px);
   gap: 10px !important;
@@ -94,6 +94,7 @@ body {
   justify-content: center !important;
   align-items: center;
   flex: none !important;
+  z-index: 102 !important;
 }
 
 .site-header .nav-links a {
@@ -157,6 +158,23 @@ body {
 .site-header .header-socials--placeholder {
   visibility: hidden;
   pointer-events: none;
+}
+
+.site-header .header-right {
+  display: flex !important;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px !important;
+  flex: none !important;
+  margin-left: auto !important;
+  overflow: visible;
+  position: relative;
+  z-index: 101;
+  min-width: 340px;
+  max-width: 340px;
+  height: 40px;
+  min-height: 40px;
+  max-height: 40px;
 }
 
 /* Language/theme area: one fixed 120px group (36px globe + 68px theme + 16px gap). */
