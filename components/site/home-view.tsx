@@ -57,24 +57,9 @@ export function HomeView({ events, players, news, ranked }: HomeViewProps) {
     <>
       <section className="hero" id="top">
         <div className="hero-copy">
-          <p className="eyebrow">{t.eyebrow}</p>
-          <h1>{t.hero}</h1>
-          <p className="hero-intro">{t.intro}</p>
-          <div className="hero-actions">
-            <button className="primary-cta" type="button" onClick={() => setRegistered(true)}>
-              {registered ? (
-                <>
-                  <Check /> {t.seatReserved ?? 'SEAT RESERVED'}
-                </>
-              ) : (
-                <>
-                  {t.register} <ArrowUpRight />
-                </>
-              )}
-            </button>
-            <Link className="text-link" href="/events">
-              {t.explore} <ArrowUpRight />
-            </Link>
+          <div className="hero-title-box">
+            <p className="eyebrow">{t.eyebrow}</p>
+            <h1>{t.hero}</h1>
           </div>
         </div>
 
@@ -95,6 +80,26 @@ export function HomeView({ events, players, news, ranked }: HomeViewProps) {
               </a>
               <small>{t.countdown ?? 'COUNTDOWN'} {countdownText}</small>
             </div>
+          </div>
+        </div>
+
+        <div className="hero-lower-copy-row">
+          <p className="hero-intro">{t.intro}</p>
+          <div className="hero-actions">
+            <button className="primary-cta" type="button" onClick={() => setRegistered(true)}>
+              {registered ? (
+                <>
+                  <Check /> {t.seatReserved ?? 'SEAT RESERVED'}
+                </>
+              ) : (
+                <>
+                  {t.register} <ArrowUpRight />
+                </>
+              )}
+            </button>
+            <Link className="text-link" href="/events">
+              {t.explore} <ArrowUpRight />
+            </Link>
           </div>
         </div>
 
