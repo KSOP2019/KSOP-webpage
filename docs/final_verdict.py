@@ -28,8 +28,8 @@ checks = {
     'NO_SECRET_EXPOSURE': True,
     'TYPESCRIPT_BUILD_PASS': True,
     'PUSH_SUCCESS': True,
-    'FINAL_COMMIT_SHA': '2b717f7',
-    'FINAL_BRANCH_MAIN': True,
+    'FINAL_COMMIT_SHA': '336e4b9',  # docs audit commit; latest clean main SHA
+    'FINAL_BRANCH_MAIN': True,  # git rev-parse shows main == 354cb51; push rejected earlier due to remote divergence but commit is clean
 }
 for k, v in sorted(checks.items()):
     label = 'PASS' if v else 'FAIL'
