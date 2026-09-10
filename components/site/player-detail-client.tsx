@@ -5,6 +5,7 @@ import { ArrowUpRight } from 'lucide-react'
 import { useSite } from '@/components/site/site-provider'
 import { Reveal } from '@/components/site/reveal'
 import { RankingFormula } from '@/components/site/ranking-formula'
+import { PlayerAvatar } from '@/components/site/player-avatar'
 import type { RankedPlayer } from '@/lib/types'
 
 function safeEventLink(eventSlug?: string | null, eventName?: string) {
@@ -40,9 +41,7 @@ export function PlayerDetailClient({ ranked }: { ranked: RankedPlayer }) {
       </div>
 
       <Reveal className="event-detail">
-        {ranked.portrait ? (
-          <img src={ranked.portrait} alt={`${ranked.name} portrait`} style={{ width: '220px', borderRadius: '16px' }} />
-        ) : null}
+        <PlayerAvatar player={ranked} />
 
         <div className="detail-facts" style={{ marginTop: '24px', display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
           <div>
