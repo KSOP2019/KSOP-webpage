@@ -40,18 +40,31 @@ export function DetailHeader({ activeHref }: { activeHref?: string }) {
           )
         })}
       </nav>
-      <div className="header-socials header-socials--placeholder" aria-hidden="true" />
-      <div className="detail-actions header-actions">
-        <LanguageMenu />
-        <ThemeSwitch />
-        <button
-          className="menu-toggle"
-          onClick={() => setMenuOpen((value) => !value)}
-          aria-label="Toggle menu"
-          type="button"
-        >
-          {menuOpen ? <X /> : <Menu />}
-        </button>
+      <div className="header-right">
+        <div className="header-socials">
+          {[['FLOPIN', 'F'], ['Instagram', '◎'], ['X', '𝕏'], ['Discord', '◌'], ['Facebook', 'f'], ['YouTube', '▶']].map(
+            ([name, symbol]) => (
+              <a className="social-icon social-text" key={name} href="/#social" aria-label={name}>
+                <span aria-hidden="true">{symbol}</span>
+                <span className="social-tooltip">
+                  {name === 'X' ? 'X SPACE' : name === 'Instagram' ? 'INSTAR GRAM' : name.toUpperCase()}
+                </span>
+              </a>
+            ),
+          )}
+        </div>
+        <div className="detail-actions header-actions">
+          <LanguageMenu />
+          <ThemeSwitch />
+          <button
+            className="menu-toggle"
+            onClick={() => setMenuOpen((value) => !value)}
+            aria-label="Toggle menu"
+            type="button"
+          >
+            {menuOpen ? <X /> : <Menu />}
+          </button>
+        </div>
       </div>
     </header>
   )

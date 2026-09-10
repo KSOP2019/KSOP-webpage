@@ -202,7 +202,16 @@ body {
 
 /* Detail headers use the exact same 4-column grid as the main header. */
 .detail-header {
-  grid-template-columns: 190px 600px 220px 120px !important;
+  display: flex !important;
+  align-items: center;
+  position: relative;
+  width: 100%;
+  min-height: 82px;
+  height: 82px;
+  max-height: 82px;
+  padding: 0 4vw !important;
+  margin: 0 auto !important;
+  overflow: visible;
 }
 
 /* Language control: fixed 36px box, globe icon only when closed. */
