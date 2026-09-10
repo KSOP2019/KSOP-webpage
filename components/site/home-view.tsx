@@ -60,6 +60,22 @@ export function HomeView({ events, players, news, ranked }: HomeViewProps) {
           <p className="eyebrow">{t.eyebrow}</p>
           <h1>{t.hero}</h1>
           <p className="hero-intro">{t.intro}</p>
+          <div className="hero-actions">
+            <button className="primary-cta" type="button" onClick={() => setRegistered(true)}>
+              {registered ? (
+                <>
+                  <Check /> {t.seatReserved ?? 'SEAT RESERVED'}
+                </>
+              ) : (
+                <>
+                  {t.register} <ArrowUpRight />
+                </>
+              )}
+            </button>
+            <Link className="text-link" href="/events">
+              {t.explore} <ArrowUpRight />
+            </Link>
+          </div>
         </div>
 
         <div className="hero-visual">
@@ -82,37 +98,18 @@ export function HomeView({ events, players, news, ranked }: HomeViewProps) {
           </div>
         </div>
 
-        <div className="hero-bottom-stack">
-          <div className="telemetry-grid">
-            <div>
-              <strong>₩1,500,000,000</strong>
-              <span>{t.guaranteed}</span>
-            </div>
-            <div>
-              <strong>{t.invitation}</strong>
-              <span>{t.invitation}</span>
-            </div>
-            <div>
-              <strong>50,000</strong>
-              <span>{t.stack}</span>
-            </div>
+        <div className="telemetry-grid">
+          <div>
+            <strong>₩1,500,000,000</strong>
+            <span>{t.guaranteed}</span>
           </div>
-
-          <div className="hero-actions">
-            <button className="primary-cta" type="button" onClick={() => setRegistered(true)}>
-              {registered ? (
-                <>
-                  <Check /> {t.seatReserved ?? 'SEAT RESERVED'}
-                </>
-              ) : (
-                <>
-                  {t.register} <ArrowUpRight />
-                </>
-              )}
-            </button>
-            <Link className="text-link" href="/events">
-              {t.explore} <ArrowUpRight />
-            </Link>
+          <div>
+            <strong>{t.invitation}</strong>
+            <span>{t.invitation}</span>
+          </div>
+          <div>
+            <strong>50,000</strong>
+            <span>{t.stack}</span>
           </div>
         </div>
       </section>
