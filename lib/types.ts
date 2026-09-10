@@ -177,6 +177,7 @@ export interface PlayerResultItem {
   buyIn: number
   earnings?: number
   eventScore?: number
+  counted?: boolean
   createdAt?: string
 }
 

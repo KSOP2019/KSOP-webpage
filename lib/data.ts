@@ -721,6 +721,18 @@ export async function getRankedPlayers(limit = 100): Promise<RankedPlayer[]> {
       breakdownRows = []
     }
 
+    // Add counted flag to results based on best-10 breakdown
+    const countedSet = new Set<string>()
+    for (const row of breakdownRows) {
+      if (row.counted) {
+        countedSet.add(`${row.eventName}|${row.eventDate}`)
+      }
+    }
+    const resultsWithCounted: PlayerResultItem[] = resultsRaw.map((r) => ({
+      ...r,
+      counted: countedSet.has(`${r.eventName}|${r.eventDate}`),
+    }))
+
     ranked.push({
       rank: 0, // assigned after sort
       playerId: player.id,
@@ -732,7 +744,7 @@ export async function getRankedPlayers(limit = 100): Promise<RankedPlayer[]> {
       finalTables: player.finalTables,
       score,
       scoreSource,
-      results: resultsRaw,
+      results: resultsWithCounted,
       scoreBreakdown: breakdownRows,
       bio: player.bio,
     })
