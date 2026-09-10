@@ -60,22 +60,6 @@ export function HomeView({ events, players, news, ranked }: HomeViewProps) {
           <p className="eyebrow">{t.eyebrow}</p>
           <h1>{t.hero}</h1>
           <p className="hero-intro">{t.intro}</p>
-          <div className="hero-actions">
-            <button className="primary-cta" type="button" onClick={() => setRegistered(true)}>
-              {registered ? (
-                <>
-                  <Check /> {t.seatReserved ?? 'SEAT RESERVED'}
-                </>
-              ) : (
-                <>
-                  {t.register} <ArrowUpRight />
-                </>
-              )}
-            </button>
-            <Link className="text-link" href="/events">
-              {t.explore} <ArrowUpRight />
-            </Link>
-          </div>
         </div>
 
         <div className="hero-visual">
@@ -111,6 +95,23 @@ export function HomeView({ events, players, news, ranked }: HomeViewProps) {
             <strong>50,000</strong>
             <span>{t.stack}</span>
           </div>
+        </div>
+
+        <div className="hero-actions" style={{ marginTop: '28px', paddingBottom: '8px' }}>
+          <button className="primary-cta" type="button" onClick={() => setRegistered(true)}>
+            {registered ? (
+              <>
+                <Check /> {t.seatReserved ?? 'SEAT RESERVED'}
+              </>
+            ) : (
+              <>
+                {t.register} <ArrowUpRight />
+              </>
+            )}
+          </button>
+          <Link className="text-link" href="/events">
+            {t.explore} <ArrowUpRight />
+          </Link>
         </div>
       </section>
 
