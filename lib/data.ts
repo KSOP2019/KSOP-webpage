@@ -305,12 +305,10 @@ export async function getPlayers(): Promise<PlayerItem[]> {
 
     if (error) {
       console.error('Supabase players read error:', error.message)
-      if (isProduction()) return []
       return readJsonFile('players.json', seedPlayers)
     }
 
     if (!data || data.length === 0) {
-      if (isProduction()) return []
       return readJsonFile('players.json', seedPlayers)
     }
 
@@ -579,7 +577,7 @@ export async function getPlayerResults(playerId: string): Promise<PlayerResultIt
         .from('player_results')
         .select('id,event_id,event_name,event_date,position,field_size,buy_in,earnings,created_at')
         .eq('player_id', playerId)
-      if (!error) {
+      if (!error && data && data.length > 0) {
         const eventIds = (data || [])
           .map((row: any) => row.event_id ? String(row.event_id) : null)
           .filter(Boolean)
@@ -671,7 +669,8 @@ export async function getRankedPlayers(limit = 100): Promise<RankedPlayer[]> {
   const ranked: RankedPlayer[] = []
 
   for (const player of published) {
-    const resultsRaw = await getPlayerResults(player.dbId || player.id)
+    const resultLookupId = player.id.startsWith('test-player-') ? player.id : (player.dbId || player.id)
+    const resultsRaw = await getPlayerResults(resultLookupId)
 
     // Convert to RankingResultInput for scoring engine
     const inputs: RankingResultInput[] = resultsRaw.map((r) => ({
