@@ -45,18 +45,9 @@ export function createSeedEvents(): EventItem[] {
   })
 }
 
-export const seedPlayers: PlayerItem[] = [
-  { id: 'jun-hyuk-lee', dbId: '', rank: 1, name: 'JUN-HYUK LEE', country: 'KR', earnings: '₩ 218,400,000', portrait: '/images/ksop-player-1.png', bio: 'KSOP ranking leader known for deep runs and disciplined late-game decisions.', published: true },
-  { id: 'daniel-lim', dbId: '', rank: 2, name: 'DANIEL LIM', country: 'KR', earnings: '₩ 164,800,000', portrait: '/images/ksop-player-2.png', published: true },
-  { id: 'min-seok-kim', dbId: '', rank: 3, name: 'MIN-SEOK KIM', country: 'KR', earnings: '₩ 129,500,000', portrait: '/images/ksop-player-3.png', published: true },
-  { id: 'alex-park', dbId: '', rank: 4, name: 'ALEX PARK', country: 'US', earnings: '₩ 98,200,000', published: true },
-  { id: 'so-yeon-han', dbId: '', rank: 5, name: 'SO-YEON HAN', country: 'KR', earnings: '₩ 82,600,000', published: true },
-  { id: 'ryan-choi', dbId: '', rank: 6, name: 'RYAN CHOI', country: 'CA', earnings: '₩ 74,300,000', published: true },
-  { id: 'jae-won-park', dbId: '', rank: 7, name: 'JAE-WON PARK', country: 'KR', earnings: '₩ 68,900,000', published: true },
-  { id: 'michael-kim', dbId: '', rank: 8, name: 'MICHAEL KIM', country: 'US', earnings: '₩ 59,400,000', published: true },
-  { id: 'hye-jin-seo', dbId: '', rank: 9, name: 'HYE-JIN SEO', country: 'KR', earnings: '₩ 51,200,000', published: true },
-  { id: 'david-kang', dbId: '', rank: 10, name: 'DAVID KANG', country: 'AU', earnings: '₩ 46,800,000', published: true },
-]
+import { generateSyntheticPlayers } from './synthetic-players'
+
+export const seedPlayers: PlayerItem[] = generateSyntheticPlayers()
 
 export const seedNews: NewsItem[] = [
   {

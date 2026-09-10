@@ -204,6 +204,53 @@ export function PlayerEditor({ initialItem, adminId }: { initialItem?: PlayerIte
         )}
       </div>
 
+      <div style={{ marginTop: '20px', borderTop: '1px solid #333', paddingTop: '16px', display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+        <h4>TEST DATA CONTROLS</h4>
+        <button
+          type="button"
+          className="admin-button secondary"
+          onClick={async () => {
+            if (!window.confirm('TEST 랭킹 데이터 전체 삭제')) return
+            setAdminError(null)
+            try {
+              // Delete synthetic players first (cascade removes results via RLS/DB design)
+              const client = createPublicClient()
+              if (client) {
+                // Find synthetic players
+                const { data: syntheticPlayers } = await client.from('players').select('id,slug').like('slug', 'test-player-%')
+                for (const p of syntheticPlayers || []) {
+                  await fetch(`/api/players/${p.id}`, { method: 'DELETE', headers: { 'Content-Type': 'application/json' } })
+                }
+                // Also delete synthetic results directly for safety
+                const { data: syntheticResults } = await client.from('player_results').select('id').in('player_id', (syntheticPlayers || []).map((p: any) => p.id))
+                for (const r of syntheticResults || []) {
+                  await fetch('/api/player-results', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: r.id }) })
+                }
+              }
+              setResults([])
+              setAdminError('Synthetic ranking test data deleted.')
+            } catch {
+              setAdminError('Failed to delete synthetic ranking data.')
+            }
+          }}
+        >TEST 랭킹 데이터 전체 삭제</button>
+        <button
+          type="button"
+          className="admin-button secondary"
+          onClick={async () => {
+            setAdminError(null)
+            try {
+              // Re-seed synthetic players via seed endpoint if available, else rely on seedPlayers update
+              // This refreshes the page so synthetic players load from seed
+              router.refresh()
+              window.location.reload()
+            } catch {
+              setAdminError('Failed to refresh synthetic ranking data.')
+            }
+          }}
+        >TEST 랭킹 100명 생성</button>
+      </div>
+
       <div className="admin-actions">
         <button className="admin-button" type="submit">Save Player</button>
         <Link className="admin-button secondary" href="/admin/players">Cancel</Link>

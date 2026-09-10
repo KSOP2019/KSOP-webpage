@@ -626,7 +626,41 @@ export async function getPlayerResults(playerId: string): Promise<PlayerResultIt
   } catch {
     // DB read failed; fall through
   }
-  // Fallback: no DB results yet
+  // Fallback: read synthetic results from local JSON file for design QA
+  try {
+    const raw = await fs.readFile(path.join(process.cwd(), 'data', 'player-results.json'), 'utf8')
+    const allResults: Record<string, any[]> = JSON.parse(raw)
+    // Try slug key first (as used in JSON), then dbId-derived slug
+    const slugKey = playerId.startsWith('test-player-') ? playerId : `test-player-${String(playerId).replace('synthetic-', '').padStart(3, '0')}`
+    const syntheticData = allResults[slugKey] || allResults[playerId] || []
+    const mapped: PlayerResultItem[] = syntheticData.map((row: any) => {
+      const eventScoreResult = calculateEventScore({
+        eventId: row.eventId || undefined,
+        eventName: row.eventName || '',
+        eventDate: row.eventDate || '',
+        position: Number(row.position) || 1,
+        fieldSize: Number(row.fieldSize) || 1,
+        buyIn: Number(row.buyIn) || 0,
+        earnings: row.earnings != null ? Number(row.earnings) : undefined,
+      })
+      return {
+        id: String(row.id || ''),
+        eventId: row.eventId ? String(row.eventId) : undefined,
+        eventSlug: row.eventSlug ? String(row.eventSlug) : (row.eventId ? String(row.eventSlug || row.eventId) : undefined),
+        eventName: String(row.eventName || ''),
+        eventDate: String(row.eventDate || ''),
+        position: Number(row.position) || 1,
+        fieldSize: Number(row.fieldSize) || 1,
+        buyIn: Number(row.buyIn) || 0,
+        earnings: row.earnings != null ? Number(row.earnings) : undefined,
+        eventScore: eventScoreResult.eventScore,
+        createdAt: row.createdAt ? String(row.createdAt) : undefined,
+      }
+    })
+    return mapped
+  } catch {
+    // No synthetic results file; return empty array
+  }
   return []
 }
 
