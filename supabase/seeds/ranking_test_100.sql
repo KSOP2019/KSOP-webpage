@@ -37,7 +37,7 @@ DO $$ BEGIN
       p.id,
       (ARRAY['event-1','event-2','event-3','event-4','event-5','event-6','event-7','event-8','event-9','event-10'])[mod(r-1,10)+1],
       CASE WHEN r % 10 = 1 THEN 'Main Event Day 1' ELSE 'NLH Poker Players Championship / Day ' || (r % 5 + 1) || 'A' END,
-      'NOV ' || (17 + (r % 5)),
+      to_char(now() - ((mod(r, 9) * 30 + 15) || ' days')::interval, 'YYYY-MM-DD'),
       CASE WHEN r % 10 = 1 THEN 1 ELSE (r % 20) + 2 END,
       100 + (r % 10) * 50,
       CASE WHEN r % 5 = 0 THEN 50000 ELSE 10000 END,

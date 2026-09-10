@@ -6,9 +6,10 @@ export function PlayerAvatar({ player }: { player: { name: string; portrait?: st
   if (player.portrait && player.portrait.trim().length > 0) {
     return (
       <img
+        className="player-avatar-frame"
         src={player.portrait}
         alt={`${player.name} portrait`}
-        style={{ width: '220px', borderRadius: '50%', objectFit: 'cover', boxShadow: '0 14px 40px rgba(0,0,0,.18)' }}
+        style={{ width: '220px', height: '220px', maxWidth: '56vw', maxHeight: '56vw', borderRadius: '50%', objectFit: 'cover', boxShadow: '0 14px 40px rgba(0,0,0,.18)' }}
       />
     )
   }
@@ -26,16 +27,19 @@ export function PlayerAvatar({ player }: { player: { name: string; portrait?: st
   const bg = countryColors[player.country || ''] || '#555'
   return (
     <div
+      className="player-avatar-frame"
       style={{
         width: '220px',
         height: '220px',
+        maxWidth: '56vw',
+        maxHeight: '56vw',
         borderRadius: '50%',
         background: `linear-gradient(135deg, ${bg}, #171717)`,
         color: '#fff',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        font: 'bold 64px Georgia, serif',
+        font: 'bold clamp(28px, 8vw, 64px) Georgia, serif',
         letterSpacing: '-0.06em',
         boxShadow: '0 14px 40px rgba(0,0,0,.18)',
       }}
