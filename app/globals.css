@@ -473,3 +473,9 @@ html::after {
 @media (prefers-reduced-motion: reduce) {
   .schedule-trigger .event-buyin-tip { transition: none; }
 }
+
+/* Lenis active: prevent native smooth double-driving scroll (hash links #top / #social unaffected). */
+html.lenis,
+html.lenis body {
+  scroll-behavior: auto !important;
+}

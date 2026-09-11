@@ -31,7 +31,7 @@ export function ParallaxImage({ children, className }: ParallaxImageProps) {
 
   return (
     <div ref={ref} className={className} style={{ width: '100%', height: '100%', overflow: 'clip' }}>
-      <motion.div style={{ scale, willChange: 'transform', width: '100%', height: '100%' }}>{children}</motion.div>
+      <motion.div style={{ scale, width: '100%', height: '100%' }}>{children}</motion.div>
     </div>
   );
 }

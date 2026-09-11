@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import { useTheme } from 'next-themes';
-import { resolveGlassMode } from '@/lib/tokens/glass';
+import { getGlassTokens, resolveGlassMode } from '@/lib/tokens/glass';
 
 type SpotlightProps = {
   /** Spotlight overlay를掛ける Hero container의 ref */
@@ -61,6 +61,8 @@ export function Spotlight({ containerRef }: SpotlightProps) {
 
   if (!isDark) return null;
 
+  const spotlight = getGlassTokens(resolvedTheme).spotlight;
+
   return (
     <div
       ref={overlayRef}
@@ -70,8 +72,7 @@ export function Spotlight({ containerRef }: SpotlightProps) {
         inset: 0,
         pointerEvents: 'none',
         opacity: 0,
-        background:
-          'radial-gradient(420px circle at var(--spot-x, 50%) var(--spot-y, 30%), rgba(255,255,255,0.14), transparent 65%)',
+        background: `radial-gradient(420px circle at var(--spot-x, 50%) var(--spot-y, 30%), ${spotlight}, transparent 65%)`,
         zIndex: 2,
       }}
     />

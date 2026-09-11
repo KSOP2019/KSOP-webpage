@@ -30,6 +30,8 @@ export interface GlassSurfaceTokens {
   highlight: string;
   /** 드롭 섀도우 (box-shadow 앞부분) */
   shadow: string;
+  /** 다크 히어로 스포트라이트 (라이트에서는 투명) */
+  spotlight: string;
   /** 본문 텍스트 */
   foreground: string;
   /** 보조 텍스트 */
@@ -104,6 +106,7 @@ const light: GlassThemeTokens = {
   stroke: 'rgba(255, 255, 255, 0.72)',
   highlight: 'rgba(255, 255, 255, 0.9)',
   shadow: 'rgba(88, 120, 171, 0.1)',
+  spotlight: 'rgba(0,0,0,0)',
   blur: { ...GLASS_BLUR_PX },
   saturate: { ...GLASS_SATURATE_PCT },
   radius: { ...GLASS_RADIUS },
@@ -125,6 +128,7 @@ const dark: GlassThemeTokens = {
   stroke: 'rgba(194, 211, 240, 0.22)',
   highlight: 'rgba(255, 255, 255, 0.2)',
   shadow: 'rgba(0, 0, 0, 0.32)',
+  spotlight: 'rgba(255,255,255,0.14)',
   blur: { ...GLASS_BLUR_PX },
   saturate: { ...GLASS_SATURATE_PCT },
   radius: { ...GLASS_RADIUS },
