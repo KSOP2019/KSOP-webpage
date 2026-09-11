@@ -1,6 +1,8 @@
 'use client'
 
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
+import { useTheme } from 'next-themes'
+import { resolveGlassMode } from '@/lib/tokens/glass'
 import type { Language, SiteContent } from '@/lib/types'
 import { seedContent } from '@/lib/seed'
 
@@ -18,8 +20,15 @@ const SiteContext = createContext<SiteContextValue | null>(null)
 
 export function SiteProvider({ children, initialContent }: { children: ReactNode; initialContent?: SiteContent }) {
   const [language, setLanguageState] = useState<Language>('KR')
-  const [darkMode, setDarkMode] = useState(false)
   const [content, setContent] = useState<SiteContent>(initialContent ?? seedContent)
+  // 원칙 3: 라이트/다크 판정은 next-themes resolvedTheme 단일 소스.
+  // 기존 darkMode boolean API는 유지해 소비자 DOM 변경 없이 브릿지한다.
+  const { resolvedTheme, setTheme } = useTheme()
+  const darkMode = resolveGlassMode(resolvedTheme) === 'dark'
+
+  const setDarkMode = (value: boolean) => {
+    setTheme(value ? 'dark' : 'light')
+  }
 
   const setLanguage = (nextLanguage: Language) => {
     if (nextLanguage === language) return

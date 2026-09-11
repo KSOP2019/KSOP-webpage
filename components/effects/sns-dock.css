@@ -1,0 +1,34 @@
+/**
+ * SNS Dock skin — geometry-preserving (skin only).
+ * - 위치/폭/정렬은 header-stability.css 소유. 이 파일은 width/height/gap/margin/padding 을 바꾸지 않는다.
+ * - border-radius 50% (visual only, box geometry unchanged).
+ * - 기본 monochrome (var(--glass-muted)/foreground), hover에만 brand color (var(--sns-brand) → tokens).
+ * - Glass blur는 .glass[data-glass] (glass.css) 가 담당. 모바일 ≤768px 8px 폴백.
+ * - Brand colors 하드코딩 금지: var(--sns-brand) 값은 socialBrandColors tokens에서 inline으로 주입.
+ */
+
+.site-header .header-socials .social-icon.sns-glass,
+.site-footer .socials .social-icon.sns-glass {
+  border-radius: 50% !important;
+  background: var(--glass-surface, rgba(255, 255, 255, 0.64)) !important;
+  border-color: var(--glass-stroke, rgba(37, 48, 72, 0.14)) !important;
+  box-shadow:
+    0 4px 14px var(--glass-shadow, rgba(88, 120, 171, 0.1)),
+    inset 0 1px var(--glass-highlight, rgba(255, 255, 255, 0.9)) !important;
+  color: var(--glass-muted, #727785) !important;
+}
+
+.site-header .header-socials .social-icon.sns-glass:hover,
+.site-header .header-socials .social-icon.sns-glass:focus-visible,
+.site-footer .socials .social-icon.sns-glass:hover,
+.site-footer .socials .social-icon.sns-glass:focus-visible {
+  color: var(--sns-brand, var(--glass-primary, #c5202d)) !important;
+  border-color: var(--sns-brand, var(--glass-primary, #c5202d)) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-header .header-socials .social-icon.sns-glass,
+  .site-footer .socials .social-icon.sns-glass {
+    transition: none !important;
+  }
+}

@@ -6,6 +6,7 @@ import { Menu, X } from 'lucide-react'
 import { useState } from 'react'
 import { useSite } from '@/components/site/site-provider'
 import { LanguageMenu, ThemeSwitch } from '@/components/site/header-controls'
+import { SnsDock } from '@/components/effects/sns-dock'
 import { NAV_ROUTES } from '@/lib/nav'
 
 const LIGHT_LOGO = '/images/ksop-light-approved.png'
@@ -18,7 +19,7 @@ export function SiteHeader() {
   const logo = darkMode ? DARK_LOGO : LIGHT_LOGO
 
   return (
-    <header className="site-header">
+    <header className="site-header glass" data-glass="header">
       <Link href="/" className="brand">
         <img src={logo} alt="KSOP Korea Series of Poker" width={170} height={54} />
       </Link>
@@ -44,12 +45,12 @@ export function SiteHeader() {
         <div className="header-socials">
           {[['FLOPIN', 'F'], ['Instagram', '◎'], ['X', '𝕏'], ['Discord', '◌'], ['Facebook', 'f'], ['YouTube', '▶']].map(
             ([name, symbol]) => (
-              <a className="social-icon social-text" key={name} href="/#social" aria-label={name}>
+              <SnsDock key={name} name={name} ariaLabel={name} className="social-text">
                 <span aria-hidden="true">{symbol}</span>
                 <span className="social-tooltip">
                   {name === 'X' ? 'X SPACE' : name === 'Instagram' ? 'INSTAR GRAM' : name.toUpperCase()}
                 </span>
-              </a>
+              </SnsDock>
             ),
           )}
         </div>

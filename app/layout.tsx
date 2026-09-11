@@ -2,10 +2,13 @@ import { Analytics } from '@vercel/analytics/next'
 import { Noto_Sans_KR } from 'next/font/google'
 import type { Metadata, Viewport } from 'next'
 import { SITE_DESCRIPTION, SITE_LOCALE, SITE_NAME, SITE_OG_IMAGE, SITE_URL } from '@/lib/site-url'
+import { ThemeProvider } from '@/providers/theme-provider'
+import { SmoothScroll } from '@/providers/smooth-scroll'
 
 const notoSansKr = Noto_Sans_KR({ subsets: ['latin'], variable: '--font-korean', display: 'swap' })
 import './globals.css'
 import './header-stability.css'
+import '@/components/design-system/glass.css'
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -102,9 +105,11 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="ko" className={`bg-background ${notoSansKr.variable}`}>
+    <html lang="ko" className={`bg-background ${notoSansKr.variable}`} suppressHydrationWarning>
       <body className="antialiased">
-        {children}
+        <ThemeProvider>
+          <SmoothScroll>{children}</SmoothScroll>
+        </ThemeProvider>
         <OrganizationJsonLd />
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>

@@ -1,7 +1,9 @@
 'use client'
 
 import { Globe2 } from 'lucide-react'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, type CSSProperties } from 'react'
+import { useTheme } from 'next-themes'
+import { getGlassTokens, glassCssVars, resolveGlassMode } from '@/lib/tokens/glass'
 import { useSite } from '@/components/site/site-provider'
 import type { Language } from '@/lib/types'
 
@@ -20,6 +22,9 @@ const LANGUAGE_LABELS: Record<Language, string> = {
 export function LanguageMenu() {
   const { language, setLanguage } = useSite()
   const detailsRef = useRef<HTMLDetailsElement | null>(null)
+  // Glass skin only (overlay). Position/size owned by header-stability.css — unchanged.
+  const { resolvedTheme } = useTheme()
+  const tokens = getGlassTokens(resolvedTheme)
 
   useEffect(() => {
     const details = detailsRef.current
@@ -51,7 +56,19 @@ export function LanguageMenu() {
       <summary className="language" aria-label={`Language ${language}`}>
         <Globe2 aria-hidden="true" />
       </summary>
-      <div className="language-options">
+      <div
+        className="language-options glass"
+        data-glass="popover"
+        style={
+          {
+            ...(glassCssVars(resolvedTheme) as CSSProperties),
+            background: tokens.surfaceStrong,
+            borderColor: tokens.mode === 'light' ? tokens.stroke : tokens.border,
+            boxShadow: `0 14px 35px ${tokens.shadow}, inset 0 1px ${tokens.highlight}`,
+            color: tokens.foreground,
+          } as CSSProperties
+        }
+      >
         {availableLanguages.map((code) => (
           <button
             key={code}
@@ -70,7 +87,9 @@ export function LanguageMenu() {
 }
 
 export function ThemeSwitch() {
-  const { darkMode, setDarkMode } = useSite()
+  // 원칙 3: resolvedTheme 단일 소스. DOM·클래스 구조는 기존 그대로.
+  const { resolvedTheme, setTheme } = useTheme()
+  const darkMode = resolveGlassMode(resolvedTheme) === 'dark'
 
   return (
     <button
@@ -78,7 +97,7 @@ export function ThemeSwitch() {
       type="button"
       aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
       aria-pressed={darkMode}
-      onClick={() => setDarkMode(!darkMode)}
+      onClick={() => setTheme(darkMode ? 'light' : 'dark')}
     >
       <span className="theme-sun" aria-hidden="true">☀</span>
       <span className="theme-track"><span /></span>

@@ -1,0 +1,58 @@
+/**
+ * KSOP Glass — 유리 블러 폴백 CSS (원칙 4)
+ *
+ * - 데스크톱: 토큰 블러(var(--glass-blur-*) → 22~24px)를 그대로 사용.
+ * - 모바일(≤768px): 전부 8px 로 폴백 (성능 + 가독성).
+ * - 인라인 backdrop-filter 를 쓰지 않고 이 CSS 가 전담하므로
+ *   미디어쿼리 폴백이 항상 동작한다.
+ * - 색상은 절대 하드코딩하지 않는다. var(--glass-*) 만 사용 (값은 glassCssVars() 주입).
+ */
+
+.glass[data-glass] {
+  -webkit-backdrop-filter: blur(var(--glass-blur-card, 22px)) saturate(100%);
+  backdrop-filter: blur(var(--glass-blur-card, 22px)) saturate(100%);
+}
+
+.glass[data-glass='header'] {
+  -webkit-backdrop-filter: blur(var(--glass-blur-header, 24px)) saturate(115%);
+  backdrop-filter: blur(var(--glass-blur-header, 24px)) saturate(115%);
+}
+
+.glass[data-glass='popover'] {
+  -webkit-backdrop-filter: blur(var(--glass-blur-card, 22px)) saturate(100%);
+  backdrop-filter: blur(var(--glass-blur-card, 22px)) saturate(100%);
+}
+
+.glass[data-glass='subtle'] {
+  -webkit-backdrop-filter: blur(var(--glass-blur-subtle, 18px)) saturate(100%);
+  backdrop-filter: blur(var(--glass-blur-subtle, 18px)) saturate(100%);
+}
+
+.glass[data-glass='heroChip'] {
+  -webkit-backdrop-filter: blur(var(--glass-blur-hero, 16px)) saturate(105%);
+  backdrop-filter: blur(var(--glass-blur-hero, 16px)) saturate(105%);
+}
+
+/* 원칙 4 — 모바일 폴백 8px */
+@media (max-width: 768px) {
+  .glass[data-glass] {
+    -webkit-backdrop-filter: blur(8px) saturate(100%);
+    backdrop-filter: blur(8px) saturate(100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .glass[data-glass] {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+/**
+ * Reveal 구 CSS(.js .reveal transition)와 framer-motion 이중 구동 방지.
+ * framer-motion 이 인라인으로 opacity/transform 을 구동하므로
+ * 구 transition 만 끄고, 최종 상태(보임)는 그대로 둔다. 레이아웃 불변.
+ */
+.js .reveal[data-framer] {
+  transition: none !important;
+}

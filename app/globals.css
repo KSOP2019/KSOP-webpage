@@ -428,3 +428,48 @@ main.theme-dark .event-detail-media.is-contain {
   .factor-grid { gap: 6px 18px; }
   .factor-grid > span { flex: 1 1 40%; }
 }
+
+/* KSOP grain - noise texture only, no bg color, no dimension change. html::after preserves existing body::after canvas. */
+html::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 60;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  background-size: 120px 120px;
+}
+
+/* KSOP event buy-in tooltip - absolute overlay only, no row height change. Glass vars only. */
+.schedule-trigger .event-buyin-tip {
+  position: absolute;
+  right: 120px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  white-space: nowrap;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--glass-stroke, rgba(37,48,72,.14));
+  background: var(--glass-surface-strong, rgba(255,255,255,.82));
+  color: var(--glass-foreground, #171a24);
+  box-shadow: 0 10px 28px var(--glass-shadow, rgba(88,120,171,.1));
+  font-size: 11px;
+  letter-spacing: .08em;
+  opacity: 0;
+  transition: opacity .18s ease;
+  z-index: 3;
+}
+.schedule-trigger:hover .event-buyin-tip,
+.schedule-trigger:focus-visible .event-buyin-tip {
+  opacity: 1;
+}
+@media (hover: none) {
+  .schedule-trigger .event-buyin-tip { opacity: 0; }
+  .schedule-trigger:focus-visible .event-buyin-tip,
+  .schedule-trigger:focus-within .event-buyin-tip { opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .schedule-trigger .event-buyin-tip { transition: none; }
+}

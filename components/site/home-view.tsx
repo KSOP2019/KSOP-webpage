@@ -1,10 +1,15 @@
 'use client'
 
 import Link from 'next/link'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { ArrowUpRight, Check, ChevronDown, MapPin } from 'lucide-react'
 import { useSite } from '@/components/site/site-provider'
 import { Reveal } from '@/components/site/reveal'
+import { GlassCard } from '@/components/ui/glass-card'
+import { KineticText } from '@/components/effects/kinetic-text'
+import { MagneticButton } from '@/components/ui/magnetic-button'
+import { ParallaxImage } from '@/components/effects/parallax-image'
+import { Spotlight } from '@/components/effects/spotlight'
 import { EVENT_CATEGORIES } from '@/lib/nav'
 import { eventCardImage } from '@/lib/event-images'
 import { filterEvents } from '@/lib/event-filters'
@@ -23,6 +28,7 @@ export function HomeView({ events, players, news, ranked }: HomeViewProps) {
   const [selectedDate, setSelectedDate] = useState('ALL')
   const [selectedCategory, setSelectedCategory] = useState('ALL EVENT')
   const [registered, setRegistered] = useState(false)
+  const heroRef = useRef<HTMLElement | null>(null)
   const [countdown, setCountdown] = useState({
     days: content.countdownDays,
     hours: 0,
@@ -55,16 +61,21 @@ export function HomeView({ events, players, news, ranked }: HomeViewProps) {
 
   return (
     <>
-      <section className="hero" id="top">
+      <section className="hero" id="top" ref={heroRef}>
+        <Spotlight containerRef={heroRef} />
         <div className="hero-copy">
           <div className="hero-title-box">
             <p className="eyebrow">{t.eyebrow}</p>
-            <h1>{t.hero}</h1>
+            <h1>
+              <KineticText text={t.hero} />
+            </h1>
           </div>
         </div>
 
         <div className="hero-visual">
-          <img src={content.heroImage} alt="KSOP tournament arena" />
+          <ParallaxImage>
+            <img src={content.heroImage} alt="KSOP tournament arena" />
+          </ParallaxImage>
           <div className="hero-stamp">
             <span>SEOUL</span>
             <strong>17</strong>
@@ -86,17 +97,19 @@ export function HomeView({ events, players, news, ranked }: HomeViewProps) {
         <div className="hero-lower-copy-row">
           <p className="hero-intro">{t.intro}</p>
           <div className="hero-actions">
-            <button className="primary-cta" type="button" onClick={() => setRegistered(true)}>
-              {registered ? (
-                <>
-                  <Check /> {t.seatReserved ?? 'SEAT RESERVED'}
-                </>
-              ) : (
-                <>
-                  {t.register} <ArrowUpRight />
-                </>
-              )}
-            </button>
+            <MagneticButton>
+              <button className="primary-cta" type="button" onClick={() => setRegistered(true)}>
+                {registered ? (
+                  <>
+                    <Check /> {t.seatReserved ?? 'SEAT RESERVED'}
+                  </>
+                ) : (
+                  <>
+                    {t.register} <ArrowUpRight />
+                  </>
+                )}
+              </button>
+            </MagneticButton>
             <Link className="text-link" href="/events">
               {t.explore} <ArrowUpRight />
             </Link>
@@ -104,18 +117,24 @@ export function HomeView({ events, players, news, ranked }: HomeViewProps) {
         </div>
 
         <div className="telemetry-grid">
-          <div>
-            <strong>₩1,500,000,000</strong>
-            <span>{t.guaranteed}</span>
-          </div>
-          <div>
-            <strong>{t.invitation}</strong>
-            <span>{t.invitation}</span>
-          </div>
-          <div>
-            <strong>50,000</strong>
-            <span>{t.stack}</span>
-          </div>
+          <GlassCard asChild>
+            <div>
+              <strong>₩1,500,000,000</strong>
+              <span>{t.guaranteed}</span>
+            </div>
+          </GlassCard>
+          <GlassCard asChild>
+            <div>
+              <strong>{t.invitation}</strong>
+              <span>{t.invitation}</span>
+            </div>
+          </GlassCard>
+          <GlassCard asChild>
+            <div>
+              <strong>50,000</strong>
+              <span>{t.stack}</span>
+            </div>
+          </GlassCard>
         </div>
       </section>
 
@@ -184,6 +203,9 @@ export function HomeView({ events, players, news, ranked }: HomeViewProps) {
                 </span>
                 <span className="event-type">{event.type}</span>
                 <ChevronDown className="chevron" />
+                <span className="glass event-buyin-tip" data-glass="popover" aria-hidden="true">
+                  {t.buyin ?? 'BUY-IN'} {event.buyInType}
+                </span>
               </button>
               {open === index && (
                 <div className="event-detail">
@@ -294,7 +316,9 @@ export function HomeView({ events, players, news, ranked }: HomeViewProps) {
       </section>
 
       <section className="image-break">
-        <img src={content.heroImage} alt="Poker tables inside the KSOP arena" />
+        <ParallaxImage>
+          <img src={content.heroImage} alt="Poker tables inside the KSOP arena" />
+        </ParallaxImage>
         <div className="image-break-copy">
           <span>{content.imageBreakLabel}</span>
           <h2>

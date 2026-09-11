@@ -2,13 +2,14 @@
 
 import Link from 'next/link'
 import { useSite } from '@/components/site/site-provider'
+import { SnsDock } from '@/components/effects/sns-dock'
 import { NAV_ROUTES, socials } from '@/lib/nav'
 
 function SocialIcon({ name, src }: { name: string; src: string }) {
   return (
-    <a className="social-icon" href="/#social" aria-label={name}>
+    <SnsDock name={name} ariaLabel={name}>
       <img src={src} alt="" />
-    </a>
+    </SnsDock>
   )
 }
 
