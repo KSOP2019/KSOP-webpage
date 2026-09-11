@@ -11,7 +11,7 @@ import {
   type RankingResultInput,
   type ScoreBreakdownRow,
 } from './ranking-score'
-const RANKING_TEST_MODE = true
+const RANKING_TEST_MODE = false
 
 import type { RankedPlayer, PlayerResultItem, PlayerScoreRow } from './types'
 
@@ -299,7 +299,7 @@ export async function saveEvents(events: EventItem[]) {
 // --- Players ---
 
 export async function getPlayers(): Promise<PlayerItem[]> {
-  if (RANKING_TEST_MODE) {
+  if (RANKING_TEST_MODE && !isProduction()) {
     return seedPlayers
   }
   const client = createPublicClient()
@@ -312,10 +312,12 @@ export async function getPlayers(): Promise<PlayerItem[]> {
 
     if (error) {
       console.error('Supabase players read error:', error.message)
+      if (isProduction()) return []
       return readJsonFile('players.json', seedPlayers)
     }
 
     if (!data || data.length === 0) {
+      if (isProduction()) return []
       return readJsonFile('players.json', seedPlayers)
     }
 
@@ -335,6 +337,7 @@ export async function getPlayers(): Promise<PlayerItem[]> {
     }))
   }
 
+  if (isProduction()) return []
   return readJsonFile('players.json', seedPlayers)
 }
 
@@ -631,6 +634,8 @@ export async function getPlayerResults(playerId: string): Promise<PlayerResultIt
   } catch {
     // DB read failed; fall through
   }
+  // Synthetic result files are strictly development/QA-only.
+  if (isProduction()) return []
   // Fallback: read synthetic results from local JSON file for design QA
   try {
     const raw = await fs.readFile(path.join(process.cwd(), 'data', 'player-results.json'), 'utf8')
