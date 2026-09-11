@@ -251,16 +251,24 @@ export const glassSkin = {
 
 /**
  * SNS hover brand colors — 하드코딩 금지, 이 export에서만 사용.
+ * STEP 1 spec exact keys (lowercase) + uppercase aliases for existing header/footer code.
  * 기본 상태는 monochrome, hover에서만 이 색상을 사용한다.
  * Header/footer geometry를 바꾸지 않는다 (색상만).
  */
 export const socialBrandColors = {
-  FLOPIN: '#c5202d',
-  Instagram: '#e1306c',
-  X: '#0f1419',
-  Discord: '#5865f2',
-  Facebook: '#1877f2',
-  YouTube: '#ff0000',
+  flopin: '#111111',
+  instagram: '#E1306C',
+  x: '#111111',
+  discord: '#5865F2',
+  facebook: '#1877F2',
+  youtube: '#FF0000',
+  // Aliases: existing SnsDock/site-header use these names (same spec values).
+  FLOPIN: '#111111',
+  Instagram: '#E1306C',
+  X: '#111111',
+  Discord: '#5865F2',
+  Facebook: '#1877F2',
+  YouTube: '#FF0000',
 } as const;
 
 export type SocialBrandName = keyof typeof socialBrandColors;

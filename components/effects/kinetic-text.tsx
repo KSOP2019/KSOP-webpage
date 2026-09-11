@@ -43,7 +43,7 @@ export function KineticText({ text, className, ariaLabel }: KineticTextProps) {
             style={{ display: 'inline-block', whiteSpace: 'inherit', willChange: 'opacity, transform' }}
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: i * 0.025, ease: [0.2, 0.8, 0.2, 1] }}
+            transition={{ duration: 0.45, delay: i * 0.025, ease: [0.2, 0.8, 0.2, 1] }}
             onAnimationComplete={() => {
               // will-change only while needed — no permanent will-change.
             }}

@@ -11,25 +11,30 @@ import Lenis from 'lenis';
  */
 export function SmoothScroll({ children }: { children: ReactNode }) {
   useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-    if (reduceMotion.matches) return;
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)')
 
-    const lenis = new Lenis({ duration: 1.2 });
-    let rafId = 0;
+    if (reduced.matches) return
+
+    const lenis = new Lenis({
+      duration: 1.2,
+    })
+
+    let frame = 0
+
     const raf = (time: number) => {
-      lenis.raf(time);
-      rafId = requestAnimationFrame(raf);
-    };
-    rafId = requestAnimationFrame(raf);
+      lenis.raf(time)
+      frame = requestAnimationFrame(raf)
+    }
+
+    frame = requestAnimationFrame(raf)
 
     return () => {
-      cancelAnimationFrame(rafId);
-      lenis.destroy();
-    };
-  }, []);
+      cancelAnimationFrame(frame)
+      lenis.destroy()
+    }
+  }, [])
 
-  return <>{children}</>;
+  return children
 }
 
 export default SmoothScroll;
