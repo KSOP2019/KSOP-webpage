@@ -6,6 +6,7 @@ import { SITE_DESCRIPTION, SITE_LOCALE, SITE_NAME, SITE_OG_IMAGE, SITE_URL } fro
 const notoSansKr = Noto_Sans_KR({ subsets: ['latin'], variable: '--font-korean', display: 'swap' })
 import './globals.css'
 import './header-stability.css'
+import './detail-polish.css'
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
