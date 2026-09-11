@@ -17,7 +17,9 @@ import type { RankedPlayer, PlayerResultItem, PlayerScoreRow } from './types'
 
 export { filterEvents }
 
-const dataDir = path.join(process.cwd(), 'data')
+const dataDir = process.env.VERCEL_ENV === 'preview'
+  ? path.join('/tmp', 'ksop-preview-data')
+  : path.join(process.cwd(), 'data')
 
 const VALID_EVENT_TYPES: EventType[] = ['NLH', 'PLO', 'SATELLITE', 'MAIN EVENT', 'HIGH ROLLER']
 const VALID_NEWS_CATEGORIES: NewsCategory[] = ['FIELD NOTES', 'PLAYER PORTRAIT', 'KSOP JOURNAL']
