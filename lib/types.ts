@@ -58,9 +58,71 @@ export interface NewsItem {
   published: boolean
 }
 
+export interface AboutMilestoneCopy {
+  label: string
+  title: string
+  description: string
+}
+
+export interface AboutWorkGroupCopy {
+  title: string
+  items: string[]
+}
+
+export interface AboutCooperationCopy {
+  title: string
+  description: string
+  cta: string
+}
+
+export interface AboutFormFieldCopy {
+  label: string
+  options?: string[]
+}
+
+export interface AboutFormCopy {
+  title: string
+  description: string
+  cta: string
+  pending: string
+  fields: AboutFormFieldCopy[]
+}
+
+export interface AboutCopy {
+  companyLabel: string
+  companyHeadline: string
+  companyBody: string[]
+  historyLabel: string
+  milestones: AboutMilestoneCopy[]
+  whatWeDoLabel: string
+  whatWeDoGroups: AboutWorkGroupCopy[]
+  visionLabel: string
+  visionHeadline: string
+  visionBody: string
+  visionBullets: string[]
+  workLabel: string
+  workHeadline: string
+  cooperations: AboutCooperationCopy[]
+  partnersLabel: string
+  partnersHeadline: string
+  partnersPending: string
+  contactLabel: string
+  contactHeadline: string
+  contactBody: string
+  contactCta: string
+  seriesLinkNote: string
+  forms: {
+    mice: AboutFormCopy
+    corporate: AboutFormCopy
+    media: AboutFormCopy
+    sponsor: AboutFormCopy
+  }
+}
+
 export interface LocaleCopy {
   ticker: string
   nav: string[]
+  about?: AboutCopy
   eyebrow: string
   hero: string
   intro: string

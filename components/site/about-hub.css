@@ -1,0 +1,186 @@
+/**
+ * About company hub — strictly scoped styles (`.about-hub` prefix only).
+ * Reuses global section/typography/button primitives; nothing here touches
+ * header, hero, telemetry, glass tokens, or any other page.
+ */
+
+/* Thin editorial rules between hub sections. */
+.about-hub + .about-hub {
+  border-top: 1px solid var(--border);
+}
+
+.about-hub h2 {
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+}
+
+.about-hub-body {
+  display: grid;
+  gap: 18px;
+  max-width: 68ch;
+}
+
+/* 4-column work cards reuse the .detail-facts base; only collapse points here. */
+@media (max-width: 1100px) {
+  .about-hub .detail-facts {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .about-hub .detail-facts {
+    grid-template-columns: 1fr;
+  }
+}
+
+.about-hub-worklist {
+  list-style: none;
+  margin: 10px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.about-hub-worklist li {
+  overflow-wrap: anywhere;
+}
+
+/* Vertical timeline: thin rule, no new geometry framework. */
+.about-hub-timeline {
+  display: grid;
+  margin-top: 8px;
+}
+
+.about-hub-milestone {
+  position: relative;
+  padding: 0 0 30px 30px;
+  border-left: 1px solid var(--border);
+}
+
+.about-hub-milestone:last-child {
+  padding-bottom: 0;
+}
+
+.about-hub-milestone::before {
+  content: '';
+  position: absolute;
+  left: -6px;
+  top: 5px;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: var(--background);
+  border: 2px solid var(--primary);
+}
+
+.about-hub-milestone-label {
+  color: var(--muted-foreground);
+  font-size: 9px;
+  letter-spacing: 0.14em;
+}
+
+.about-hub-milestone h3 {
+  margin: 8px 0 0;
+  font-family: Georgia, serif;
+  font-weight: 400;
+  font-size: clamp(22px, 2.4vw, 32px);
+  letter-spacing: -0.02em;
+}
+
+.about-hub-milestone p {
+  margin: 8px 0 0;
+  max-width: 62ch;
+  line-height: 1.7;
+  color: var(--muted-foreground);
+}
+
+/* Partner logo grid: 3 columns desktop, 2 columns mobile. */
+.about-hub-partners {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.about-hub-partner {
+  min-height: 120px;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  color: var(--muted-foreground);
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-align: center;
+}
+
+@media (max-width: 720px) {
+  .about-hub-partners {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Application form: 2 columns desktop, 1 column mobile. */
+.about-hub-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-top: 28px;
+}
+
+.about-hub-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.about-hub-field--full {
+  grid-column: 1 / -1;
+}
+
+.about-hub-field > span {
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  color: var(--muted-foreground);
+}
+
+.about-hub-field input,
+.about-hub-field textarea,
+.about-hub-field select {
+  font: inherit;
+  color: var(--foreground);
+  background: var(--background);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.about-hub-field textarea {
+  min-height: 140px;
+  resize: vertical;
+}
+
+.about-hub-field input:focus-visible,
+.about-hub-field textarea:focus-visible,
+.about-hub-field select:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+@media (max-width: 720px) {
+  .about-hub-form {
+    grid-template-columns: 1fr;
+  }
+}
+
+.about-hub-cta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 28px;
+}

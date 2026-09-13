@@ -5,40 +5,6 @@ import { useSite } from '@/components/site/site-provider'
 import { Reveal } from '@/components/site/reveal'
 import type { SiteContent } from '@/lib/types'
 
-export function AboutPageClient({ content }: { content: SiteContent }) {
-  const { t } = useSite()
-
-  return (
-    <section className="intro section-pad">
-      <div className="section-label">{t.seriesLabel ?? '01 / THE SERIES'}</div>
-      <Reveal className="intro-content">
-        <h2>
-          {t.introTitle ?? 'More than'}
-          <br />
-          <em>{t.introEmphasis ?? 'a tournament.'}</em>
-        </h2>
-        <p className="large-copy">{content.introBody}</p>
-        <p className="muted-copy" style={{ marginTop: '24px' }}>
-          {content.seriesDate} · {content.seriesVenue}
-          <br />
-          {content.seriesGtd}
-        </p>
-        <Link className="text-link" href="/events" style={{ marginTop: '32px', display: 'inline-flex' }}>
-          {t.exploreSchedule ?? 'Explore the schedule'}
-        </Link>
-        <div className="detail-actions" style={{ marginTop: '32px' }}>
-          <Link className="ghost-button" href="/about/series">
-            {t.theSeries ?? 'THE SERIES'}
-          </Link>
-          <Link className="ghost-button" href="/about/venue">
-            {t.theVenue ?? 'THE VENUE'}
-          </Link>
-        </div>
-      </Reveal>
-    </section>
-  )
-}
-
 export function AboutTopicClient({
   content,
   slug,
