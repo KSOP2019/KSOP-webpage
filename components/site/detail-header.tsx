@@ -5,7 +5,7 @@ import { Menu, X } from 'lucide-react'
 import { useState } from 'react'
 import { useSite } from '@/components/site/site-provider'
 import { LanguageMenu, ThemeSwitch } from '@/components/site/header-controls'
-import { NAV_ROUTES } from '@/lib/nav'
+import { getNavItems } from '@/lib/nav'
 
 const LIGHT_LOGO = '/images/ksop-light-approved.png'
 const DARK_LOGO = '/images/ksop-dark-approved.png'
@@ -26,11 +26,10 @@ export function DetailHeader({ activeHref }: { activeHref?: string }) {
         />
       </Link>
       <nav className={menuOpen ? 'nav-links is-open' : 'nav-links'}>
-        {t.nav.map((label, index) => {
-          const href = NAV_ROUTES[index]
+        {getNavItems(t.nav).map(({ href, label }) => {
           return (
             <Link
-              key={`${href}-${index}`}
+              key={href}
               href={href}
               className={activeHref === href ? 'active' : undefined}
               onClick={() => setMenuOpen(false)}

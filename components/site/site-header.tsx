@@ -7,7 +7,7 @@ import { useState } from 'react'
 import { useSite } from '@/components/site/site-provider'
 import { LanguageMenu, ThemeSwitch } from '@/components/site/header-controls'
 import { SnsDock } from '@/components/effects/sns-dock'
-import { NAV_ROUTES } from '@/lib/nav'
+import { getNavItems } from '@/lib/nav'
 
 const LIGHT_LOGO = '/images/ksop-light-approved.png'
 const DARK_LOGO = '/images/ksop-dark-approved.png'
@@ -25,17 +25,16 @@ export function SiteHeader() {
       </Link>
 
       <nav className={menuOpen ? 'nav-links is-open' : 'nav-links'}>
-        {t.nav.map((item, index) => {
-          const href = NAV_ROUTES[index]
+        {getNavItems(t.nav).map(({ href, label }) => {
           const active = pathname === href || ((href as string) !== '/' && pathname.startsWith(href))
           return (
             <Link
-              key={`${href}-${index}`}
+              key={href}
               href={href}
               className={active ? 'is-active' : undefined}
               onClick={() => setMenuOpen(false)}
             >
-              {item}
+              {label}
             </Link>
           )
         })}

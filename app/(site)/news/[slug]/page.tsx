@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { NewsDetailClient } from '@/components/site/news-detail-client'
-import { getNewsItem } from '@/lib/data'
+import { getNewsItemForPreview } from '@/lib/news-preview'
 import { SITE_OG_IMAGE } from '@/lib/site-url'
 
 export const dynamic = 'force-dynamic'
@@ -16,7 +16,7 @@ async function loadItem(slug: string) {
   } catch {
     // Keep the original segment if it is already decoded or malformed.
   }
-  const item = await getNewsItem(decodedSlug)
+  const item = await getNewsItemForPreview(decodedSlug)
   return item && item.published ? item : undefined
 }
 

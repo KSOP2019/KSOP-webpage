@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useSite } from '@/components/site/site-provider'
 import { SnsDock } from '@/components/effects/sns-dock'
-import { NAV_ROUTES, socials } from '@/lib/nav'
+import { getNavItems, socials } from '@/lib/nav'
 
 function SocialIcon({ name, src }: { name: string; src: string }) {
   return (
@@ -28,9 +28,9 @@ export function SiteFooter() {
         </p>
       </div>
       <div className="footer-nav">
-        {t.nav.slice(0, 4).map((item, index) => (
-          <Link href={NAV_ROUTES[index]} key={`${NAV_ROUTES[index]}-${index}`}>
-            {item}
+        {getNavItems(t.nav).slice(0, 4).map(({ href, label }) => (
+          <Link href={href} key={href}>
+            {label}
           </Link>
         ))}
       </div>

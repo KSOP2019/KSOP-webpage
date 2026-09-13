@@ -1,5 +1,26 @@
 export const NAV_ROUTES = ['/schedule', '/events', '/ranking', '/news', '/about'] as const
 
+/**
+ * Fallback labels keyed by NAV_ROUTES position.
+ * CMS copy (`site_settings.global.copy[lang].nav`) supplies display labels only;
+ * routes always come from NAV_ROUTES so a CMS length/order drift can never
+ * misroute a link (e.g. NEWS must always resolve to `/news`).
+ */
+export const NAV_FALLBACK_LABELS = ['SCHEDULE', 'EVENT', 'RANKING', 'NEWS', 'ABOUT'] as const
+
+export interface NavEntry {
+  href: (typeof NAV_ROUTES)[number]
+  label: string
+}
+
+/** Route-driven nav: iterate routes (source of truth), pick CMS label per index. */
+export function getNavItems(labels: readonly string[] | undefined | null): NavEntry[] {
+  return NAV_ROUTES.map((href, index) => ({
+    href,
+    label: labels?.[index] ?? NAV_FALLBACK_LABELS[index] ?? `NAV ${index + 1}`,
+  }))
+}
+
 export const EVENT_CATEGORIES = ['ALL EVENT', 'MAIN EVENT', 'HIGH ROLLER', 'DAY'] as const
 
 export const socials = {
