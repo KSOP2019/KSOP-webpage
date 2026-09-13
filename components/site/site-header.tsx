@@ -13,7 +13,7 @@ const LIGHT_LOGO = '/images/ksop-light-approved.png'
 const DARK_LOGO = '/images/ksop-dark-approved.png'
 
 export function SiteHeader() {
-  const { darkMode, t } = useSite()
+  const { darkMode, t, language } = useSite()
   const [menuOpen, setMenuOpen] = useState(false)
   const pathname = usePathname()
   const logo = darkMode ? DARK_LOGO : LIGHT_LOGO
@@ -25,7 +25,7 @@ export function SiteHeader() {
       </Link>
 
       <nav className={menuOpen ? 'nav-links is-open' : 'nav-links'}>
-        {getNavItems(t.nav).map(({ href, label }) => {
+        {getNavItems(t.nav, language).map(({ href, label }) => {
           const active = pathname === href || ((href as string) !== '/' && pathname.startsWith(href))
           return (
             <Link

@@ -12,7 +12,7 @@ const DARK_LOGO = '/images/ksop-dark-approved.png'
 
 /** Shared fixed-geometry detail header (Schedule/Events/Ranking/News/About + series pages). */
 export function DetailHeader({ activeHref }: { activeHref?: string }) {
-  const { t, darkMode } = useSite()
+  const { t, darkMode, language } = useSite()
   const [menuOpen, setMenuOpen] = useState(false)
 
   return (
@@ -26,7 +26,7 @@ export function DetailHeader({ activeHref }: { activeHref?: string }) {
         />
       </Link>
       <nav className={menuOpen ? 'nav-links is-open' : 'nav-links'}>
-        {getNavItems(t.nav).map(({ href, label }) => {
+        {getNavItems(t.nav, language).map(({ href, label }) => {
           return (
             <Link
               key={href}

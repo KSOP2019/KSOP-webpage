@@ -1,4 +1,17 @@
+import type { Language } from './types'
+
 export const NAV_ROUTES = ['/schedule', '/events', '/ranking', '/news', '/about'] as const
+
+/**
+ * Canonical About labels per locale. The /about label never comes from CMS
+ * copy, so stale CMS nav arrays cannot override it.
+ */
+export const ABOUT_NAV_LABELS = {
+  KR: '소개',
+  EN: 'ABOUT',
+  JP: '紹介',
+  CN: '介绍',
+} as const
 
 /**
  * Fallback labels keyed by NAV_ROUTES position.
@@ -13,11 +26,18 @@ export interface NavEntry {
   label: string
 }
 
-/** Route-driven nav: iterate routes (source of truth), pick CMS label per index. */
-export function getNavItems(labels: readonly string[] | undefined | null): NavEntry[] {
+/**
+ * Route-driven nav: iterate routes (source of truth), pick CMS label per index.
+ * ONLY href === '/about' uses ABOUT_NAV_LABELS[language]; every other label
+ * may continue to come from CMS copy.
+ */
+export function getNavItems(labels: readonly string[] | undefined | null, language: Language): NavEntry[] {
   return NAV_ROUTES.map((href, index) => ({
     href,
-    label: labels?.[index] ?? NAV_FALLBACK_LABELS[index] ?? `NAV ${index + 1}`,
+    label:
+      href === '/about'
+        ? ABOUT_NAV_LABELS[language]
+        : (labels?.[index] ?? NAV_FALLBACK_LABELS[index] ?? `NAV ${index + 1}`),
   }))
 }
 

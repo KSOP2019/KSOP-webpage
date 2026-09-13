@@ -14,7 +14,7 @@ function SocialIcon({ name, src }: { name: string; src: string }) {
 }
 
 export function SiteFooter() {
-  const { t, darkMode } = useSite()
+  const { t, darkMode, language } = useSite()
   const logo = darkMode ? '/images/ksop-dark-approved.png' : '/images/ksop-light-approved.png'
 
   return (
@@ -28,7 +28,7 @@ export function SiteFooter() {
         </p>
       </div>
       <div className="footer-nav">
-        {getNavItems(t.nav).slice(0, 4).map(({ href, label }) => (
+        {getNavItems(t.nav, language).slice(0, 4).map(({ href, label }) => (
           <Link href={href} key={href}>
             {label}
           </Link>
