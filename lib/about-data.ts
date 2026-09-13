@@ -53,8 +53,8 @@ export const partners: Partner[] = [
 export const companyMilestones: CompanyMilestone[] = [
   { label: 'BEGINNING', title: '시작', description: '포커 대회를 더 체계적이고 신뢰도 높은 방식으로 운영하기 위한 프로젝트에서 시작.' },
   { label: 'BUILD', title: '구축', description: '대회 운영 시스템, 선수 데이터, 라이브 타이머, 랭킹 구조를 단계적으로 구축.' },
-  { label: 'EXPANSION', title: '확장', description: 'FLOPIN, PLAYPLACE, KSOP STUDIO, PLAYSOFT와 연결되는 포커 엔터테인먼트 구조로 확장.' },
-  { label: 'NOW', title: '현재', description: '오프라인 대회와 디지털 플랫폼, 콘텐츠 제작, 파트너 비즈니스를 하나의 체계로 연결하는 단계.' },
+  { label: 'EXPANSION', title: '확장', description: '각각 독립적으로 운영되는 FLOPIN, PLAYPLACE, KSOP STUDIO, PLAYSOFT와 계약·제휴 기반의 협력 구조를 구축하며 사업 영역을 확장.' },
+  { label: 'NOW', title: '현재', description: '오프라인 대회, 디지털 플랫폼, 콘텐츠 제작, 파트너 비즈니스를 분야별 독립 사업체와의 계약·제휴로 연결하는 단계.' },
   { label: 'NEXT', title: '다음', description: '국내를 넘어 아시아권 포커 이벤트·미디어·선수 생태계로 확장.' },
 ]
 
