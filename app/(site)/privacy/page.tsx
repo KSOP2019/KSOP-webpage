@@ -16,12 +16,21 @@ export default function PrivacyPage() {
         </div>
       </div>
       <p className="large-copy" style={{ maxWidth: '68ch' }}>
-        KSOP는 제휴·문의 응대를 위해 최소한의 개인정보(이름, 연락처, 이메일, 문의 내용)만을 수집하며,
-        수집 목적 외 이용·제3자 제공을 하지 않습니다. 보관 기간 경과 시 지체 없이 파기합니다.
-        개인정보 관련 문의는 공식 채널을 통해 접수해 주세요.
+        KSOP는 제휴 및 문의 응대를 위해 필요한 최소한의 개인정보를 처리합니다.
+        수집 항목은 이름, 연락처, 이메일, 문의 내용이며, 수집 목적은 제휴 및 문의 응대입니다.
+        서비스 운영을 위해 호스팅, 데이터베이스 등 외부 서비스 제공업체가
+        KSOP를 대신하여 정보를 처리할 수 있으며,
+        구체적인 처리위탁 업체와 범위는 운영 확정 후 개인정보처리방침에 명시합니다.
+      </p>
+      <p className="large-copy" style={{ maxWidth: '68ch', marginTop: '16px' }}>
+        개인정보는 수집 목적 달성 및 관련 법령상 필요한 범위에서만 보관하며,
+        구체적인 보관 기간은 운영 정책 확정 후 공개합니다.
+      </p>
+      <p className="large-copy" style={{ maxWidth: '68ch', marginTop: '16px' }}>
+        개인정보 관련 문의 채널은 운영 확정 후 본 페이지에 안내합니다.
       </p>
       <p className="muted-copy" role="status" style={{ marginTop: '16px' }}>
-        상세 처리방침은 운영 확정 시 공개됩니다. PII는 URL에 포함하지 않으며 로그에 원문을 기록하지 않습니다.
+        본 페이지의 세부 처리방침은 운영 정책 및 개인정보 처리 구조 확정 후 업데이트됩니다.
       </p>
     </section>
   )

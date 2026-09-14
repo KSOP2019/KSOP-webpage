@@ -21,6 +21,7 @@ const nextConfig = {
             "font-src 'self' data:",
             "connect-src 'self' https://*.supabase.co https://*.vercel-insights.com",
             "frame-ancestors 'self'",
+            "form-action 'self'",
             "object-src 'none'",
             "base-uri 'self'",
           ].join('; '),

@@ -41,8 +41,28 @@ export function DetailHeader({ activeHref }: { activeHref?: string }) {
     document.body.style.overflow = 'hidden'
     const firstLink = navRef.current?.querySelector('a')
     firstLink instanceof HTMLElement && firstLink.focus()
+    const closeAndRefocus = () => {
+      setMenuOpen(false)
+      requestAnimationFrame(() => toggleRef.current?.focus())
+    }
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') setMenuOpen(false)
+      if (event.key === 'Escape') {
+        event.preventDefault()
+        closeAndRefocus()
+      }
+      if (event.key === 'Tab' && navRef.current) {
+        const focusables = Array.from(navRef.current.querySelectorAll('a, button'))
+        if (focusables.length === 0) return
+        const first = focusables[0] as HTMLElement
+        const last = focusables[focusables.length - 1] as HTMLElement
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault()
+          last.focus()
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault()
+          first.focus()
+        }
+      }
     }
     const onPointerDown = (event: PointerEvent) => {
       if (
@@ -51,7 +71,7 @@ export function DetailHeader({ activeHref }: { activeHref?: string }) {
         toggleRef.current &&
         !toggleRef.current.contains(event.target as Node)
       ) {
-        setMenuOpen(false)
+        closeAndRefocus()
       }
     }
     document.addEventListener('keydown', onKeyDown)
@@ -63,6 +83,11 @@ export function DetailHeader({ activeHref }: { activeHref?: string }) {
     }
   }, [menuOpen])
 
+  const closeMenu = (returnFocus: boolean) => {
+    setMenuOpen(false)
+    if (returnFocus) requestAnimationFrame(() => toggleRef.current?.focus())
+  }
+
   return (
     <header className={`site-header detail-header glass${scrolled ? ' is-scrolled' : ''}`} data-glass="header">
       <Link href="/" className="brand">
@@ -73,7 +98,7 @@ export function DetailHeader({ activeHref }: { activeHref?: string }) {
           height={54}
         />
       </Link>
-      <nav ref={navRef} className={menuOpen ? 'nav-links is-open' : 'nav-links'} aria-label="Primary">
+      <nav ref={navRef} id="detail-primary-navigation" className={menuOpen ? 'nav-links is-open' : 'nav-links'} aria-label="Primary">
         {getNavItems(t.nav, language).map(({ href, label }) => {
           const active = activeHref === href
           return (
@@ -82,7 +107,7 @@ export function DetailHeader({ activeHref }: { activeHref?: string }) {
               href={href}
               className={active ? 'active' : undefined}
               aria-current={active ? 'page' : undefined}
-              onClick={() => setMenuOpen(false)}
+              onClick={() => closeMenu(true)}
             >
               {label}
             </Link>
@@ -108,9 +133,10 @@ export function DetailHeader({ activeHref }: { activeHref?: string }) {
           <button
             ref={toggleRef}
             className="menu-toggle"
-            onClick={() => setMenuOpen((value) => !value)}
+            onClick={() => (menuOpen ? closeMenu(true) : setMenuOpen(true))}
             aria-label={menuOpen ? 'Close menu' : 'Open menu'}
             aria-expanded={menuOpen}
+            aria-controls="detail-primary-navigation"
             type="button"
           >
             {menuOpen ? <X /> : <Menu />}

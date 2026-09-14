@@ -32,7 +32,7 @@ export function AboutApplicationForm({ spec, copy, fields }: AboutApplicationFor
 
   const onSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    // Duplicate submit lock + simple rate limiting (10s).
+    // Client duplicate-submit lock (10s). No submission API exists; this is not server rate limiting.
     const now = Date.now()
     if (submitting || now - lastSubmitAt < 10000) return
     const form = event.currentTarget
@@ -42,7 +42,6 @@ export function AboutApplicationForm({ spec, copy, fields }: AboutApplicationFor
     const nextErrors: Record<string, string> = {}
     for (const field of spec) {
       const raw = String(data.get(field.name) || '').trim()
-      const id = `apply-${field.name}`
       if (field.required && !raw) {
         nextErrors[field.name] = 'Required'
         continue
@@ -60,7 +59,6 @@ export function AboutApplicationForm({ spec, copy, fields }: AboutApplicationFor
         nextErrors[field.name] = 'Invalid phone'
         continue
       }
-      void id
     }
     // Privacy consent is mandatory.
     if (!data.get('privacy_consent')) {
@@ -86,7 +84,7 @@ export function AboutApplicationForm({ spec, copy, fields }: AboutApplicationFor
   return (
     <div>
       <p className="muted-copy" role="status" style={{ marginBottom: '16px' }}>
-        현재 접수 시스템 준비 중 — submit is disabled until backend exists.
+        현재 접수 시스템을 준비 중입니다.
       </p>
       <div ref={errorRef} tabIndex={-1} aria-live="polite" style={{ outline: 'none' }}>
         {status ? <p className="muted-copy" role="status">{status}</p> : null}

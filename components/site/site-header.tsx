@@ -42,14 +42,23 @@ export function SiteHeader() {
   }, [])
 
   // Mobile drawer: body scroll lock, ESC close, outside click close, first-item focus.
+  // Focus is returned to the hamburger trigger on close (ESC/outside/route/toggle).
   useEffect(() => {
     if (!menuOpen) return
     const prevOverflow = document.body.style.overflow
     document.body.style.overflow = 'hidden'
     const firstLink = navRef.current?.querySelector('a')
     firstLink instanceof HTMLElement && firstLink.focus()
+    const closeAndRefocus = () => {
+      setMenuOpen(false)
+      // Return focus to trigger; queue after handlers so trap listeners are removed first.
+      requestAnimationFrame(() => toggleRef.current?.focus())
+    }
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') setMenuOpen(false)
+      if (event.key === 'Escape') {
+        event.preventDefault()
+        closeAndRefocus()
+      }
       if (event.key === 'Tab' && navRef.current) {
         const focusables = Array.from(navRef.current.querySelectorAll('a, button'))
         if (focusables.length === 0) return
@@ -71,7 +80,7 @@ export function SiteHeader() {
         toggleRef.current &&
         !toggleRef.current.contains(event.target as Node)
       ) {
-        setMenuOpen(false)
+        closeAndRefocus()
       }
     }
     document.addEventListener('keydown', onKeyDown)
@@ -83,13 +92,18 @@ export function SiteHeader() {
     }
   }, [menuOpen])
 
+  const closeMenu = (returnFocus: boolean) => {
+    setMenuOpen(false)
+    if (returnFocus) requestAnimationFrame(() => toggleRef.current?.focus())
+  }
+
   return (
     <header className={`site-header glass${scrolled ? ' is-scrolled' : ''}`} data-glass="header">
       <Link href="/" className="brand">
         <img src={logo} alt="KSOP Korea Series of Poker" width={170} height={54} />
       </Link>
 
-      <nav ref={navRef} className={menuOpen ? 'nav-links is-open' : 'nav-links'} aria-label="Primary">
+      <nav ref={navRef} id="primary-navigation" className={menuOpen ? 'nav-links is-open' : 'nav-links'} aria-label="Primary">
         {getNavItems(t.nav, language).map(({ href, label }) => {
           const active = pathname === href || ((href as string) !== '/' && pathname.startsWith(href))
           return (
@@ -98,7 +112,7 @@ export function SiteHeader() {
               href={href}
               className={active ? 'is-active' : undefined}
               aria-current={active ? 'page' : undefined}
-              onClick={() => setMenuOpen(false)}
+              onClick={() => closeMenu(true)}
             >
               {label}
             </Link>
@@ -124,7 +138,7 @@ export function SiteHeader() {
           <LanguageMenu />
           <ThemeSwitch />
 
-          <button ref={toggleRef} className="menu-toggle" aria-label={menuOpen ? 'Close menu' : 'Open menu'} aria-expanded={menuOpen} aria-controls="primary-navigation" type="button" onClick={() => setMenuOpen(!menuOpen)}>
+          <button ref={toggleRef} className="menu-toggle" aria-label={menuOpen ? 'Close menu' : 'Open menu'} aria-expanded={menuOpen} aria-controls="primary-navigation" type="button" onClick={() => (menuOpen ? closeMenu(true) : setMenuOpen(true))}>
             {menuOpen ? <X /> : <Menu />}
           </button>
         </div>
