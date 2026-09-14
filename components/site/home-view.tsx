@@ -22,8 +22,43 @@ type HomeViewProps = {
   ranked: RankedPlayer[]
 }
 
+const HOME_EMPTY_COPY = {
+  KR: {
+    eventsTitle: '주요 이벤트',
+    eventsBody: '확정된 공식 이벤트가 등록되는 즉시 이 영역에서 확인할 수 있습니다.',
+    rankingTitle: 'TOP PLAYER',
+    rankingBody: '확정된 공식 선수 랭킹이 등록되면 이 영역에 표시됩니다.',
+    newsTitle: 'KSOP NEWS',
+    newsBody: '확정된 공식 소식이 등록되는 즉시 이 영역에서 확인할 수 있습니다.',
+  },
+  EN: {
+    eventsTitle: 'FEATURED EVENTS',
+    eventsBody: 'Confirmed official events will appear here as soon as they are published.',
+    rankingTitle: 'TOP PLAYER',
+    rankingBody: 'Confirmed official player rankings will appear here when published.',
+    newsTitle: 'KSOP NEWS',
+    newsBody: 'Confirmed official news will appear here as soon as it is published.',
+  },
+  JP: {
+    eventsTitle: '注目イベント',
+    eventsBody: '確定した公式イベントは公開され次第、このエリアに表示されます。',
+    rankingTitle: 'TOP PLAYER',
+    rankingBody: '確定した公式プレイヤーランキングは公開され次第表示されます。',
+    newsTitle: 'KSOP NEWS',
+    newsBody: '確定した公式ニュースは公開され次第、このエリアに表示されます。',
+  },
+  CN: {
+    eventsTitle: '重点赛事',
+    eventsBody: '已确认的官方赛事发布后将在此区域显示。',
+    rankingTitle: 'TOP PLAYER',
+    rankingBody: '已确认的官方选手排名发布后将在此区域显示。',
+    newsTitle: 'KSOP NEWS',
+    newsBody: '已确认的官方资讯发布后将在此区域显示。',
+  },
+} as const
+
 export function HomeView({ events, players, news, ranked }: HomeViewProps) {
-  const { content, t } = useSite()
+  const { content, t, language } = useSite()
   const [open, setOpen] = useState(-1)
   const [selectedDate, setSelectedDate] = useState('ALL')
   const [selectedCategory, setSelectedCategory] = useState('ALL EVENT')
@@ -36,6 +71,7 @@ export function HomeView({ events, players, news, ranked }: HomeViewProps) {
     minutes: 0,
     seconds: 0,
   })
+  const emptyCopy = HOME_EMPTY_COPY[language]
 
   useEffect(() => {
     setMounted(true)
@@ -167,6 +203,14 @@ export function HomeView({ events, players, news, ranked }: HomeViewProps) {
           </h2>
           <p className="large-copy">{content.introBody}</p>
         </Reveal>
+        <div style={{ marginTop: '24px', display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
+          <Link className="text-link" href="/about/series">
+            {t.exploreSchedule ?? 'Explore the series'} <ArrowUpRight />
+          </Link>
+          <Link className="text-link" href="/schedule">
+            {t.schedule ?? 'Schedule'} <ArrowUpRight />
+          </Link>
+        </div>
       </section>
 
       <section className="schedule-section section-pad" id="schedule">
@@ -199,65 +243,77 @@ export function HomeView({ events, players, news, ranked }: HomeViewProps) {
         </div>
 
         <div className="schedule-list">
-          {visibleEvents.map((event, index) => (
-            <article className={open === index ? 'schedule-item open' : 'schedule-item'} key={event.id}>
-              <button className="schedule-trigger" type="button" onClick={() => setOpen(open === index ? -1 : index)}>
-                <span className="date">
-                  <strong>{event.date}</strong>
-                  <span>{event.dayLabel}</span>
-                </span>
-                {eventCardImage(event) ? (
-                  <img
-                    src={eventCardImage(event)}
-                    alt=""
-                    loading="lazy"
-                    style={{ width: 56, height: 56, borderRadius: 10, objectFit: 'cover', flex: '0 0 56px' }}
-                  />
-                ) : null}
-                <span className="event-title">
-                  <b>{event.name}</b>
-                  <small>
-                    {event.type} · {t.buyin ?? 'BUY-IN'} {event.buyInType} · {event.gtd} GTD
-                  </small>
-                </span>
-                <span className="event-type">{event.type}</span>
-                <ChevronDown className="chevron" />
-                <span className="glass event-buyin-tip" data-glass="popover" aria-hidden="true">
-                  {t.buyin ?? 'BUY-IN'} {event.buyInType}
-                </span>
-              </button>
-              {open === index && (
-                <div className="event-detail">
-                  <div className="detail-facts">
-                    <div>
-                      <span>{t.factChips ?? 'STARTING CHIPS'}</span>
-                      <strong>{event.startingChips.toLocaleString()}</strong>
+          {visibleEvents.length === 0 ? (
+            <GlassCard asChild>
+              <div role="status" style={{ padding: '28px', display: 'grid', gap: '10px' }}>
+                <span className="section-label">{emptyCopy.eventsTitle}</span>
+                <strong style={{ fontSize: '1.1rem' }}>{emptyCopy.eventsBody}</strong>
+                <Link className="text-link" href="/events">
+                  {t.viewAllEvents ?? 'View all events'} <ArrowUpRight />
+                </Link>
+              </div>
+            </GlassCard>
+          ) : (
+            visibleEvents.map((event, index) => (
+              <article className={open === index ? 'schedule-item open' : 'schedule-item'} key={event.id}>
+                <button className="schedule-trigger" type="button" onClick={() => setOpen(open === index ? -1 : index)}>
+                  <span className="date">
+                    <strong>{event.date}</strong>
+                    <span>{event.dayLabel}</span>
+                  </span>
+                  {eventCardImage(event) ? (
+                    <img
+                      src={eventCardImage(event)}
+                      alt=""
+                      loading="lazy"
+                      style={{ width: 56, height: 56, borderRadius: 10, objectFit: 'cover', flex: '0 0 56px' }}
+                    />
+                  ) : null}
+                  <span className="event-title">
+                    <b>{event.name}</b>
+                    <small>
+                      {event.type} · {t.buyin ?? 'BUY-IN'} {event.buyInType} · {event.gtd} GTD
+                    </small>
+                  </span>
+                  <span className="event-type">{event.type}</span>
+                  <ChevronDown className="chevron" />
+                  <span className="glass event-buyin-tip" data-glass="popover" aria-hidden="true">
+                    {t.buyin ?? 'BUY-IN'} {event.buyInType}
+                  </span>
+                </button>
+                {open === index && (
+                  <div className="event-detail">
+                    <div className="detail-facts">
+                      <div>
+                        <span>{t.factChips ?? 'STARTING CHIPS'}</span>
+                        <strong>{event.startingChips.toLocaleString()}</strong>
+                      </div>
+                      <div>
+                        <span>{t.factLate ?? 'LATE REG.'}</span>
+                        <strong>{event.lateReg}</strong>
+                      </div>
+                      <div>
+                        <span>{t.factLevel ?? 'LEVEL TIME'}</span>
+                        <strong>{event.levelTime}</strong>
+                      </div>
+                      <div>
+                        <span>{t.factType ?? 'TYPE'}</span>
+                        <strong>{event.type}</strong>
+                      </div>
                     </div>
-                    <div>
-                      <span>{t.factLate ?? 'LATE REG.'}</span>
-                      <strong>{event.lateReg}</strong>
-                    </div>
-                    <div>
-                      <span>{t.factLevel ?? 'LEVEL TIME'}</span>
-                      <strong>{event.levelTime}</strong>
-                    </div>
-                    <div>
-                      <span>{t.factType ?? 'TYPE'}</span>
-                      <strong>{event.type}</strong>
+                    <div className="detail-actions">
+                      <Link className="primary-cta" href={`/events/${event.id}`}>
+                        {t.viewEvent ?? 'View event'} <ArrowUpRight />
+                      </Link>
+                      <button className="ghost-button" type="button" onClick={() => setRegistered(true)}>
+                        {t.registerShort ?? 'Register'}
+                      </button>
                     </div>
                   </div>
-                  <div className="detail-actions">
-                    <Link className="primary-cta" href={`/events/${event.id}`}>
-                      {t.viewEvent ?? 'View event'} <ArrowUpRight />
-                    </Link>
-                    <button className="ghost-button" type="button" onClick={() => setRegistered(true)}>
-                      {t.registerShort ?? 'Register'}
-                    </button>
-                  </div>
-                </div>
-              )}
-            </article>
-          ))}
+                )}
+              </article>
+            ))
+          )}
         </div>
 
         <div style={{ marginTop: '24px', display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
@@ -282,9 +338,15 @@ export function HomeView({ events, players, news, ranked }: HomeViewProps) {
         </div>
 
         {ranked.length === 0 ? (
-          <p className="muted-copy" role="status">
-            Official ranking is being prepared. No provisional standings are shown.
-          </p>
+          <GlassCard asChild>
+            <div role="status" style={{ padding: '28px', display: 'grid', gap: '10px' }}>
+              <span className="section-label">{emptyCopy.rankingTitle}</span>
+              <strong style={{ fontSize: '1.1rem' }}>{emptyCopy.rankingBody}</strong>
+              <Link className="text-link" href="/ranking">
+                {t.fullRanking ?? 'Full ranking'} <ArrowUpRight />
+              </Link>
+            </div>
+          </GlassCard>
         ) : (
           <>
             <Reveal className="podium-grid">
@@ -332,9 +394,15 @@ export function HomeView({ events, players, news, ranked }: HomeViewProps) {
         </div>
         <Reveal className="news-grid">
           {news.length === 0 ? (
-            <p className="muted-copy" role="status">
-              Official news is being prepared.
-            </p>
+            <GlassCard asChild>
+              <div role="status" style={{ padding: '28px', display: 'grid', gap: '10px', width: '100%' }}>
+                <span className="section-label">{emptyCopy.newsTitle}</span>
+                <strong style={{ fontSize: '1.1rem' }}>{emptyCopy.newsBody}</strong>
+                <Link className="text-link" href="/news">
+                  {t.allNews ?? 'All news'} <ArrowUpRight />
+                </Link>
+              </div>
+            </GlassCard>
           ) : (
             news.slice(0, 3).map((item) => (
               <article key={item.slug}>
