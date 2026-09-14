@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import type { PlayerItem } from '@/lib/types'
-import { createPublicClient } from '@/lib/supabase-server'
+import { createPublicBrowserClient } from '@/lib/supabase-client'
 import type { EventItem } from '@/lib/types'
 
 interface PlayerResultForm {
@@ -59,7 +59,7 @@ export function PlayerEditor({ initialItem, adminId }: { initialItem?: PlayerIte
       try {
         const dbId = initialItem.dbId || initialItem.id
         if (!dbId) return
-        const client = createPublicClient()
+        const client = createPublicBrowserClient()
         let raw: any[] = []
         if (client) {
           const { data, error } = await client
@@ -214,7 +214,7 @@ export function PlayerEditor({ initialItem, adminId }: { initialItem?: PlayerIte
             setAdminError(null)
             try {
               // Delete synthetic players first (cascade removes results via RLS/DB design)
-              const client = createPublicClient()
+              const client = createPublicBrowserClient()
               if (client) {
                 // Find synthetic players
                 const { data: syntheticPlayers } = await client.from('players').select('id,slug').like('slug', 'test-player-%')

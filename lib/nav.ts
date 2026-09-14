@@ -43,6 +43,19 @@ export function getNavItems(labels: readonly string[] | undefined | null, langua
 
 export const EVENT_CATEGORIES = ['ALL EVENT', 'MAIN EVENT', 'HIGH ROLLER', 'DAY'] as const
 
+/**
+ * Confirmed social profile URLs only. Empty string = unconfirmed → hidden.
+ * Never use "#" or "/#social" as href.
+ */
+export const SOCIAL_URLS: Record<string, string> = {
+  FLOPIN: '',
+  Instagram: '',
+  X: '',
+  Discord: '',
+  Facebook: '',
+  YouTube: '',
+}
+
 export const socials = {
   Instagram: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Instagram_logo_2016.svg-NBMO0lmv2K7K473c9FrC4lkjBON4CP.xml',
   YouTube: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/YouTube_full-color_icon_%282017%29-lzM6xIHSSDTpUc58zCv1DnznwW1NMZ.svg',

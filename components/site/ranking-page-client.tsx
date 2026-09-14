@@ -25,6 +25,22 @@ export function RankingPageClient({ ranked }: { ranked: RankedPlayer[] }) {
   const top3 = filtered.slice(0, 3)
   const rest = filtered.slice(3)
 
+  if (ranked.length === 0) {
+    return (
+      <section className="ranking-section section-pad">
+        <div className="section-top">
+          <div>
+            <div className="section-label">{t.rankingLabel ?? '03 / PLAYER RANKING'}</div>
+            <h2>TOP 100</h2>
+          </div>
+        </div>
+        <p className="muted-copy" role="status">
+          Official ranking is being prepared. No provisional standings are shown.
+        </p>
+      </section>
+    )
+  }
+
   return (
     <section className="ranking-section section-pad">
       <div className="section-top">

@@ -84,15 +84,7 @@ export function EventDetailClient({
           ))}
         </div>
 
-        <div className="blind-label">{t.resultLabel ?? 'RESULT'}</div>
-        <p className="muted-copy" style={{ marginTop: '12px' }}>
-          {t.resultPending ?? 'RESULT DATA PENDING'}
-        </p>
-
-        <div className="blind-label">{t.liveLabel ?? 'LIVE'}</div>
-        <p className="muted-copy" style={{ marginTop: '12px' }}>
-          {t.livePending ?? 'LIVE DATA PENDING'}
-        </p>
+        {/* Results/live render only when verified data exists — no default pending exposure. */}
 
         <div className="detail-actions">
           <button className="primary-cta" type="button" disabled aria-disabled="true" title={t.regPending ?? 'Registration not yet available'}>

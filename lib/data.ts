@@ -69,10 +69,11 @@ export function siteContentToSiteSettings(content: SiteContent): any {
     image_break_emphasis: content.imageBreakEmphasis || seedContent.imageBreakEmphasis,
     footer_text: content.introBody || seedContent.introBody,
     primary_color: '#c5202d',
-    instagram_url: '#',
-    youtube_url: '#',
-    facebook_url: '#',
-    x_url: '#',
+    // Unconfirmed social URLs stay empty (never "#" or "/#social"). Header/footer hide empties.
+    instagram_url: '',
+    youtube_url: '',
+    facebook_url: '',
+    x_url: '',
     copy: content.copy || seedContent.copy,
   }
 }

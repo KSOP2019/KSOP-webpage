@@ -21,9 +21,26 @@ type SnsDockProps = {
  * - 기본 monochrome, hover에만 brand color (tokens → CSS var).
  * - Glass blur는 .glass[data-glass] (glass.css) 담당.
  */
-export function SnsDock({ name, children, className, href = '/#social', ariaLabel }: SnsDockProps) {
+export function SnsDock({ name, children, className, href, ariaLabel }: SnsDockProps) {
   const brand = (socialBrandColors as Record<string, string>)[name] ?? 'currentColor';
   const style = { '--sns-brand': brand } as CSSProperties;
+
+  // No confirmed URL → render non-link visual only. Never href="#" or "/#social".
+  if (!href) {
+    return (
+      <span
+        aria-label={ariaLabel ?? name}
+        data-glass="subtle"
+        data-sns={name}
+        className={cn('social-icon', 'glass', 'sns-glass', className)}
+        style={style}
+      >
+        {children}
+      </span>
+    );
+  }
+
+  const isExternal = href.startsWith('http');
 
   return (
     <a
@@ -33,6 +50,7 @@ export function SnsDock({ name, children, className, href = '/#social', ariaLabe
       data-sns={name}
       className={cn('social-icon', 'glass', 'sns-glass', className)}
       style={style}
+      {...(isExternal ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
     >
       {children}
     </a>

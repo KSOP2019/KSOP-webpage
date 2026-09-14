@@ -3,28 +3,93 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Menu, X } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useSite } from '@/components/site/site-provider'
 import { LanguageMenu, ThemeSwitch } from '@/components/site/header-controls'
 import { SnsDock } from '@/components/effects/sns-dock'
-import { getNavItems } from '@/lib/nav'
+import { getNavItems, SOCIAL_URLS } from '@/lib/nav'
 
 const LIGHT_LOGO = '/images/ksop-light-approved.png'
 const DARK_LOGO = '/images/ksop-dark-approved.png'
 
+const SOCIAL_ORDER = [
+  ['FLOPIN', 'F'],
+  ['Instagram', '◎'],
+  ['X', '𝕏'],
+  ['Discord', '◌'],
+  ['Facebook', 'f'],
+  ['YouTube', '▶'],
+] as const
+
+function socialTooltip(name: string): string {
+  return name.toUpperCase()
+}
+
 export function SiteHeader() {
   const { darkMode, t, language } = useSite()
   const [menuOpen, setMenuOpen] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
   const pathname = usePathname()
   const logo = darkMode ? DARK_LOGO : LIGHT_LOGO
+  const navRef = useRef<HTMLElement | null>(null)
+  const toggleRef = useRef<HTMLButtonElement | null>(null)
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 24)
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
+  // Mobile drawer: body scroll lock, ESC close, outside click close, first-item focus.
+  useEffect(() => {
+    if (!menuOpen) return
+    const prevOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    const firstLink = navRef.current?.querySelector('a')
+    firstLink instanceof HTMLElement && firstLink.focus()
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setMenuOpen(false)
+      if (event.key === 'Tab' && navRef.current) {
+        const focusables = Array.from(navRef.current.querySelectorAll('a, button'))
+        if (focusables.length === 0) return
+        const first = focusables[0] as HTMLElement
+        const last = focusables[focusables.length - 1] as HTMLElement
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault()
+          last.focus()
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault()
+          first.focus()
+        }
+      }
+    }
+    const onPointerDown = (event: PointerEvent) => {
+      if (
+        navRef.current &&
+        !navRef.current.contains(event.target as Node) &&
+        toggleRef.current &&
+        !toggleRef.current.contains(event.target as Node)
+      ) {
+        setMenuOpen(false)
+      }
+    }
+    document.addEventListener('keydown', onKeyDown)
+    document.addEventListener('pointerdown', onPointerDown)
+    return () => {
+      document.body.style.overflow = prevOverflow
+      document.removeEventListener('keydown', onKeyDown)
+      document.removeEventListener('pointerdown', onPointerDown)
+    }
+  }, [menuOpen])
 
   return (
-    <header className="site-header glass" data-glass="header">
+    <header className={`site-header glass${scrolled ? ' is-scrolled' : ''}`} data-glass="header">
       <Link href="/" className="brand">
         <img src={logo} alt="KSOP Korea Series of Poker" width={170} height={54} />
       </Link>
 
-      <nav className={menuOpen ? 'nav-links is-open' : 'nav-links'}>
+      <nav ref={navRef} className={menuOpen ? 'nav-links is-open' : 'nav-links'} aria-label="Primary">
         {getNavItems(t.nav, language).map(({ href, label }) => {
           const active = pathname === href || ((href as string) !== '/' && pathname.startsWith(href))
           return (
@@ -32,6 +97,7 @@ export function SiteHeader() {
               key={href}
               href={href}
               className={active ? 'is-active' : undefined}
+              aria-current={active ? 'page' : undefined}
               onClick={() => setMenuOpen(false)}
             >
               {label}
@@ -42,23 +108,23 @@ export function SiteHeader() {
 
       <div className="header-right">
         <div className="header-socials">
-          {[['FLOPIN', 'F'], ['Instagram', '◎'], ['X', '𝕏'], ['Discord', '◌'], ['Facebook', 'f'], ['YouTube', '▶']].map(
-            ([name, symbol]) => (
-              <SnsDock key={name} name={name} ariaLabel={name} className="social-text">
+          {SOCIAL_ORDER.map(([name, symbol]) => {
+            const href = SOCIAL_URLS[name]
+            if (!href) return null
+            return (
+              <SnsDock key={name} name={name} ariaLabel={name} href={href} className="social-text">
                 <span aria-hidden="true">{symbol}</span>
-                <span className="social-tooltip">
-                  {name === 'X' ? 'X SPACE' : name === 'Instagram' ? 'INSTAR GRAM' : name.toUpperCase()}
-                </span>
+                <span className="social-tooltip">{socialTooltip(name)}</span>
               </SnsDock>
-            ),
-          )}
+            )
+          })}
         </div>
 
         <div className="header-actions">
           <LanguageMenu />
           <ThemeSwitch />
 
-          <button className="menu-toggle" aria-label="Toggle menu" type="button" onClick={() => setMenuOpen(!menuOpen)}>
+          <button ref={toggleRef} className="menu-toggle" aria-label={menuOpen ? 'Close menu' : 'Open menu'} aria-expanded={menuOpen} aria-controls="primary-navigation" type="button" onClick={() => setMenuOpen(!menuOpen)}>
             {menuOpen ? <X /> : <Menu />}
           </button>
         </div>

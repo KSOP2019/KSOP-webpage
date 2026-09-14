@@ -3,11 +3,14 @@
 import Link from 'next/link'
 import { useSite } from '@/components/site/site-provider'
 import { SnsDock } from '@/components/effects/sns-dock'
-import { getNavItems, socials } from '@/lib/nav'
+import { getNavItems, socials, SOCIAL_URLS } from '@/lib/nav'
 
 function SocialIcon({ name, src }: { name: string; src: string }) {
+  const href = SOCIAL_URLS[name]
+  // Confirmed URL only. Unconfirmed → hidden (never "#" or "/#social").
+  if (!href) return null
   return (
-    <SnsDock name={name} ariaLabel={name}>
+    <SnsDock name={name} ariaLabel={name} href={href}>
       <img src={src} alt="" />
     </SnsDock>
   )
@@ -16,6 +19,7 @@ function SocialIcon({ name, src }: { name: string; src: string }) {
 export function SiteFooter() {
   const { t, darkMode, language } = useSite()
   const logo = darkMode ? '/images/ksop-dark-approved.png' : '/images/ksop-light-approved.png'
+  const confirmedSocials = Object.entries(socials).filter(([name]) => SOCIAL_URLS[name])
 
   return (
     <footer className="site-footer" id="social">
@@ -34,14 +38,16 @@ export function SiteFooter() {
           </Link>
         ))}
       </div>
-      <div className="socials">
-        <span>{t.follow}</span>
-        <div>
-          {Object.entries(socials).map(([name, src]) => (
-            <SocialIcon key={name} name={name} src={src} />
-          ))}
+      {confirmedSocials.length > 0 ? (
+        <div className="socials">
+          <span>{t.follow}</span>
+          <div>
+            {confirmedSocials.map(([name, src]) => (
+              <SocialIcon key={name} name={name} src={src} />
+            ))}
+          </div>
         </div>
-      </div>
+      ) : null}
       <div className="copyright">© 2026 KSOP · ALL RIGHTS RESERVED</div>
     </footer>
   )

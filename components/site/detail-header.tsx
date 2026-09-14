@@ -2,21 +2,69 @@
 
 import Link from 'next/link'
 import { Menu, X } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useSite } from '@/components/site/site-provider'
 import { LanguageMenu, ThemeSwitch } from '@/components/site/header-controls'
-import { getNavItems } from '@/lib/nav'
+import { SnsDock } from '@/components/effects/sns-dock'
+import { getNavItems, SOCIAL_URLS } from '@/lib/nav'
 
 const LIGHT_LOGO = '/images/ksop-light-approved.png'
 const DARK_LOGO = '/images/ksop-dark-approved.png'
+
+const SOCIAL_ORDER = [
+  ['FLOPIN', 'F'],
+  ['Instagram', '◎'],
+  ['X', '𝕏'],
+  ['Discord', '◌'],
+  ['Facebook', 'f'],
+  ['YouTube', '▶'],
+] as const
 
 /** Shared fixed-geometry detail header (Schedule/Events/Ranking/News/About + series pages). */
 export function DetailHeader({ activeHref }: { activeHref?: string }) {
   const { t, darkMode, language } = useSite()
   const [menuOpen, setMenuOpen] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
+  const navRef = useRef<HTMLElement | null>(null)
+  const toggleRef = useRef<HTMLButtonElement | null>(null)
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 24)
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
+  useEffect(() => {
+    if (!menuOpen) return
+    const prevOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    const firstLink = navRef.current?.querySelector('a')
+    firstLink instanceof HTMLElement && firstLink.focus()
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setMenuOpen(false)
+    }
+    const onPointerDown = (event: PointerEvent) => {
+      if (
+        navRef.current &&
+        !navRef.current.contains(event.target as Node) &&
+        toggleRef.current &&
+        !toggleRef.current.contains(event.target as Node)
+      ) {
+        setMenuOpen(false)
+      }
+    }
+    document.addEventListener('keydown', onKeyDown)
+    document.addEventListener('pointerdown', onPointerDown)
+    return () => {
+      document.body.style.overflow = prevOverflow
+      document.removeEventListener('keydown', onKeyDown)
+      document.removeEventListener('pointerdown', onPointerDown)
+    }
+  }, [menuOpen])
 
   return (
-    <header className="site-header detail-header">
+    <header className={`site-header detail-header glass${scrolled ? ' is-scrolled' : ''}`} data-glass="header">
       <Link href="/" className="brand">
         <img
           src={darkMode ? DARK_LOGO : LIGHT_LOGO}
@@ -25,13 +73,15 @@ export function DetailHeader({ activeHref }: { activeHref?: string }) {
           height={54}
         />
       </Link>
-      <nav className={menuOpen ? 'nav-links is-open' : 'nav-links'}>
+      <nav ref={navRef} className={menuOpen ? 'nav-links is-open' : 'nav-links'} aria-label="Primary">
         {getNavItems(t.nav, language).map(({ href, label }) => {
+          const active = activeHref === href
           return (
             <Link
               key={href}
               href={href}
-              className={activeHref === href ? 'active' : undefined}
+              className={active ? 'active' : undefined}
+              aria-current={active ? 'page' : undefined}
               onClick={() => setMenuOpen(false)}
             >
               {label}
@@ -41,24 +91,26 @@ export function DetailHeader({ activeHref }: { activeHref?: string }) {
       </nav>
       <div className="header-right">
         <div className="header-socials">
-          {[['FLOPIN', 'F'], ['Instagram', '◎'], ['X', '𝕏'], ['Discord', '◌'], ['Facebook', 'f'], ['YouTube', '▶']].map(
-            ([name, symbol]) => (
-              <a className="social-icon social-text" key={name} href="/#social" aria-label={name}>
+          {SOCIAL_ORDER.map(([name, symbol]) => {
+            const href = SOCIAL_URLS[name]
+            if (!href) return null
+            return (
+              <SnsDock key={name} name={name} ariaLabel={name} href={href} className="social-icon social-text">
                 <span aria-hidden="true">{symbol}</span>
-                <span className="social-tooltip">
-                  {name === 'X' ? 'X SPACE' : name === 'Instagram' ? 'INSTAR GRAM' : name.toUpperCase()}
-                </span>
-              </a>
-            ),
-          )}
+                <span className="social-tooltip">{name.toUpperCase()}</span>
+              </SnsDock>
+            )
+          })}
         </div>
         <div className="detail-actions header-actions">
           <LanguageMenu />
           <ThemeSwitch />
           <button
+            ref={toggleRef}
             className="menu-toggle"
             onClick={() => setMenuOpen((value) => !value)}
-            aria-label="Toggle menu"
+            aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={menuOpen}
             type="button"
           >
             {menuOpen ? <X /> : <Menu />}

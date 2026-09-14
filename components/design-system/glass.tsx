@@ -128,17 +128,10 @@ export function Glass({
   );
 }
 
-/** 카드 기본형 — 기존 .podium-card / .event-detail / .telemetry-grid>div 래핑용 */
+/** 카드 기본형 — 기존 .podium-card / .event-detail / .telemetry-grid>div 래핑용
+ * NOTE: Canonical GlassCard lives in components/ui/glass-card.tsx (used by home/about).
+ * This export is kept for backwards compat but prefer ui/GlassCard for new code.
+ */
 export function GlassCard(props: GlassBaseProps & { hoverLift?: boolean }) {
   return <Glass {...props} variant={props.variant ?? 'card'} hoverLift={props.hoverLift ?? true} />;
-}
-
-/** 헤더 기본형 — 기존 .site-header 래핑용 (sticky/위치는 기존 CSS 소유) */
-export function GlassHeader(props: GlassBaseProps) {
-  return <Glass {...props} variant="header" motion="none" />;
-}
-
-/** 팝오버/드롭다운 기본형 — 기존 .language-options 래핑용 */
-export function GlassPopover(props: GlassBaseProps) {
-  return <Glass {...props} variant="popover" motion="none" />;
 }

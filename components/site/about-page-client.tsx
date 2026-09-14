@@ -51,11 +51,6 @@ export function AboutTopicClient({
             </>
           )}
         </div>
-        {isVenue ? (
-          <p className="muted-copy" style={{ marginTop: '24px' }}>
-            {t.contentPending ?? 'CONTENT PENDING'}
-          </p>
-        ) : null}
         <div className="detail-actions" style={{ marginTop: '32px' }}>
           <Link className="ghost-button" href="/about">
             {t.backToAbout ?? 'Back to about'}

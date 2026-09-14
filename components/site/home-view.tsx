@@ -29,6 +29,7 @@ export function HomeView({ events, players, news, ranked }: HomeViewProps) {
   const [selectedCategory, setSelectedCategory] = useState('ALL EVENT')
   const [registered, setRegistered] = useState(false)
   const heroRef = useRef<HTMLElement | null>(null)
+  const [mounted, setMounted] = useState(false)
   const [countdown, setCountdown] = useState({
     days: content.countdownDays,
     hours: 0,
@@ -37,6 +38,14 @@ export function HomeView({ events, players, news, ranked }: HomeViewProps) {
   })
 
   useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  useEffect(() => {
+    // Countdown uses confirmed series timing only; respects reduced-motion and hydration.
+    if (typeof window === 'undefined') return
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)')
+    if (reduced.matches) return
     const timer = window.setInterval(() => {
       setCountdown((current) => {
         const total = ((current.days * 24 + current.hours) * 60 + current.minutes) * 60 + current.seconds - 1
@@ -52,7 +61,9 @@ export function HomeView({ events, players, news, ranked }: HomeViewProps) {
     return () => window.clearInterval(timer)
   }, [])
 
-  const countdownText = `${String(countdown.days).padStart(2, '0')}D : ${String(countdown.hours).padStart(2, '0')}H : ${String(countdown.minutes).padStart(2, '0')}M : ${String(countdown.seconds).padStart(2, '0')}S`
+  const countdownText = mounted
+    ? `${String(countdown.days).padStart(2, '0')}D : ${String(countdown.hours).padStart(2, '0')}H : ${String(countdown.minutes).padStart(2, '0')}M : ${String(countdown.seconds).padStart(2, '0')}S`
+    : `${String(content.countdownDays).padStart(2, '0')}D : 00H : 00M : 00S`
   const dates = Array.from(new Set(events.map((event) => event.date)))
   const visibleEvents = useMemo(
     () => filterEvents(events, selectedCategory, selectedDate).slice(0, 12),
@@ -74,7 +85,15 @@ export function HomeView({ events, players, news, ranked }: HomeViewProps) {
 
         <div className="hero-visual">
           <ParallaxImage>
-            <img src={content.heroImage} alt="KSOP tournament arena" />
+            <img
+              src={content.heroImage}
+              alt="KSOP tournament arena"
+              fetchPriority="high"
+              decoding="async"
+              width={1600}
+              height={900}
+              style={{ width: '100%', height: 'auto', aspectRatio: '16 / 9' }}
+            />
           </ParallaxImage>
           <div className="hero-stamp">
             <span>SEOUL</span>
@@ -126,7 +145,7 @@ export function HomeView({ events, players, news, ranked }: HomeViewProps) {
           <GlassCard asChild>
             <div>
               <strong>{t.invitation}</strong>
-              <span>{t.invitation}</span>
+              <span>{t.buyin ?? 'BUY-IN'}</span>
             </div>
           </GlassCard>
           <GlassCard asChild>
@@ -241,9 +260,12 @@ export function HomeView({ events, players, news, ranked }: HomeViewProps) {
           ))}
         </div>
 
-        <div style={{ marginTop: '24px' }}>
+        <div style={{ marginTop: '24px', display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
           <Link className="text-link" href="/events">
             {t.viewAllEvents ?? 'View all events'} <ArrowUpRight />
+          </Link>
+          <Link className="text-link" href="/schedule">
+            {t.exploreSchedule ?? 'Explore the schedule'} <ArrowUpRight />
           </Link>
         </div>
       </section>
@@ -259,35 +281,43 @@ export function HomeView({ events, players, news, ranked }: HomeViewProps) {
           </Link>
         </div>
 
-        <Reveal className="podium-grid">
-          {ranked.slice(0, 3).map((player) => (
-            <Link href={`/ranking/${player.playerId}`} className={`podium-card place-0${player.rank}`} key={player.playerId}>
-              <div className="podium-glow" />
-              <span className="podium-rank">{player.rank}</span>
-              <div className="podium-medal">
-                <span>{player.rank}</span>
-              </div>
-              {player.portrait ? (
-                <img className="podium-portrait" src={player.portrait} alt={`${player.name} portrait`} />
-              ) : null}
-              <strong className="player-name">{player.name}</strong>
-              <span className="podium-country">{player.country} · KSOP RANKING</span>
-              <b>{player.score}</b>
-              <span className="text-link">{t.viewProfile ?? 'View profile'} <ArrowUpRight /></span>
-            </Link>
-          ))}
-        </Reveal>
+        {ranked.length === 0 ? (
+          <p className="muted-copy" role="status">
+            Official ranking is being prepared. No provisional standings are shown.
+          </p>
+        ) : (
+          <>
+            <Reveal className="podium-grid">
+              {ranked.slice(0, 3).map((player) => (
+                <Link href={`/ranking/${player.playerId}`} className={`podium-card place-0${player.rank}`} key={player.playerId}>
+                  <div className="podium-glow" />
+                  <span className="podium-rank">{player.rank}</span>
+                  <div className="podium-medal">
+                    <span>{player.rank}</span>
+                  </div>
+                  {player.portrait ? (
+                    <img className="podium-portrait" src={player.portrait} alt={`${player.name} portrait`} />
+                  ) : null}
+                  <strong className="player-name">{player.name}</strong>
+                  <span className="podium-country">{player.country} · KSOP RANKING</span>
+                  <b>{player.score}</b>
+                  <span className="text-link">{t.viewProfile ?? 'View profile'} <ArrowUpRight /></span>
+                </Link>
+              ))}
+            </Reveal>
 
-        <div className="ranking-table" style={{ marginTop: '24px' }}>
-          {ranked.slice(3, 10).map((player) => (
-            <Link className="player-row" href={`/ranking/${player.playerId}`} key={player.playerId}>
-              <span className="rank">#{player.rank}</span>
-              <strong className="player-name">{player.name}</strong>
-              <span>{player.country}</span>
-              <span>{player.score}</span>
-            </Link>
-          ))}
-        </div>
+            <div className="ranking-table" style={{ marginTop: '24px' }}>
+              {ranked.slice(3, 4).map((player) => (
+                <Link className="player-row" href={`/ranking/${player.playerId}`} key={player.playerId}>
+                  <span className="rank">#{player.rank}</span>
+                  <strong className="player-name">{player.name}</strong>
+                  <span>{player.country}</span>
+                  <span>{player.score}</span>
+                </Link>
+              ))}
+            </div>
+          </>
+        )}
       </section>
 
       <section className="news-section section-pad" id="news">
@@ -301,17 +331,23 @@ export function HomeView({ events, players, news, ranked }: HomeViewProps) {
           </Link>
         </div>
         <Reveal className="news-grid">
-          {news.slice(0, 3).map((item) => (
-            <article key={item.slug}>
-              <span>
-                {item.date} · {item.category}
-              </span>
-              <h3>{item.title}</h3>
-              <Link className="text-link" href={`/news/${item.slug}`}>
-                {t.readStory ?? 'Read the story'} <ArrowUpRight />
-              </Link>
-            </article>
-          ))}
+          {news.length === 0 ? (
+            <p className="muted-copy" role="status">
+              Official news is being prepared.
+            </p>
+          ) : (
+            news.slice(0, 3).map((item) => (
+              <article key={item.slug}>
+                <span>
+                  {item.date} · {item.category}
+                </span>
+                <h3>{item.title}</h3>
+                <Link className="text-link" href={`/news/${item.slug}`}>
+                  {t.readStory ?? 'Read the story'} <ArrowUpRight />
+                </Link>
+              </article>
+            ))
+          )}
         </Reveal>
       </section>
 

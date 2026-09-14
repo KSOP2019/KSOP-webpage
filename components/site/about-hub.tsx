@@ -143,7 +143,7 @@ export function AboutHub() {
         </Reveal>
       </section>
 
-      {/* F. PARTNERS / SPONSORS */}
+      {/* F. PARTNERS / SPONSORS — confirmed partners only, else pending notice. */}
       <section className="section-pad about-hub">
         <Reveal>
           <div className="section-top">
@@ -151,15 +151,17 @@ export function AboutHub() {
               <div className="section-label">{a.partnersLabel}</div>
               <h2>{a.partnersHeadline}</h2>
             </div>
-            <p>{a.partnersPending}</p>
+            <p role="status">{a.partnersPending}</p>
           </div>
-          <div className="about-hub-partners">
-            {partners.map((partner) => (
-              <div key={partner.id} className="about-hub-partner">
-                {partner.name}
-              </div>
-            ))}
-          </div>
+          {partners.length > 0 ? (
+            <div className="about-hub-partners">
+              {partners.map((partner) => (
+                <div key={partner.id} className="about-hub-partner">
+                  {partner.name}
+                </div>
+              ))}
+            </div>
+          ) : null}
         </Reveal>
       </section>
 

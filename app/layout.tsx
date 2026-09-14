@@ -22,10 +22,16 @@ export const metadata: Metadata = {
   alternates: {
     canonical: '/',
   },
-  robots: {
-    index: true,
-    follow: true,
-  },
+  robots:
+    process.env.VERCEL_ENV === 'preview'
+      ? {
+          index: false,
+          follow: false,
+        }
+      : {
+          index: true,
+          follow: true,
+        },
   openGraph: {
     type: 'website',
     siteName: 'KSOP',

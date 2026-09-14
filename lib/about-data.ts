@@ -1,8 +1,8 @@
 /**
- * About hub static data — preview only, no Supabase.
+ * About hub static data — canonical local copy, no Supabase.
  *
- * Partners are neutral placeholders until real sponsors are confirmed;
- * swap `partners` with CMS rows later without touching components.
+ * Partners: confirmed partners only. Empty until real sponsors are confirmed;
+ * UI shows pending notice when empty. Never render placeholder partner names in production.
  * Form field *structure* (names, input kinds, required flags) lives here;
  * display labels/options are localized in `LocaleCopy.about.forms`.
  */
@@ -39,15 +39,8 @@ export const COOPERATION_HREFS: Record<CooperationId, string> = {
 
 export const COOPERATION_IDS: CooperationId[] = ['mice', 'corporate', 'media', 'sponsor']
 
-/** Neutral placeholders — no fake company names or logos. */
-export const partners: Partner[] = [
-  { id: 'partner-01', name: 'PARTNER 01' },
-  { id: 'partner-02', name: 'PARTNER 02' },
-  { id: 'partner-03', name: 'PARTNER 03' },
-  { id: 'partner-04', name: 'PARTNER 04' },
-  { id: 'partner-05', name: 'PARTNER 05' },
-  { id: 'partner-06', name: 'PARTNER 06' },
-]
+/** Confirmed partners only — empty until real sponsors are confirmed. */
+export const partners: Partner[] = []
 
 /** Fallback milestones (KR canonical). Localized copies come from locale `about`. */
 export const companyMilestones: CompanyMilestone[] = [
