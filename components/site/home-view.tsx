@@ -168,6 +168,14 @@ export function HomeView({ events, players, news, ranked }: HomeViewProps) {
           </h2>
           <p className="large-copy">{content.introBody}</p>
         </Reveal>
+        <div style={{ marginTop: '24px', display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
+          <Link className="text-link" href="/about/series">
+            {t.exploreSeries} <ArrowUpRight />
+          </Link>
+          <Link className="text-link" href="/schedule">
+            {t.exploreSchedule} <ArrowUpRight />
+          </Link>
+        </div>
       </section>
 
       <section className="schedule-section section-pad" id="schedule">
@@ -201,9 +209,15 @@ export function HomeView({ events, players, news, ranked }: HomeViewProps) {
 
         <div className="schedule-list">
           {visibleEvents.length === 0 ? (
-            <p className="muted-copy" role="status">
-              {t.noEvents}
-            </p>
+            <GlassCard asChild>
+              <div role="status" style={{ padding: '28px', display: 'grid', gap: '10px' }}>
+                <span className="section-label">{t.eventsEmptyTitle}</span>
+                <strong style={{ fontSize: '1.1rem' }}>{t.eventsEmptyBody}</strong>
+                <Link className="text-link" href="/events">
+                  {t.viewAllEvents} <ArrowUpRight />
+                </Link>
+              </div>
+            </GlassCard>
           ) : null}
           {visibleEvents.map((event, index) => (
             <article className={open === index ? 'schedule-item open' : 'schedule-item'} key={event.id}>
@@ -288,9 +302,15 @@ export function HomeView({ events, players, news, ranked }: HomeViewProps) {
         </div>
 
         {ranked.length === 0 ? (
-          <p className="muted-copy" role="status">
-            {t.rankingPreparing}
-          </p>
+          <GlassCard asChild>
+            <div role="status" style={{ padding: '28px', display: 'grid', gap: '10px' }}>
+              <span className="section-label">{t.rankingEmptyTitle}</span>
+              <strong style={{ fontSize: '1.1rem' }}>{t.rankingEmptyBody}</strong>
+              <Link className="text-link" href="/ranking">
+                {t.fullRanking} <ArrowUpRight />
+              </Link>
+            </div>
+          </GlassCard>
         ) : (
           <>
             <Reveal className="podium-grid">
@@ -338,9 +358,15 @@ export function HomeView({ events, players, news, ranked }: HomeViewProps) {
         </div>
         <Reveal className="news-grid">
           {news.length === 0 ? (
-            <p className="muted-copy" role="status">
-              {t.newsPreparing}
-            </p>
+            <GlassCard asChild>
+              <div role="status" style={{ padding: '28px', display: 'grid', gap: '10px', width: '100%' }}>
+                <span className="section-label">{t.newsEmptyTitle}</span>
+                <strong style={{ fontSize: '1.1rem' }}>{t.newsEmptyBody}</strong>
+                <Link className="text-link" href="/news">
+                  {t.allNews} <ArrowUpRight />
+                </Link>
+              </div>
+            </GlassCard>
           ) : (
             news.slice(0, 3).map((item) => (
               <article key={item.slug}>

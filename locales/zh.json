@@ -83,6 +83,13 @@
   "scheduleKicker": "01 / 赛程",
   "rankingPreparing": "官方排名准备中。",
   "newsPreparing": "官方新闻准备中。",
+  "eventsEmptyTitle": "重点赛事",
+  "eventsEmptyBody": "已确认的官方赛事发布后将在此区域显示。",
+  "rankingEmptyTitle": "TOP PLAYER",
+  "rankingEmptyBody": "已确认的官方选手排名发布后将在此区域显示。",
+  "newsEmptyTitle": "KSOP NEWS",
+  "newsEmptyBody": "已确认的官方资讯发布后将在此区域显示。",
+  "exploreSeries": "查看系列赛",
   "forms": {
     "company": "公司/机构名称",
     "contactName": "负责人姓名",

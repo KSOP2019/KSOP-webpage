@@ -83,6 +83,13 @@
   "scheduleKicker": "01 / Schedule",
   "rankingPreparing": "Official rankings are being prepared.",
   "newsPreparing": "Official news is being prepared.",
+  "eventsEmptyTitle": "FEATURED EVENTS",
+  "eventsEmptyBody": "Confirmed official events will appear here as soon as they are published.",
+  "rankingEmptyTitle": "TOP PLAYER",
+  "rankingEmptyBody": "Confirmed official player rankings will appear here when published.",
+  "newsEmptyTitle": "KSOP NEWS",
+  "newsEmptyBody": "Confirmed official news will appear here as soon as it is published.",
+  "exploreSeries": "Explore the series",
   "forms": {
     "company": "Company / Organization",
     "contactName": "Contact name",

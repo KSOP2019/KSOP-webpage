@@ -83,6 +83,13 @@
   "scheduleKicker": "01 / スケジュール",
   "rankingPreparing": "公式ランキングを準備中です。",
   "newsPreparing": "公式ニュースを準備中です。",
+  "eventsEmptyTitle": "注目イベント",
+  "eventsEmptyBody": "確定した公式イベントは公開され次第、このエリアに表示されます。",
+  "rankingEmptyTitle": "TOP PLAYER",
+  "rankingEmptyBody": "確定した公式プレイヤーランキングは公開され次第表示されます。",
+  "newsEmptyTitle": "KSOP NEWS",
+  "newsEmptyBody": "確定した公式ニュースは公開され次第、このエリアに表示されます。",
+  "exploreSeries": "シリーズを見る",
   "forms": {
     "company": "会社/機関名",
     "contactName": "担当者名",
