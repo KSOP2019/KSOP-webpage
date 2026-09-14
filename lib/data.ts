@@ -11,13 +11,26 @@ import {
   type RankingResultInput,
   type ScoreBreakdownRow,
 } from './ranking-score'
-const RANKING_TEST_MODE = true
+const RANKING_TEST_MODE = false
 
 import type { RankedPlayer, PlayerResultItem, PlayerScoreRow } from './types'
 
 export { filterEvents }
 
-const dataDir = path.join(process.cwd(), 'data')
+const dataDir = process.env.VERCEL_ENV === 'preview'
+  ? path.join('/tmp', 'ksop-preview-data')
+  : path.join(process.cwd(), 'data')
+
+/**
+ * Environment-aware preview policy (single source of truth).
+ * - preview (VERCEL_ENV === 'preview'): DB first, seed/synthetic fallback allowed.
+ * - production (real prod): DB only, never synthetic. No Supabase writes.
+ * - development: DB first, local file fallback allowed.
+ * This preserves main's production-safety intent (299925d) while keeping
+ * Vercel branch previews non-empty without writing fake data to Supabase.
+ */
+export const IS_VERCEL_PREVIEW =
+  process.env.VERCEL_ENV === 'preview'
 
 const VALID_EVENT_TYPES: EventType[] = ['NLH', 'PLO', 'SATELLITE', 'MAIN EVENT', 'HIGH ROLLER']
 const VALID_NEWS_CATEGORIES: NewsCategory[] = ['FIELD NOTES', 'PLAYER PORTRAIT', 'KSOP JOURNAL']
@@ -158,16 +171,16 @@ export async function getEvents(): Promise<EventItem[]> {
 
     if (error) {
       console.error('Supabase events read error:', error.message)
-      if (isProduction()) {
+      if (isProduction() && !IS_VERCEL_PREVIEW) {
         // Production: never silently fall back to seed data when Supabase configured
         return []
       }
-      // Development only: controlled fallback when query fails
+      // Preview/development only: controlled fallback when query fails
       return readJsonFile('events.json', createSeedEvents())
     }
 
     if (!data || data.length === 0) {
-      if (isProduction()) {
+      if (isProduction() && !IS_VERCEL_PREVIEW) {
         // Production: empty published table returns empty array
         return []
       }
@@ -220,6 +233,8 @@ export async function getEvents(): Promise<EventItem[]> {
     })
   }
 
+  // No Supabase client: preview/dev may use local seed; real production stays empty.
+  if (isProduction() && !IS_VERCEL_PREVIEW) return []
   return readJsonFile('events.json', createSeedEvents())
 }
 
@@ -297,7 +312,7 @@ export async function saveEvents(events: EventItem[]) {
 // --- Players ---
 
 export async function getPlayers(): Promise<PlayerItem[]> {
-  if (RANKING_TEST_MODE) {
+  if (RANKING_TEST_MODE && !isProduction()) {
     return seedPlayers
   }
   const client = createPublicClient()
@@ -310,10 +325,14 @@ export async function getPlayers(): Promise<PlayerItem[]> {
 
     if (error) {
       console.error('Supabase players read error:', error.message)
+      // Production blocks synthetic; preview allows seed fallback when DB empty/error.
+      if (isProduction() && !IS_VERCEL_PREVIEW) return []
       return readJsonFile('players.json', seedPlayers)
     }
 
     if (!data || data.length === 0) {
+      // Production blocks synthetic; preview allows seed fallback when DB empty/error.
+      if (isProduction() && !IS_VERCEL_PREVIEW) return []
       return readJsonFile('players.json', seedPlayers)
     }
 
@@ -333,6 +352,8 @@ export async function getPlayers(): Promise<PlayerItem[]> {
     }))
   }
 
+  // No Supabase client: preview/dev may use local seed; real production stays empty.
+  if (isProduction() && !IS_VERCEL_PREVIEW) return []
   return readJsonFile('players.json', seedPlayers)
 }
 
@@ -389,12 +410,14 @@ export async function getNews(): Promise<NewsItem[]> {
 
     if (error) {
       console.error('Supabase news read error:', error.message)
-      if (isProduction()) return []
+      // Production: real CMS only. Preview/dev: local fallback allowed.
+      if (isProduction() && !IS_VERCEL_PREVIEW) return []
       return readJsonFile('news.json', seedNews)
     }
 
     if (!data || data.length === 0) {
-      if (isProduction()) return []
+      // Production: real CMS only. Preview/dev: local fallback allowed.
+      if (isProduction() && !IS_VERCEL_PREVIEW) return []
       return readJsonFile('news.json', seedNews)
     }
 
@@ -410,6 +433,8 @@ export async function getNews(): Promise<NewsItem[]> {
     }))
   }
 
+  // No Supabase client: preview/dev may use local file; real production stays empty (no synthetic leak).
+  if (isProduction() && !IS_VERCEL_PREVIEW) return []
   return readJsonFile('news.json', seedNews)
 }
 
@@ -470,8 +495,10 @@ export async function getSiteContent(): Promise<SiteContent> {
 
     if (error) {
       console.error('Supabase site content read error:', error.message)
-      if (isProduction()) {
-        throw new Error('PRODUCTION_READ_ERROR: Site content read failed. Supabase is configured but query returned an error.')
+      // About is static corporate copy (not QA ranking data): never blank the page.
+      // CMS may override later, but empty/error CMS falls back to canonical local copy.
+      if (isProduction() && !IS_VERCEL_PREVIEW) {
+        return seedContent
       }
       return readJsonFile('content.json', seedContent)
     }
@@ -480,13 +507,19 @@ export async function getSiteContent(): Promise<SiteContent> {
       return siteSettingsToSiteContent(data.value)
     }
 
-    if (isProduction()) {
-      throw new Error('PRODUCTION_READ_ERROR: Site settings missing or invalid value. Supabase configured but global row missing/non-object.')
+    // About is static corporate copy (not QA ranking data): never blank the page.
+    if (isProduction() && !IS_VERCEL_PREVIEW) {
+      return seedContent
     }
     return readJsonFile('content.json', seedContent)
   }
 
-  return readJsonFile('content.json', seedContent)
+  // No Supabase client: canonical local About copy (safe in both preview and production).
+  try {
+    return await readJsonFile('content.json', seedContent)
+  } catch {
+    return seedContent
+  }
 }
 
 export async function saveSiteContent(content: SiteContent) {
@@ -629,6 +662,9 @@ export async function getPlayerResults(playerId: string): Promise<PlayerResultIt
   } catch {
     // DB read failed; fall through
   }
+  // Synthetic result files are strictly preview/QA-only, never real production.
+  // Preserves main 299925d intent: isolate QA/test data from production.
+  if (isProduction() && !IS_VERCEL_PREVIEW) return []
   // Fallback: read synthetic results from local JSON file for design QA
   try {
     const raw = await fs.readFile(path.join(process.cwd(), 'data', 'player-results.json'), 'utf8')

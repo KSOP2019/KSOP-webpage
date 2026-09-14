@@ -3,13 +3,16 @@ import { syntheticNews } from './synthetic-news'
 import type { NewsItem } from './types'
 
 /**
- * Design-review switch for the design/glass-patch preview.
- * - true: /news list and /news/[slug] detail serve the local synthetic
- *   dataset (lib/synthetic-news.ts). No Supabase reads/writes, no CMS change.
- * - false: production behavior — existing getNews / getNewsItem only.
- * Revert to false before launch; then delete lib/synthetic-news.ts.
+ * Environment-aware preview switch (single source of truth for News).
+ * - preview (VERCEL_ENV === 'preview') or local development: serve the local
+ *   synthetic 20-article dataset (lib/synthetic-news.ts). No Supabase reads/writes.
+ * - production: real CMS news only via getNews()/getNewsItem(). Never synthetic.
+ * This replaces the previous hardcoded `true` so a future merge to main can
+ * never leak synthetic articles into production or /api/news production.
  */
-export const NEWS_TEST_MODE = true
+export const NEWS_TEST_MODE =
+  process.env.VERCEL_ENV === 'preview' ||
+  process.env.NODE_ENV === 'development'
 
 const SYNTHETIC_PREFIX = 'ksop-news-'
 

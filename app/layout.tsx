@@ -9,6 +9,7 @@ const notoSansKr = Noto_Sans_KR({ subsets: ['latin'], variable: '--font-korean',
 import './globals.css'
 import './header-stability.css'
 import '@/components/design-system/glass.css'
+import './detail-polish.css'
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
