@@ -5,6 +5,7 @@ import { useMemo, useState } from 'react'
 import { ArrowUpRight, Search } from 'lucide-react'
 import { useSite } from '@/components/site/site-provider'
 import { Reveal } from '@/components/site/reveal'
+import { realPhotoOrBlank } from '@/lib/event-images'
 import type { RankedPlayer } from '@/lib/types'
 
 function normalizeSearch(text: string): string {
@@ -35,7 +36,7 @@ export function RankingPageClient({ ranked }: { ranked: RankedPlayer[] }) {
           </div>
         </div>
         <p className="muted-copy" role="status">
-          Official ranking is being prepared. No provisional standings are shown.
+          {t.rankingPreparing}
         </p>
       </section>
     )
@@ -67,7 +68,7 @@ export function RankingPageClient({ ranked }: { ranked: RankedPlayer[] }) {
             <div className="podium-medal">
               <span>{player.rank}</span>
             </div>
-            {player.portrait ? <img className="podium-portrait" src={player.portrait} alt={`${player.name} portrait`} /> : null}
+            {realPhotoOrBlank(player.portrait) ? <img className="podium-portrait" src={realPhotoOrBlank(player.portrait)} alt={`${player.name} portrait`} /> : null}
             <strong className="player-name">{player.name}</strong>
             <span className="podium-country">{player.country} · KSOP RANKING</span>
             <b>{player.score}</b>
