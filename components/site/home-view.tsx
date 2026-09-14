@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { ArrowUpRight, Check, ChevronDown, MapPin } from 'lucide-react'
+import { ArrowUpRight, Check, ChevronDown } from 'lucide-react'
 import { useSite } from '@/components/site/site-provider'
 import { Reveal } from '@/components/site/reveal'
 import { GlassCard } from '@/components/ui/glass-card'
@@ -11,7 +11,7 @@ import { MagneticButton } from '@/components/ui/magnetic-button'
 import { ParallaxImage } from '@/components/effects/parallax-image'
 import { Spotlight } from '@/components/effects/spotlight'
 import { EVENT_CATEGORIES } from '@/lib/nav'
-import { eventCardImage } from '@/lib/event-images'
+import { eventCardImage, realPhotoOrBlank } from '@/lib/event-images'
 import { filterEvents } from '@/lib/event-filters'
 import type { EventItem, NewsItem, PlayerItem, RankedPlayer } from '@/lib/types'
 
@@ -70,6 +70,13 @@ export function HomeView({ events, players, news, ranked }: HomeViewProps) {
     [events, selectedCategory, selectedDate],
   )
 
+  // Documentary imagery: real KSOP photos only (/images/real/).
+  // Anything else falls back to solid black + typography — never AI filler.
+  const heroPhoto = realPhotoOrBlank(content.heroImage)
+  const venueLine = content.seriesVenue && content.seriesVenue !== 'TBA' ? content.seriesVenue : ''
+  const dateLine = content.seriesDate && content.seriesDate !== 'TBA' ? content.seriesDate : ''
+  const gtdLine = content.seriesGtd && content.seriesGtd !== 'TBA' ? content.seriesGtd : t.tba
+
   return (
     <>
       <section className="hero" id="top" ref={heroRef}>
@@ -83,32 +90,26 @@ export function HomeView({ events, players, news, ranked }: HomeViewProps) {
           </div>
         </div>
 
-        <div className="hero-visual">
-          <ParallaxImage>
-            <img
-              src={content.heroImage}
-              alt="KSOP tournament arena"
-              fetchPriority="high"
-              decoding="async"
-              width={1600}
-              height={900}
-              style={{ width: '100%', height: 'auto', aspectRatio: '16 / 9' }}
-            />
-          </ParallaxImage>
+        <div className="hero-visual" style={heroPhoto ? undefined : { background: '#000' }}>
+          {heroPhoto ? (
+            <ParallaxImage>
+              <img
+                src={heroPhoto}
+                alt="KSOP tournament arena"
+                fetchPriority="high"
+                decoding="async"
+                width={1600}
+                height={900}
+                style={{ width: '100%', height: 'auto', aspectRatio: '16 / 9' }}
+              />
+            </ParallaxImage>
+          ) : null}
           <div className="hero-stamp">
-            <span>SEOUL</span>
-            <strong>17</strong>
-            <span>{t.posterMonth ?? 'NOVEMBER'}</span>
+            {dateLine ? <span>{dateLine}</span> : null}
+            <span>{t.posterMonth}</span>
             <div className="poster-details">
-              <a
-                className="poster-location"
-                href="https://www.google.com/maps/search/?api=1&query=Seoul+Grand+Hyatt"
-                target="_blank"
-                rel="noreferrer"
-              >
-                <MapPin /> SEOUL · GRAND HYATT
-              </a>
-              <small>{t.countdown ?? 'COUNTDOWN'} {countdownText}</small>
+              {venueLine ? <span className="poster-location">{venueLine}</span> : null}
+              <small>{t.countdown} {countdownText}</small>
             </div>
           </div>
         </div>
@@ -120,7 +121,7 @@ export function HomeView({ events, players, news, ranked }: HomeViewProps) {
               <button className="primary-cta" type="button" onClick={() => setRegistered(true)}>
                 {registered ? (
                   <>
-                    <Check /> {t.seatReserved ?? 'SEAT RESERVED'}
+                    <Check /> {t.seatReserved}
                   </>
                 ) : (
                   <>
@@ -138,19 +139,19 @@ export function HomeView({ events, players, news, ranked }: HomeViewProps) {
         <div className="telemetry-grid">
           <GlassCard asChild>
             <div>
-              <strong>₩1,500,000,000</strong>
+              <strong>{gtdLine}</strong>
               <span>{t.guaranteed}</span>
             </div>
           </GlassCard>
           <GlassCard asChild>
             <div>
               <strong>{t.invitation}</strong>
-              <span>{t.buyin ?? 'BUY-IN'}</span>
+              <span>{t.buyin}</span>
             </div>
           </GlassCard>
           <GlassCard asChild>
             <div>
-              <strong>50,000</strong>
+              <strong>{t.tba}</strong>
               <span>{t.stack}</span>
             </div>
           </GlassCard>
@@ -158,12 +159,12 @@ export function HomeView({ events, players, news, ranked }: HomeViewProps) {
       </section>
 
       <section className="intro section-pad" id="about">
-        <div className="section-label">{t.seriesLabel ?? '01 / THE SERIES'}</div>
+        <div className="section-label">{t.seriesLabel}</div>
         <Reveal className="intro-content">
           <h2>
-            {t.introTitle ?? 'More than'}
+            {t.introTitle}
             <br />
-            <em>{t.introEmphasis ?? 'a tournament.'}</em>
+            {t.introEmphasis}
           </h2>
           <p className="large-copy">{content.introBody}</p>
         </Reveal>
@@ -188,7 +189,7 @@ export function HomeView({ events, players, news, ranked }: HomeViewProps) {
 
         <div className="section-top">
           <div>
-            <div className="section-label">{t.scheduleLabel ?? '02 / UPCOMING SERIES'}</div>
+            <div className="section-label">{t.scheduleLabel}</div>
             <h2>{t.schedule}</h2>
           </div>
           <div className="series-meta">
@@ -199,6 +200,11 @@ export function HomeView({ events, players, news, ranked }: HomeViewProps) {
         </div>
 
         <div className="schedule-list">
+          {visibleEvents.length === 0 ? (
+            <p className="muted-copy" role="status">
+              {t.noEvents}
+            </p>
+          ) : null}
           {visibleEvents.map((event, index) => (
             <article className={open === index ? 'schedule-item open' : 'schedule-item'} key={event.id}>
               <button className="schedule-trigger" type="button" onClick={() => setOpen(open === index ? -1 : index)}>
@@ -217,41 +223,41 @@ export function HomeView({ events, players, news, ranked }: HomeViewProps) {
                 <span className="event-title">
                   <b>{event.name}</b>
                   <small>
-                    {event.type} · {t.buyin ?? 'BUY-IN'} {event.buyInType} · {event.gtd} GTD
+                    {event.type} · {t.buyin} {event.buyInType} · {event.gtd} GTD
                   </small>
                 </span>
                 <span className="event-type">{event.type}</span>
                 <ChevronDown className="chevron" />
                 <span className="glass event-buyin-tip" data-glass="popover" aria-hidden="true">
-                  {t.buyin ?? 'BUY-IN'} {event.buyInType}
+                  {t.buyin} {event.buyInType}
                 </span>
               </button>
               {open === index && (
                 <div className="event-detail">
                   <div className="detail-facts">
                     <div>
-                      <span>{t.factChips ?? 'STARTING CHIPS'}</span>
+                      <span>{t.factChips}</span>
                       <strong>{event.startingChips.toLocaleString()}</strong>
                     </div>
                     <div>
-                      <span>{t.factLate ?? 'LATE REG.'}</span>
+                      <span>{t.factLate}</span>
                       <strong>{event.lateReg}</strong>
                     </div>
                     <div>
-                      <span>{t.factLevel ?? 'LEVEL TIME'}</span>
+                      <span>{t.factLevel}</span>
                       <strong>{event.levelTime}</strong>
                     </div>
                     <div>
-                      <span>{t.factType ?? 'TYPE'}</span>
+                      <span>{t.factType}</span>
                       <strong>{event.type}</strong>
                     </div>
                   </div>
                   <div className="detail-actions">
                     <Link className="primary-cta" href={`/events/${event.id}`}>
-                      {t.viewEvent ?? 'View event'} <ArrowUpRight />
+                      {t.viewEvent} <ArrowUpRight />
                     </Link>
                     <button className="ghost-button" type="button" onClick={() => setRegistered(true)}>
-                      {t.registerShort ?? 'Register'}
+                      {t.registerShort}
                     </button>
                   </div>
                 </div>
@@ -262,10 +268,10 @@ export function HomeView({ events, players, news, ranked }: HomeViewProps) {
 
         <div style={{ marginTop: '24px', display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
           <Link className="text-link" href="/events">
-            {t.viewAllEvents ?? 'View all events'} <ArrowUpRight />
+            {t.viewAllEvents} <ArrowUpRight />
           </Link>
           <Link className="text-link" href="/schedule">
-            {t.exploreSchedule ?? 'Explore the schedule'} <ArrowUpRight />
+            {t.exploreSchedule} <ArrowUpRight />
           </Link>
         </div>
       </section>
@@ -273,17 +279,17 @@ export function HomeView({ events, players, news, ranked }: HomeViewProps) {
       <section className="ranking-section section-pad" id="ranking">
         <div className="section-top">
           <div>
-            <div className="section-label">{t.rankingLabel ?? '03 / PLAYER RANKING'}</div>
+            <div className="section-label">{t.rankingLabel}</div>
             <h2>{t.ranking}</h2>
           </div>
           <Link className="text-link" href="/ranking">
-            {t.fullRanking ?? 'Full ranking'} <ArrowUpRight />
+            {t.fullRanking} <ArrowUpRight />
           </Link>
         </div>
 
         {ranked.length === 0 ? (
           <p className="muted-copy" role="status">
-            Official ranking is being prepared. No provisional standings are shown.
+            {t.rankingPreparing}
           </p>
         ) : (
           <>
@@ -295,13 +301,13 @@ export function HomeView({ events, players, news, ranked }: HomeViewProps) {
                   <div className="podium-medal">
                     <span>{player.rank}</span>
                   </div>
-                  {player.portrait ? (
-                    <img className="podium-portrait" src={player.portrait} alt={`${player.name} portrait`} />
+                  {realPhotoOrBlank(player.portrait) ? (
+                    <img className="podium-portrait" src={realPhotoOrBlank(player.portrait)} alt={`${player.name} portrait`} />
                   ) : null}
                   <strong className="player-name">{player.name}</strong>
                   <span className="podium-country">{player.country} · KSOP RANKING</span>
                   <b>{player.score}</b>
-                  <span className="text-link">{t.viewProfile ?? 'View profile'} <ArrowUpRight /></span>
+                  <span className="text-link">{t.viewProfile} <ArrowUpRight /></span>
                 </Link>
               ))}
             </Reveal>
@@ -323,17 +329,17 @@ export function HomeView({ events, players, news, ranked }: HomeViewProps) {
       <section className="news-section section-pad" id="news">
         <div className="section-top">
           <div>
-            <div className="section-label">{t.newsLabel ?? '04 / FROM THE SERIES'}</div>
+            <div className="section-label">{t.newsLabel}</div>
             <h2>{t.news}</h2>
           </div>
           <Link className="text-link" href="/news">
-            {t.allNews ?? 'All news'} <ArrowUpRight />
+            {t.allNews} <ArrowUpRight />
           </Link>
         </div>
         <Reveal className="news-grid">
           {news.length === 0 ? (
             <p className="muted-copy" role="status">
-              Official news is being prepared.
+              {t.newsPreparing}
             </p>
           ) : (
             news.slice(0, 3).map((item) => (
@@ -343,7 +349,7 @@ export function HomeView({ events, players, news, ranked }: HomeViewProps) {
                 </span>
                 <h3>{item.title}</h3>
                 <Link className="text-link" href={`/news/${item.slug}`}>
-                  {t.readStory ?? 'Read the story'} <ArrowUpRight />
+                  {t.readStory} <ArrowUpRight />
                 </Link>
               </article>
             ))
@@ -351,19 +357,16 @@ export function HomeView({ events, players, news, ranked }: HomeViewProps) {
         </Reveal>
       </section>
 
-      <section className="image-break">
-        <ParallaxImage>
-          <img src={content.heroImage} alt="Poker tables inside the KSOP arena" />
-        </ParallaxImage>
+      <section className="image-break" style={{ background: '#000' }}>
         <div className="image-break-copy">
-          <span>{content.imageBreakLabel}</span>
+          <span>{t.seriesLabel}</span>
           <h2>
-            {content.imageBreakTitle}
+            {t.introTitle}
             <br />
-            <em>{content.imageBreakEmphasis}</em>
+            {t.introEmphasis}
           </h2>
           <button className="button-link" type="button" onClick={() => setRegistered(true)}>
-            {registered ? (t.seatReserved ?? 'SEAT RESERVED') : t.register} <ArrowUpRight />
+            {registered ? t.seatReserved : t.register} <ArrowUpRight />
           </button>
         </div>
       </section>

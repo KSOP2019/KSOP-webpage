@@ -43,13 +43,13 @@ function SeriesDetailInner({
       <DetailHeader activeHref="/schedule" />
 
       <section className="detail-hero">
-        <div className="detail-kicker">{t.scheduleKicker ?? '01 / SCHEDULE · SERIES'}</div>
+        <div className="detail-kicker">{t.scheduleKicker}</div>
         <div className="detail-hero-grid">
           <h1>{series.title}</h1>
           <div>
             {dateRange ? <p>{dateRange}</p> : null}
             <p className="muted-copy" style={{ marginTop: '12px' }}>
-              {seriesEvents.length} {t.eventsWord ?? 'EVENTS'}{content.seriesVenue ? ` · ${content.seriesVenue}` : ''}
+              {seriesEvents.length} {t.eventsWord}{content.seriesVenue ? ` · ${content.seriesVenue}` : ''}
             </p>
           </div>
         </div>
@@ -58,29 +58,29 @@ function SeriesDetailInner({
       <Reveal as="section" className="detail-list" ariaLabel={`${series.title.trim()} series details`}>
         <div className="detail-facts series-facts">
           <div>
-            <span>{t.seriesWord ?? 'SERIES'}</span>
+            <span>{t.seriesWord}</span>
             <strong>{series.title.trim()}</strong>
           </div>
           <div>
-            <span>{t.dateRangeLabel ?? 'DATE RANGE'}</span>
-            <strong>{dateRange ?? (t.tba ?? 'TBA')}</strong>
+            <span>{t.dateRangeLabel}</span>
+            <strong>{dateRange ?? t.tba}</strong>
           </div>
           <div>
-            <span>{t.eventsWord ?? 'EVENTS'}</span>
+            <span>{t.eventsWord}</span>
             <strong>{seriesEvents.length}</strong>
           </div>
           {content.seriesVenue ? (
             <div>
-              <span>{t.venueLabel ?? 'VENUE'}</span>
+              <span>{t.venueLabel}</span>
               <strong>{content.seriesVenue}</strong>
             </div>
           ) : null}
         </div>
 
-        <div className="section-label" style={{ marginTop: '48px' }}>{t.eventList ?? 'EVENT LIST'}</div>
+        <div className="section-label" style={{ marginTop: '48px' }}>{t.eventList}</div>
 
         {seriesEvents.length === 0 ? (
-          <p className="muted-copy" style={{ marginTop: '24px' }}>{t.schedulePending ?? 'EVENT SCHEDULE PENDING'}</p>
+          <p className="muted-copy" style={{ marginTop: '24px' }}>{t.schedulePending}</p>
         ) : (
           <div style={{ marginTop: '12px' }}>
             {seriesEvents.map((event, index) => (
@@ -97,7 +97,7 @@ function SeriesDetailInner({
                     <span>{event.date}</span>
                     <span>{event.dayLabel}</span>
                     <span>{event.type}</span>
-                    <span>{t.factBuyin ?? 'BUY-IN'} {event.buyIn}</span>
+                    <span>{t.factBuyin} {event.buyIn}</span>
                     <span>{event.gtd} GTD</span>
                   </span>
                 </span>
@@ -111,8 +111,8 @@ function SeriesDetailInner({
       <footer className="detail-footer">
         <span>THE KOREA SERIES OF POKER · 2026</span>
         <span style={{ display: 'flex', gap: '24px' }}>
-          <Link href="/schedule">{t.backToScheduleArrow ?? 'BACK TO SCHEDULE ↗'}</Link>
-          <Link href="/">{t.backHome ?? 'BACK TO HOME ↗'}</Link>
+          <Link href="/schedule">{t.backToScheduleArrow}</Link>
+          <Link href="/">{t.backHome}</Link>
         </span>
       </footer>
     </main>

@@ -22,7 +22,7 @@ export function EventDetailClient({
     <section className="section-pad event-detail-page">
       <div className="section-top event-detail-top">
         <div>
-          <div className="section-label">{t.eventDetail ?? 'EVENT DETAIL'}</div>
+          <div className="section-label">{t.eventDetail}</div>
           <h2>{event.name}</h2>
         </div>
         <div className="series-meta">
@@ -41,7 +41,7 @@ export function EventDetailClient({
       <Reveal className="event-detail" style={{ marginTop: 0 }}>
         <div className="detail-facts">
           <div>
-            <span>{t.factBuyin ?? 'BUY-IN'}</span>
+            <span>{t.factBuyin}</span>
             <strong>{event.buyIn}</strong>
           </div>
           <div>
@@ -49,29 +49,29 @@ export function EventDetailClient({
             <strong>{event.gtd}</strong>
           </div>
           <div>
-            <span>{t.factChips ?? 'STARTING CHIPS'}</span>
+            <span>{t.factChips}</span>
             <strong>{event.startingChips.toLocaleString()}</strong>
           </div>
           <div>
-            <span>{t.factLate ?? 'LATE REG.'}</span>
+            <span>{t.factLate}</span>
             <strong>{event.lateReg}</strong>
           </div>
           <div>
-            <span>{t.eventStatus ?? 'EVENT STATUS'}</span>
-            <strong>{t.statusPending ?? 'STATUS PENDING'}</strong>
+            <span>{t.eventStatus}</span>
+            <strong>{t.statusPending}</strong>
           </div>
           <div>
-            <span>{t.regStatus ?? 'REGISTRATION STATUS'}</span>
-            <strong>{t.regPending ?? 'REGISTRATION PENDING'}</strong>
+            <span>{t.regStatus}</span>
+            <strong>{t.regPending}</strong>
           </div>
         </div>
 
-        <div className="blind-label">{t.blindStructure ?? 'BLIND STRUCTURE'}</div>
+        <div className="blind-label">{t.blindStructure}</div>
         <div className="blind-table">
           <div>
-            <span>{t.blindLevel ?? 'LEVEL'}</span>
-            <span>{t.blindSmallBig ?? 'SMALL / BIG'}</span>
-            <span>{t.blindAnte ?? 'ANTE'}</span>
+            <span>{t.blindLevel}</span>
+            <span>{t.blindSmallBig}</span>
+            <span>{t.blindAnte}</span>
           </div>
           {event.blindStructure.map((level) => (
             <div key={level.level}>
@@ -88,10 +88,10 @@ export function EventDetailClient({
 
         <div className="detail-actions">
           <button className="primary-cta" type="button" disabled aria-disabled="true" title={t.regPending ?? 'Registration not yet available'}>
-            {t.regPending ?? 'REGISTRATION PENDING'}
+            {t.regPending}
           </button>
           <Link className="ghost-button" href="/events">
-            {t.backToSchedule ?? 'Back to schedule'}
+            {t.backToSchedule}
           </Link>
         </div>
       </Reveal>

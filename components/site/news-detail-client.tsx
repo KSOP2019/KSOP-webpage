@@ -2,10 +2,12 @@
 
 import Link from 'next/link'
 import { useSite } from '@/components/site/site-provider'
+import { realPhotoOrBlank } from '@/lib/event-images'
 import type { NewsItem } from '@/lib/types'
 
 export function NewsDetailClient({ item }: { item: NewsItem }) {
   const { t } = useSite()
+  const cover = realPhotoOrBlank(item.coverUrl)
 
   return (
     <section className="news-section section-pad">
@@ -18,9 +20,9 @@ export function NewsDetailClient({ item }: { item: NewsItem }) {
       </div>
 
       <article className="event-detail">
-        {item.coverUrl ? (
+        {cover ? (
           <img
-            src={item.coverUrl}
+            src={cover}
             alt=""
             loading="lazy"
             style={{ width: '100%', aspectRatio: '16 / 10', objectFit: 'cover', borderRadius: 12, marginBottom: 18 }}
@@ -28,7 +30,7 @@ export function NewsDetailClient({ item }: { item: NewsItem }) {
         ) : null}
         <p className="large-copy">{item.body}</p>
         <Link className="text-link" href="/news" style={{ marginTop: '24px', display: 'inline-flex' }}>
-          {t.backToNews ?? 'Back to news'}
+          {t.backToNews}
         </Link>
       </article>
     </section>

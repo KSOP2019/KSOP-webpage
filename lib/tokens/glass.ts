@@ -66,21 +66,21 @@ export const GLASS_MOBILE_BLUR_PX = 8 as const;
 /** 모바일 판정 브레이크포인트 (Tailwind `md` 와 일치) */
 export const GLASS_MOBILE_BREAKPOINT_PX = 768 as const;
 
-/** 데스크톱 기준 블러 (px) — 기존 globals.css 의 24/22/18/16 을 그대로 승계 */
+/** 데스크톱 기준 블러 (px) — editorial restraint: 8~12px */
 export const GLASS_BLUR_PX: Record<GlassVariant, number> = {
-  header: 24,
-  card: 22,
-  popover: 22,
-  subtle: 18,
-  heroChip: 16,
+  header: 12,
+  card: 10,
+  popover: 10,
+  subtle: 8,
+  heroChip: 8,
 } as const;
 
 export const GLASS_SATURATE_PCT: Record<GlassVariant, number> = {
-  header: 115,
+  header: 100,
   card: 100,
   popover: 100,
   subtle: 100,
-  heroChip: 105,
+  heroChip: 100,
 } as const;
 
 export const GLASS_RADIUS = {
@@ -92,20 +92,20 @@ export const GLASS_RADIUS = {
 
 const light: GlassThemeTokens = {
   mode: 'light',
-  canvas: '#f7faff',
-  card: 'rgba(255, 255, 255, 0.64)',
+  canvas: '#faf8f2',
+  card: 'rgba(255, 255, 255, 0.92)',
   cardForeground: '#171a24',
-  primary: '#c5202d',
+  primary: '#8a6d1f',
   primaryForeground: '#ffffff',
-  border: 'rgba(37, 48, 72, 0.14)',
+  border: 'rgba(23, 26, 36, 0.14)',
   foreground: '#171a24',
-  muted: '#727785',
-  surface: 'rgba(255, 255, 255, 0.64)',
-  surfaceStrong: 'rgba(255, 255, 255, 0.82)',
-  surfaceMuted: 'rgba(244, 248, 255, 0.72)',
-  stroke: 'rgba(255, 255, 255, 0.72)',
-  highlight: 'rgba(255, 255, 255, 0.9)',
-  shadow: 'rgba(88, 120, 171, 0.1)',
+  muted: '#5c5f6b',
+  surface: 'rgba(255, 255, 255, 0.92)',
+  surfaceStrong: 'rgba(255, 255, 255, 0.97)',
+  surfaceMuted: 'rgba(250, 248, 242, 0.94)',
+  stroke: 'rgba(23, 26, 36, 0.12)',
+  highlight: 'rgba(255, 255, 255, 0.6)',
+  shadow: 'rgba(23, 26, 36, 0.08)',
   spotlight: 'rgba(0,0,0,0)',
   blur: { ...GLASS_BLUR_PX },
   saturate: { ...GLASS_SATURATE_PCT },
@@ -114,21 +114,21 @@ const light: GlassThemeTokens = {
 
 const dark: GlassThemeTokens = {
   mode: 'dark',
-  canvas: '#111722',
-  card: 'rgba(28, 38, 56, 0.82)',
-  cardForeground: '#edf3ff',
-  primary: '#e45460',
-  primaryForeground: '#111722',
-  border: 'rgba(194, 211, 240, 0.2)',
-  foreground: '#edf3ff',
-  muted: '#a9b6cc',
-  surface: 'rgba(28, 38, 56, 0.6)',
-  surfaceStrong: 'rgba(28, 38, 56, 0.82)',
-  surfaceMuted: 'rgba(23, 28, 38, 0.55)',
-  stroke: 'rgba(194, 211, 240, 0.22)',
-  highlight: 'rgba(255, 255, 255, 0.2)',
-  shadow: 'rgba(0, 0, 0, 0.32)',
-  spotlight: 'rgba(255,255,255,0.14)',
+  canvas: '#0a0a0c',
+  card: 'rgba(16, 16, 20, 0.94)',
+  cardForeground: '#f2efe6',
+  primary: '#d4af37',
+  primaryForeground: '#0a0a0c',
+  border: 'rgba(212, 175, 55, 0.22)',
+  foreground: '#f2efe6',
+  muted: '#a8a49a',
+  surface: 'rgba(16, 16, 20, 0.9)',
+  surfaceStrong: 'rgba(16, 16, 20, 0.96)',
+  surfaceMuted: 'rgba(20, 20, 24, 0.9)',
+  stroke: 'rgba(212, 175, 55, 0.22)',
+  highlight: 'rgba(255, 255, 255, 0.08)',
+  shadow: 'rgba(0, 0, 0, 0.4)',
+  spotlight: 'rgba(212,175,55,0.08)',
   blur: { ...GLASS_BLUR_PX },
   saturate: { ...GLASS_SATURATE_PCT },
   radius: { ...GLASS_RADIUS },
@@ -214,12 +214,12 @@ export function glassCssVars(resolvedThemeOrMode?: string | null): Record<string
  */
 export const GLASS_BLUR_CSS = `
 .glass[data-glass] {
-  -webkit-backdrop-filter: blur(var(--glass-blur-card, 22px)) saturate(100%);
-  backdrop-filter: blur(var(--glass-blur-card, 22px)) saturate(100%);
+  -webkit-backdrop-filter: blur(var(--glass-blur-card, 10px)) saturate(100%);
+  backdrop-filter: blur(var(--glass-blur-card, 10px)) saturate(100%);
 }
 .glass[data-glass='header'] {
-  -webkit-backdrop-filter: blur(var(--glass-blur-header, 24px)) saturate(115%);
-  backdrop-filter: blur(var(--glass-blur-header, 24px)) saturate(115%);
+  -webkit-backdrop-filter: blur(var(--glass-blur-header, 12px)) saturate(100%);
+  backdrop-filter: blur(var(--glass-blur-header, 12px)) saturate(100%);
 }
 @media (max-width: ${GLASS_MOBILE_BREAKPOINT_PX}px) {
   .glass[data-glass] {

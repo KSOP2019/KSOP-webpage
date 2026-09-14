@@ -20,8 +20,8 @@ function resolveAboutCopy(tAbout: AboutCopy | undefined, language: 'EN' | 'KR' |
 }
 
 export function AboutHub() {
-  const { t, language } = useSite()
-  const a = resolveAboutCopy(t.about, language)
+  const { copy, language } = useSite()
+  const a = resolveAboutCopy(copy.about, language)
   if (!a) return null
 
   const milestones = a.milestones.length === companyMilestones.length ? a.milestones : companyMilestones

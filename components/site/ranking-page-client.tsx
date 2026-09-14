@@ -30,7 +30,7 @@ export function RankingPageClient({ ranked }: { ranked: RankedPlayer[] }) {
       <section className="ranking-section section-pad">
         <div className="section-top">
           <div>
-            <div className="section-label">{t.rankingLabel ?? '03 / PLAYER RANKING'}</div>
+            <div className="section-label">{t.rankingLabel}</div>
             <h2>TOP 100</h2>
           </div>
         </div>
@@ -45,7 +45,7 @@ export function RankingPageClient({ ranked }: { ranked: RankedPlayer[] }) {
     <section className="ranking-section section-pad">
       <div className="section-top">
         <div>
-          <div className="section-label">{t.rankingLabel ?? '03 / PLAYER RANKING'}</div>
+          <div className="section-label">{t.rankingLabel}</div>
           <h2>TOP 100</h2>
         </div>
         <div className="search-box">
@@ -53,8 +53,8 @@ export function RankingPageClient({ ranked }: { ranked: RankedPlayer[] }) {
           <input
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            placeholder={t.searchPlayer ?? 'Search player'}
-            aria-label={t.searchPlayer ?? 'Search player ranking'}
+            placeholder={t.searchPlayer}
+            aria-label={t.searchPlayer}
           />
         </div>
       </div>
@@ -71,7 +71,7 @@ export function RankingPageClient({ ranked }: { ranked: RankedPlayer[] }) {
             <strong className="player-name">{player.name}</strong>
             <span className="podium-country">{player.country} · KSOP RANKING</span>
             <b>{player.score}</b>
-            <span className="text-link">{t.viewProfile ?? 'View profile'} <ArrowUpRight /></span>
+            <span className="text-link">{t.viewProfile} <ArrowUpRight /></span>
           </Link>
         ))}
       </Reveal>

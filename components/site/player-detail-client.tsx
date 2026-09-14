@@ -205,7 +205,7 @@ export function PlayerDetailClient({ ranked }: { ranked: RankedPlayer }) {
     <section className="ranking-section section-pad">
       <div className="section-top">
         <div>
-          <div className="section-label">{t.playerProfile ?? 'PLAYER PROFILE'}</div>
+          <div className="section-label">{t.playerProfile}</div>
           <h2>{ranked.name}</h2>
         </div>
         <div className="series-meta">
@@ -257,10 +257,10 @@ export function PlayerDetailClient({ ranked }: { ranked: RankedPlayer }) {
         </div>
 
         <p className="large-copy" style={{ marginTop: '24px' }}>
-          {ranked.bio ?? (t.bioPending ?? 'Player profile details will be managed from the admin panel.')}
+          {ranked.bio ?? t.bioPending}
         </p>
 
-        <div className="blind-label" style={{ marginTop: '32px' }}>{t.resultHistory ?? 'RESULT / TOURNAMENT HISTORY'}</div>
+        <div className="blind-label" style={{ marginTop: '32px' }}>{t.resultHistory}</div>
 
         <div className="tournament-controls">
           <button type="button" onClick={() => setSortMode('latest')} style={sortButtonStyle(sortMode === 'latest')}>LATEST</button>
@@ -329,10 +329,10 @@ export function PlayerDetailClient({ ranked }: { ranked: RankedPlayer }) {
 
         <div className="detail-actions" style={{ marginTop: '32px' }}>
           <Link className="ghost-button" href="/ranking">
-            {t.backToRanking ?? 'Back to ranking'}
+            {t.backToRanking}
           </Link>
           <Link className="text-link" href="/events">
-            {t.viewEvents ?? 'View events'} <ArrowUpRight />
+            {t.viewEvents} <ArrowUpRight />
           </Link>
         </div>
 

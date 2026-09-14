@@ -26,9 +26,9 @@ export function SiteFooter() {
       <div>
         <img className="footer-logo" src={logo} alt="KSOP Korea Series of Poker" width={160} height={54} />
         <p className="footer-note">
-          {t.footerLine1 ?? "Korea's premier live poker series."}
+          {t.footerLine1}
           <br />
-          {t.footerLine2 ?? 'Designed for the game.'}
+          {t.footerLine2}
         </p>
       </div>
       <div className="footer-nav">

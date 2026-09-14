@@ -14,11 +14,11 @@ export function AboutTopicClient({
 }) {
   const { t } = useSite()
   const isVenue = slug === 'venue'
-  const title = isVenue ? (t.theVenue ?? 'THE VENUE') : (t.theSeries ?? 'THE SERIES')
+  const title = isVenue ? t.theVenue : t.theSeries
 
   return (
     <section className="intro section-pad">
-      <div className="section-label">{t.seriesDetail ?? '01 / THE SERIES · DETAIL'}</div>
+      <div className="section-label">{t.seriesDetail}</div>
       <Reveal className="intro-content">
         <h2>{title}</h2>
         <p className="large-copy">{content.introBody}</p>
@@ -26,26 +26,26 @@ export function AboutTopicClient({
           {isVenue ? (
             <>
               <div>
-                <span>{t.venueLabel ?? 'VENUE'}</span>
+                <span>{t.venueLabel}</span>
                 <strong>{content.seriesVenue}</strong>
               </div>
               <div>
-                <span>{t.dateLabel ?? 'DATE'}</span>
+                <span>{t.dateLabel}</span>
                 <strong>{content.seriesDate}</strong>
               </div>
             </>
           ) : (
             <>
               <div>
-                <span>{t.dateLabel ?? 'DATE'}</span>
+                <span>{t.dateLabel}</span>
                 <strong>{content.seriesDate}</strong>
               </div>
               <div>
-                <span>{t.venueLabel ?? 'VENUE'}</span>
+                <span>{t.venueLabel}</span>
                 <strong>{content.seriesVenue}</strong>
               </div>
               <div>
-                <span>{t.guaranteedLabel ?? 'GUARANTEED'}</span>
+                <span>{t.guaranteedLabel}</span>
                 <strong>{content.seriesGtd}</strong>
               </div>
             </>
@@ -53,10 +53,10 @@ export function AboutTopicClient({
         </div>
         <div className="detail-actions" style={{ marginTop: '32px' }}>
           <Link className="ghost-button" href="/about">
-            {t.backToAbout ?? 'Back to about'}
+            {t.backToAbout}
           </Link>
           <Link className="text-link" href="/events">
-            {t.exploreSchedule ?? 'Explore the schedule'}
+            {t.exploreSchedule}
           </Link>
         </div>
       </Reveal>

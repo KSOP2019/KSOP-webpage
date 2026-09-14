@@ -11,11 +11,11 @@ import './about-hub.css'
 
 /** Resolves the localized form copy with KR-seed fallback on shape drift. */
 export function AboutApplyClient({ type }: { type: CooperationId }) {
-  const { t, language } = useSite()
+  const { copy: localeCopy, language } = useSite()
   const seedForms = seedContent.copy[language].about?.forms ?? seedContent.copy.KR.about?.forms
-  const copy = t.about?.forms[type] ?? seedForms?.[type]
+  const formCopy = localeCopy.about?.forms[type] ?? seedForms?.[type]
   const fallback = seedContent.copy.KR.about?.forms[type]
-  const resolved = copy ?? fallback
+  const resolved = formCopy ?? fallback
   if (!resolved) return null
 
   const spec = APPLY_FORM_SPECS[type]

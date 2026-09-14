@@ -1,23 +1,35 @@
-import Link from 'next/link'
+'use client'
 
-export default function NotFound() {
+import Link from 'next/link'
+import { SiteProvider, useSite } from '@/components/site/site-provider'
+
+function NotFoundBody() {
+  const { t } = useSite()
   return (
     <section className="section-pad">
       <div className="section-top">
         <div>
           <div className="section-label">404</div>
-          <h1>페이지를 찾을 수 없습니다</h1>
+          <h1>{t.notFound.title}</h1>
         </div>
       </div>
-      <p className="large-copy">요청하신 주소가 존재하지 않거나 이동되었습니다.</p>
-      <div style={{ marginTop: '20px', display: 'flex', gap: '16px' }}>
+      <p className="large-copy">{t.notFound.body}</p>
+      <div style={{ marginTop: '20px', display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
         <Link className="text-link" href="/">
-          홈으로 돌아가기
+          {t.notFound.home}
         </Link>
         <Link className="text-link" href="/events">
-          이벤트 목록으로 이동
+          {t.notFound.events}
         </Link>
       </div>
     </section>
+  )
+}
+
+export default function NotFound() {
+  return (
+    <SiteProvider>
+      <NotFoundBody />
+    </SiteProvider>
   )
 }

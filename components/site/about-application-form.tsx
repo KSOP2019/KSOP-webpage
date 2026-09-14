@@ -1,6 +1,7 @@
 'use client'
 
 import { useRef, useState, type FormEvent } from 'react'
+import { useSite } from '@/components/site/site-provider'
 import type { AboutFormCopy } from '@/lib/types'
 import type { ApplyFieldSpec } from '@/lib/about-data'
 import './about-hub.css'
@@ -24,6 +25,7 @@ interface AboutApplicationFormProps {
  * PII is never placed in URL or logged.
  */
 export function AboutApplicationForm({ spec, copy, fields }: AboutApplicationFormProps) {
+  const { t } = useSite()
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [status, setStatus] = useState<string>('')
   const [submitting, setSubmitting] = useState(false)
@@ -43,30 +45,30 @@ export function AboutApplicationForm({ spec, copy, fields }: AboutApplicationFor
     for (const field of spec) {
       const raw = String(data.get(field.name) || '').trim()
       if (field.required && !raw) {
-        nextErrors[field.name] = 'Required'
+        nextErrors[field.name] = t.forms.required
         continue
       }
       if (!raw) continue
       if (raw.length > 2000) {
-        nextErrors[field.name] = 'Too long (max 2000)'
+        nextErrors[field.name] = t.forms.tooLong
         continue
       }
       if (field.kind === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(raw)) {
-        nextErrors[field.name] = 'Invalid email'
+        nextErrors[field.name] = t.forms.invalidEmail
         continue
       }
       if (field.kind === 'tel' && !/^[+0-9()\-\s]{7,20}$/.test(raw)) {
-        nextErrors[field.name] = 'Invalid phone'
+        nextErrors[field.name] = t.forms.invalidPhone
         continue
       }
     }
     // Privacy consent is mandatory.
     if (!data.get('privacy_consent')) {
-      nextErrors['privacy_consent'] = 'Privacy consent is required'
+      nextErrors['privacy_consent'] = t.forms.privacyConsent
     }
     setErrors(nextErrors)
     if (Object.keys(nextErrors).length > 0) {
-      setStatus('Please correct the highlighted fields.')
+      setStatus(t.forms.correctErrors)
       // First-error focus.
       const firstName = Object.keys(nextErrors)[0]
       const el = document.getElementById(firstName === 'privacy_consent' ? 'apply-privacy-consent' : `apply-${firstName}`)
@@ -84,7 +86,7 @@ export function AboutApplicationForm({ spec, copy, fields }: AboutApplicationFor
   return (
     <div>
       <p className="muted-copy" role="status" style={{ marginBottom: '16px' }}>
-        현재 접수 시스템을 준비 중입니다.
+        {t.forms.preparing}
       </p>
       <div ref={errorRef} tabIndex={-1} aria-live="polite" style={{ outline: 'none' }}>
         {status ? <p className="muted-copy" role="status">{status}</p> : null}
@@ -166,7 +168,7 @@ export function AboutApplicationForm({ spec, copy, fields }: AboutApplicationFor
               aria-invalid={!!errors['privacy_consent']}
               aria-describedby={errors['privacy_consent'] ? 'apply-privacy-consent-error' : undefined}
             />
-            <span>Privacy consent (required) — 개인정보 수집·이용 동의</span>
+            <span>{t.forms.privacyConsent}</span>
           </label>
           {errors['privacy_consent'] ? (
             <span id="apply-privacy-consent-error" role="alert" className="muted-copy">
@@ -175,8 +177,8 @@ export function AboutApplicationForm({ spec, copy, fields }: AboutApplicationFor
           ) : null}
         </div>
         <div className="about-hub-field about-hub-field--full">
-          <button className="primary-cta" type="submit" disabled aria-disabled="true" title="현재 접수 시스템 준비 중" style={{ justifyContent: 'center', opacity: 0.6 }}>
-            {copy.cta} — 준비 중
+          <button className="primary-cta" type="submit" disabled aria-disabled="true" title={t.forms.preparing} style={{ justifyContent: 'center', opacity: 0.6 }}>
+            {t.forms.submit}
           </button>
         </div>
       </form>
