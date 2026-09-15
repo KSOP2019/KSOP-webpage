@@ -18,7 +18,7 @@ function PartnerItem({ partner }: { partner: KsopPartner }) {
         />
       </span>
       <span className="ksop-partner-name">{partner.name}</span>
-      {partner.url ? <ArrowUpRight aria-hidden="true" /> : null}
+      <ArrowUpRight aria-hidden="true" />
     </>
   )
 
