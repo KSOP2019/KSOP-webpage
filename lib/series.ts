@@ -1,5 +1,5 @@
 import type { EventItem, EventType } from './types'
-import type { ScheduleCard, ScheduleContent } from './schedule-content'
+import { defaultScheduleContent, type ScheduleCard, type ScheduleContent } from './schedule-content'
 
 export interface SeriesEventMatch {
   types?: EventType[]
@@ -44,7 +44,7 @@ export function seriesFromCard(card: ScheduleCard): SeriesItem {
   }
 }
 
-export function getAllSeries(scheduleContent: ScheduleContent): SeriesItem[] {
+export function getAllSeries(scheduleContent: ScheduleContent = defaultScheduleContent): SeriesItem[] {
   return scheduleContent.items.map(seriesFromCard)
 }
 
