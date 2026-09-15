@@ -213,10 +213,27 @@ export interface LocaleCopy {
   scheduleKicker?: string
 }
 
+export interface HeroLayoutSettings {
+  brandX: number
+  brandY: number
+  brandWidth: number
+  brandFontSize: number
+  cardX: number
+  cardY: number
+  cardWidth: number
+  symbolX: number
+  symbolY: number
+  symbolSize: number
+  symbolOpacity: number
+  railBottom: number
+  railHeight: number
+}
+
 export interface SiteContent {
   heroImage: string
   logoBlack: string
   logoWhite: string
+  heroLayout: HeroLayoutSettings
   seriesDate: string
   seriesVenue: string
   seriesGtd: string
