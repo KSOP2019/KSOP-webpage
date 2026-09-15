@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
 import { HomeViewV2 } from '@/components/site/home-view-v2'
+import { HeroLayoutRuntime } from '@/components/site/hero-layout-runtime'
 import { getEvents, getNews, getRankedPlayers } from '@/lib/data'
+import { getHeroLayout } from '@/lib/hero-layout-store'
 import { getScheduleContent } from '@/lib/schedule-content'
 import { SITE_DESCRIPTION } from '@/lib/site-url'
 import type { NewsItem } from '@/lib/types'
@@ -46,11 +48,12 @@ const previewFallbackNews: NewsItem[] = [
 ]
 
 export default async function HomePage() {
-  const [events, news, ranked, scheduleContent] = await Promise.all([
+  const [events, news, ranked, scheduleContent, heroLayout] = await Promise.all([
     getEvents(),
     getNews(),
     getRankedPlayers(10),
     getScheduleContent(),
+    getHeroLayout(),
   ])
 
   const publishedNews = news.filter((item) => item.published)
@@ -59,11 +62,14 @@ export default async function HomePage() {
     : publishedNews
 
   return (
-    <HomeViewV2
-      events={events}
-      news={homeNews}
-      ranked={ranked}
-      scheduleContent={scheduleContent}
-    />
+    <>
+      <HeroLayoutRuntime initialLayout={heroLayout} />
+      <HomeViewV2
+        events={events}
+        news={homeNews}
+        ranked={ranked}
+        scheduleContent={scheduleContent}
+      />
+    </>
   )
 }
