@@ -44,10 +44,10 @@ function SeriesDetailInner({
     return acc
   }, {})
   const labels = {
-    KR: { hub: '시리즈 안내', allEvents: '전체 이벤트', events: '시리즈 이벤트', venue: '장소 / 안내', back: '전체 일정' },
-    EN: { hub: 'SERIES GUIDE', allEvents: 'ALL EVENTS', events: 'SERIES EVENTS', venue: 'VENUE / GUIDE', back: 'ALL SERIES' },
-    JP: { hub: 'シリーズ案内', allEvents: '全イベント', events: 'シリーズイベント', venue: '会場 / 案内', back: '全日程' },
-    CN: { hub: '系列赛指南', allEvents: '全部赛事', events: '系列赛赛事', venue: '场馆 / 指南', back: '全部日程' },
+    KR: { hub: '시리즈 안내', overview: '시리즈 개요', allEvents: '전체 이벤트', events: '시리즈 이벤트', venue: '장소 / 안내', back: '전체 일정' },
+    EN: { hub: 'SERIES GUIDE', overview: 'SERIES OVERVIEW', allEvents: 'ALL EVENTS', events: 'SERIES EVENTS', venue: 'VENUE / GUIDE', back: 'ALL SERIES' },
+    JP: { hub: 'シリーズ案内', overview: 'シリーズ概要', allEvents: '全イベント', events: 'シリーズイベント', venue: '会場 / 案内', back: '全日程' },
+    CN: { hub: '系列赛指南', overview: '系列赛概览', allEvents: '全部赛事', events: '系列赛赛事', venue: '场馆 / 指南', back: '全部日程' },
   }[language]
   const venue = series.venue || content.seriesVenue
 
@@ -71,6 +71,17 @@ function SeriesDetailInner({
             <p className="muted-copy" style={{ marginTop: 12 }}>{seriesEvents.length} {t.eventsWord}</p>
           </div>
         </div>
+
+        <nav
+          aria-label={`${series.title.trim()} section navigation`}
+          className="detail-actions"
+          style={{ marginTop: 28, flexWrap: 'wrap' }}
+        >
+          <a className="ghost-button" href="#series-overview">{labels.overview}</a>
+          <a className="ghost-button" href="#series-events">{labels.events}</a>
+          {venue ? <a className="ghost-button" href="#venue-guide">{labels.venue}</a> : null}
+          <Link className="text-link" href="/events">{labels.allEvents} <ArrowUpRight /></Link>
+        </nav>
       </section>
 
       {series.image ? (
@@ -82,14 +93,15 @@ function SeriesDetailInner({
       ) : null}
 
       <Reveal as="section" className="detail-list" ariaLabel={`${series.title.trim()} series details`}>
-        <div className="detail-facts series-facts">
+        <div id="series-overview" className="section-label">{labels.overview}</div>
+        <div className="detail-facts series-facts" style={{ marginTop: 16 }}>
           <div><span>{t.seriesWord}</span><strong>{series.title.trim()}</strong></div>
           <div><span>{t.dateRangeLabel}</span><strong>{dateRange ?? t.tba}</strong></div>
           <div><span>{labels.events}</span><strong>{seriesEvents.length}</strong></div>
           {venue ? <div><span>{t.venueLabel}</span><strong>{venue}</strong></div> : null}
         </div>
 
-        <div className="section-label" style={{ marginTop: 48 }}>{labels.events}</div>
+        <div id="series-events" className="section-label" style={{ marginTop: 48 }}>{labels.events}</div>
 
         {seriesEvents.length === 0 ? (
           <div className="premium-empty-state" style={{ marginTop: 18 }}>
@@ -128,7 +140,7 @@ function SeriesDetailInner({
         )}
 
         {venue ? (
-          <div style={{ marginTop: 56 }}>
+          <div id="venue-guide" style={{ marginTop: 56 }}>
             <div className="section-label">{labels.venue}</div>
             <div className="detail-facts" style={{ marginTop: 16 }}>
               <div><span>{t.venueLabel}</span><strong>{venue}</strong></div>
