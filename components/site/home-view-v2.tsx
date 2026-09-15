@@ -57,6 +57,10 @@ export function HomeViewV2({ events, news, ranked }: HomeViewV2Props) {
   const rankingSnapshot = useMemo(() => buildRankingTrendSnapshot(ranked), [ranked])
   const homeTop3 = ranked.slice(0, 3)
   const homeTop3Visual = homeTop3.length === 3 ? [homeTop3[1], homeTop3[0], homeTop3[2]] : homeTop3
+  const scheduleEvents = events.slice(0, 6)
+  const importantEvents = events
+    .filter((event) => event.type === 'MAIN EVENT' || event.type === 'HIGH ROLLER')
+    .slice(0, 6)
 
   return (
     <>
@@ -97,40 +101,16 @@ export function HomeViewV2({ events, news, ranked }: HomeViewV2Props) {
           </div>
           <Link className="text-link" href="/schedule">{t.exploreSchedule} <ArrowUpRight /></Link>
         </div>
-        <Reveal className="home-series-panel premium-depth-card">
-          <div className="home-series-copy">
-            <span className="section-label">{t.seriesLabel}</span>
-            <h3>{content.introTitle}</h3>
-            <p className="large-copy">{content.introBody}</p>
-          </div>
-          <div className="home-fact-grid">
-            <GlassCard asChild><div><span>{t.dateLabel}</span><strong>{content.seriesDate}</strong></div></GlassCard>
-            <GlassCard asChild><div><span>{t.venueLabel}</span><strong>{content.seriesVenue}</strong></div></GlassCard>
-            <GlassCard asChild><div><span>GTD</span><strong>{content.seriesGtd}</strong></div></GlassCard>
-          </div>
-        </Reveal>
-      </section>
 
-      <section className="section-pad home-section" id="events">
-        <div className="section-top">
-          <div>
-            <div className="section-label">02 · {label('/events')}</div>
-            <h2>{label('/events')}</h2>
-          </div>
-          <Link className="text-link" href="/events">{t.viewAllEvents} <ArrowUpRight /></Link>
-        </div>
-
-        {events.length === 0 ? (
+        {scheduleEvents.length === 0 ? (
           <GlassCard asChild>
             <div className="premium-empty-state" role="status">
-              <span className="section-label">{t.eventsEmptyTitle}</span>
-              <strong>{t.eventsEmptyBody}</strong>
-              <Link className="text-link" href="/events">{t.viewAllEvents} <ArrowUpRight /></Link>
+              <strong>{t.schedulePending}</strong>
             </div>
           </GlassCard>
         ) : (
           <Reveal className="home-event-grid">
-            {events.slice(0, 6).map((event) => {
+            {scheduleEvents.map((event) => {
               const image = eventCardImage(event)
               return (
                 <Link href={`/events/${event.id}`} className="home-event-card premium-depth-card" key={event.id}>
@@ -143,6 +123,64 @@ export function HomeViewV2({ events, news, ranked }: HomeViewV2Props) {
                     <div className="home-event-meta"><span>{event.buyIn}</span><span>{event.gtd} GTD</span></div>
                     <span className="text-link">{t.viewEvent} <ArrowUpRight /></span>
                   </div>
+                </Link>
+              )
+            })}
+          </Reveal>
+        )}
+      </section>
+
+      <section className="section-pad home-section" id="events">
+        <div className="section-top">
+          <div>
+            <div className="section-label">02 · {label('/events')}</div>
+            <h2>{label('/events')}</h2>
+          </div>
+          <Link className="text-link" href="/events">{t.viewAllEvents} <ArrowUpRight /></Link>
+        </div>
+
+        {importantEvents.length === 0 ? (
+          <GlassCard asChild>
+            <div className="premium-empty-state" role="status">
+              <span className="section-label">MAIN EVENT · HIGH ROLLER</span>
+              <strong>{t.eventsEmptyBody}</strong>
+              <Link className="text-link" href="/events">{t.viewAllEvents} <ArrowUpRight /></Link>
+            </div>
+          </GlassCard>
+        ) : (
+          <Reveal className="schedule-list">
+            {importantEvents.map((event) => {
+              const image = eventCardImage(event)
+              return (
+                <Link
+                  href={`/events/${event.id}`}
+                  className="premium-depth-card"
+                  key={event.id}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 18,
+                    width: '100%',
+                    padding: '18px 20px',
+                    marginBottom: 12,
+                    borderRadius: 18,
+                    border: '1px solid var(--border)',
+                    background: 'var(--glass-surface, rgba(255,255,255,.62))',
+                    overflow: 'hidden',
+                  }}
+                >
+                  {image ? (
+                    <img src={image} alt="" loading="lazy" style={{ width: 72, height: 72, borderRadius: 14, objectFit: 'cover', flex: '0 0 72px' }} />
+                  ) : (
+                    <span style={{ width: 72, height: 72, borderRadius: 14, display: 'grid', placeItems: 'center', flex: '0 0 72px', background: '#0a0a0c', color: '#fff', fontSize: 10, letterSpacing: '.08em' }}>
+                      {event.type}
+                    </span>
+                  )}
+                  <span className="event-title" style={{ flex: '1 1 auto', minWidth: 0 }}>
+                    <b>{event.name}</b>
+                    <small>{event.date} · {event.dayLabel} · {event.type} · {t.buyin} {event.buyIn} · {event.gtd} GTD</small>
+                  </span>
+                  <ArrowUpRight className="chevron" aria-hidden="true" />
                 </Link>
               )
             })}
