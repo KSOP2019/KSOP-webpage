@@ -100,17 +100,9 @@ main:has(> .premium-hero) .ksop-partner-link > svg {
   margin-top: 8px !important;
 }
 
+/* Keep cards without a destination non-clicking, but preserve the exact same visual hover treatment. */
 main:has(> .premium-hero) .ksop-partner-link.is-static {
   cursor: default !important;
-}
-
-@media (hover: hover) and (pointer: fine) {
-  main:has(> .premium-hero) .ksop-partner-link.is-static:hover,
-  main:has(> .premium-hero) .ksop-partner-link.is-static:focus-visible {
-    transform: none !important;
-    border-color: rgba(23, 26, 36, .10) !important;
-    box-shadow: 0 20px 60px rgba(31, 36, 49, .08), inset 0 1px rgba(255,255,255,.92) !important;
-  }
 }
 
 /* /partners — complete partner directory. */
