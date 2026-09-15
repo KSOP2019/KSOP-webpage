@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import type { Language, LocaleCopy, SiteContent } from '@/lib/types'
 import { AdminImageField } from '@/components/admin/admin-image-field'
+import { NestedCopyEditor } from '@/components/admin/nested-copy-editor'
 import { EMPTY_SOCIAL_LINKS, SOCIAL_ORDER, type SocialLinks } from '@/lib/social-links'
 
 const languages: Language[] = ['EN', 'KR', 'JP', 'CN']
@@ -188,6 +189,22 @@ export function ContentEditor({ initialContent }: { initialContent: SiteContent 
               />
             </label>
           ))}
+
+          {content.copy[language].about ? (
+            <NestedCopyEditor
+              title={`${language} About / Forms`}
+              value={content.copy[language].about}
+              onChange={(about) =>
+                setContent({
+                  ...content,
+                  copy: {
+                    ...content.copy,
+                    [language]: { ...content.copy[language], about },
+                  },
+                })
+              }
+            />
+          ) : null}
         </fieldset>
       ))}
 
