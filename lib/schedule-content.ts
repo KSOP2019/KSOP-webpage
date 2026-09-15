@@ -7,8 +7,13 @@ export type ScheduleCard = {
   status?: 'upcoming' | 'past'
   dateRange?: string
   venue?: string
+  /** Public event slugs explicitly included in this series. Preferred link source. */
+  eventIds?: string[]
+  /** Optional canonical public.series.id for future/native DB ownership. */
   seriesId?: string
+  /** Legacy fallback only. */
   matchType?: EventType | ''
+  /** Legacy fallback only. */
   matchName?: string
 }
 
@@ -42,6 +47,11 @@ function inferMatch(item: any): Pick<ScheduleCard, 'matchType' | 'matchName'> {
   return { matchType: '', matchName: '' }
 }
 
+function normalizeEventIds(value: unknown): string[] {
+  if (!Array.isArray(value)) return []
+  return Array.from(new Set(value.map((item) => String(item || '').trim()).filter(Boolean))).slice(0, 300)
+}
+
 function normalize(value: any): ScheduleContent {
   const items = Array.isArray(value?.items)
     ? value.items
@@ -56,6 +66,7 @@ function normalize(value: any): ScheduleContent {
             status: item?.status === 'past' ? 'past' as const : 'upcoming' as const,
             dateRange: String(item?.dateRange || '').trim(),
             venue: String(item?.venue || '').trim(),
+            eventIds: normalizeEventIds(item?.eventIds),
             seriesId: String(item?.seriesId || '').trim(),
             matchType,
             matchName: String(item?.matchName || inferred.matchName || '').trim(),
