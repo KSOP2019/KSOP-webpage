@@ -1,0 +1,42 @@
+/* HERO LAYOUT RUNTIME — values are supplied by HeroLayoutRuntime from CMS. */
+
+main:has(> .premium-hero) > .premium-hero .hero-copy {
+  left: var(--hero-card-x, 135px) !important;
+  top: var(--hero-card-y, 430px) !important;
+  width: var(--hero-card-width, 570px) !important;
+  min-width: var(--hero-card-width, 570px) !important;
+  max-width: var(--hero-card-width, 570px) !important;
+}
+
+main:has(> .premium-hero) > .premium-hero .hero-copy::before {
+  left: calc(var(--hero-brand-x, 295px) - var(--hero-card-x, 135px)) !important;
+  top: calc(var(--hero-brand-y, 138px) - var(--hero-card-y, 430px)) !important;
+  width: var(--hero-brand-width, 780px) !important;
+  font-size: var(--hero-brand-font-size, 76px) !important;
+}
+
+/* Use the approved dark-mode lockup and crop its left symbol only. */
+main:has(> .premium-hero) > .premium-hero .hero-copy::after {
+  left: calc(var(--hero-symbol-x, 112px) - var(--hero-card-x, 135px)) !important;
+  top: calc(var(--hero-symbol-y, 122px) - var(--hero-card-y, 430px)) !important;
+  width: var(--hero-symbol-size, 384px) !important;
+  height: var(--hero-symbol-size, 384px) !important;
+  background-image: url('/images/ksop-dark-approved.png') !important;
+  background-repeat: no-repeat !important;
+  background-position: left center !important;
+  background-size: auto var(--hero-symbol-size, 384px) !important;
+  opacity: var(--hero-symbol-opacity, .08) !important;
+  filter: grayscale(1) brightness(1.25) !important;
+}
+
+main:has(> .premium-hero) > .premium-hero .hero-title-box {
+  width: var(--hero-card-width, 570px) !important;
+  min-width: var(--hero-card-width, 570px) !important;
+  max-width: var(--hero-card-width, 570px) !important;
+}
+
+main:has(> .premium-hero) > .premium-hero .hero-info-rail {
+  bottom: var(--hero-rail-bottom, 46px) !important;
+  min-height: var(--hero-rail-height, 86px) !important;
+  height: var(--hero-rail-height, 86px) !important;
+}
