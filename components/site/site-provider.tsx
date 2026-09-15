@@ -10,11 +10,9 @@ import en from '@/locales/en.json'
 import ja from '@/locales/ja.json'
 import zh from '@/locales/zh.json'
 
-/** Editorial UI strings — single source for public chrome. Event names never live here. */
-export type LocaleStrings = typeof ko;
+export type LocaleStrings = typeof ko
 
 const LOCALES: Record<Language, LocaleStrings> = { KR: ko, EN: en, JP: ja, CN: zh } as Record<Language, LocaleStrings>
-
 const LOCALE_STORAGE_KEY = 'ksop-locale'
 
 function readStoredLanguage(): Language | null {
@@ -28,6 +26,13 @@ function readStoredLanguage(): Language | null {
   return null
 }
 
+function mergeLocaleStrings(base: LocaleStrings, cmsCopy: SiteContent['copy'][Language]): LocaleStrings {
+  const overrides = Object.fromEntries(
+    Object.entries(cmsCopy || {}).filter(([, value]) => typeof value === 'string' || Array.isArray(value)),
+  )
+  return { ...base, ...overrides } as LocaleStrings
+}
+
 type SiteContextValue = {
   language: Language
   setLanguage: (language: Language) => void
@@ -35,9 +40,7 @@ type SiteContextValue = {
   setDarkMode: (value: boolean) => void
   content: SiteContent
   setContent: (content: SiteContent) => void
-  /** Editorial UI strings from locales/*.json (instant, no reload). */
   t: LocaleStrings
-  /** CMS-driven copy (about/forms) — data, not chrome. Falls back to local seed. */
   copy: SiteContent['copy'][Language]
 }
 
@@ -46,8 +49,6 @@ const SiteContext = createContext<SiteContextValue | null>(null)
 export function SiteProvider({ children, initialContent }: { children: ReactNode; initialContent?: SiteContent }) {
   const [language, setLanguageState] = useState<Language>(() => readStoredLanguage() ?? 'KR')
   const [content, setContent] = useState<SiteContent>(initialContent ?? seedContent)
-  // 원칙 3: 라이트/다크 판정은 next-themes resolvedTheme 단일 소스.
-  // 기존 darkMode boolean API는 유지해 소비자 DOM 변경 없이 브릿지한다.
   const { resolvedTheme, setTheme } = useTheme()
   const darkMode = resolveGlassMode(resolvedTheme) === 'dark'
 
@@ -71,19 +72,19 @@ export function SiteProvider({ children, initialContent }: { children: ReactNode
     document.documentElement.lang = language.toLowerCase()
   }, [language])
 
-  const value = useMemo(
-    () => ({
+  const value = useMemo(() => {
+    const copy = content.copy[language]
+    return {
       language,
       setLanguage,
       darkMode,
       setDarkMode,
       content,
       setContent,
-      t: LOCALES[language],
-      copy: content.copy[language],
-    }),
-    [language, darkMode, content],
-  )
+      t: mergeLocaleStrings(LOCALES[language], copy),
+      copy,
+    }
+  }, [language, darkMode, content])
 
   return <SiteContext.Provider value={value}>{children}</SiteContext.Provider>
 }
