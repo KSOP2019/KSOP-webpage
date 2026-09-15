@@ -2,34 +2,36 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { SeriesDetailClient } from '@/components/site/series-detail-client'
 import { getEvents, getSiteContent } from '@/lib/data'
-import { getAllSeries, getSeries, getSeriesDateRange, getSeriesEvents } from '@/lib/series'
+import { getScheduleContent } from '@/lib/schedule-content'
+import { getSeries, getSeriesDateRange, getSeriesEvents } from '@/lib/series'
 
 type PageProps = { params: Promise<{ 'series-slug': string }> }
 
 export const revalidate = 120
 
-export function generateStaticParams() {
-  return getAllSeries().map((series) => ({ 'series-slug': series.slug }))
-}
-
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { 'series-slug': slug } = await params
-  const series = getSeries(slug)
+  const scheduleContent = await getScheduleContent()
+  const series = getSeries(scheduleContent, slug)
   if (!series) return { title: 'Series not found · KSOP' }
   return {
     title: series.title.trim(),
-    description: `${series.title.trim()} — KSOP schedule series.`,
+    description: `${series.title.trim()} — KSOP series schedule and events.`,
     alternates: { canonical: `/schedule/${slug}` },
   }
 }
 
 export default async function SeriesDetailPage({ params }: PageProps) {
   const { 'series-slug': slug } = await params
-  const series = getSeries(slug)
+  const [events, content, scheduleContent] = await Promise.all([
+    getEvents(),
+    getSiteContent(),
+    getScheduleContent(),
+  ])
+  const series = getSeries(scheduleContent, slug)
 
   if (!series) notFound()
 
-  const [events, content] = await Promise.all([getEvents(), getSiteContent()])
   const seriesEvents = getSeriesEvents(series, events)
   const dateRange = getSeriesDateRange(seriesEvents) ?? series.periodHint
 
