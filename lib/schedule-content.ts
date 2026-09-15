@@ -7,6 +7,7 @@ export type ScheduleCard = {
   status?: 'upcoming' | 'past'
   dateRange?: string
   venue?: string
+  seriesId?: string
   matchType?: EventType | ''
   matchName?: string
 }
@@ -55,6 +56,7 @@ function normalize(value: any): ScheduleContent {
             status: item?.status === 'past' ? 'past' as const : 'upcoming' as const,
             dateRange: String(item?.dateRange || '').trim(),
             venue: String(item?.venue || '').trim(),
+            seriesId: String(item?.seriesId || '').trim(),
             matchType,
             matchName: String(item?.matchName || inferred.matchName || '').trim(),
           }
