@@ -60,7 +60,7 @@ export function PartnerEditor() {
       <div>
         <h3 style={{ marginBottom: 8 }}>Homepage Partnerships</h3>
         <p style={{ marginTop: 0 }}>
-          계약이 확정된 회사만 등록합니다. 회사명, 공식 사이트 URL, 로고를 저장하면 홈 하단 파트너십 영역에 반영됩니다.
+          계약이 확정된 회사만 등록합니다. 회사명과 로고는 필수이며, 공식 사이트 URL은 준비된 경우에만 입력합니다. 홈에는 앞 6개가 노출되고 전체 목록은 /partners에서 확인합니다.
         </p>
       </div>
 
@@ -88,7 +88,7 @@ export function PartnerEditor() {
             />
           </label>
           <label>
-            Official website URL
+            Official website URL (optional)
             <input
               value={partner.url}
               onChange={(event) => updatePartner(index, { url: event.target.value })}
@@ -124,7 +124,7 @@ export function PartnerEditor() {
             setSaved(false)
             setPartners((current) => [...current, emptyPartner()])
           }}
-          disabled={partners.length >= 24}
+          disabled={partners.length >= 60}
         >
           Add partner
         </button>
