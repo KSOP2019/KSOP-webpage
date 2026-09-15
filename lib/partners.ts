@@ -5,13 +5,7 @@ export type KsopPartner = {
   logoAlt: string
 }
 
-/**
- * Homepage partnership source.
- * Keep this list limited to companies with an approved KSOP relationship.
- * Replace logoUrl with the contract-provided transparent PNG/WebP whenever an
- * official brand asset is supplied; homepage layout does not need to change.
- */
-export const KSOP_PARTNERS: KsopPartner[] = [
+export const DEFAULT_KSOP_PARTNERS: KsopPartner[] = [
   {
     name: 'Japan Open Poker Tour',
     url: 'https://japanopenpoker.com/',
@@ -31,3 +25,22 @@ export const KSOP_PARTNERS: KsopPartner[] = [
     logoAlt: 'Global Poker Index',
   },
 ]
+
+export function normalizePartners(value: unknown): KsopPartner[] {
+  if (!Array.isArray(value)) return DEFAULT_KSOP_PARTNERS
+
+  return value
+    .map((item) => {
+      const source = item && typeof item === 'object' ? (item as Record<string, unknown>) : {}
+      const name = typeof source.name === 'string' ? source.name.trim() : ''
+      const url = typeof source.url === 'string' ? source.url.trim() : ''
+      const logoUrl = typeof source.logoUrl === 'string' ? source.logoUrl.trim() : ''
+      const logoAlt = typeof source.logoAlt === 'string' ? source.logoAlt.trim() : name
+      return { name, url, logoUrl, logoAlt }
+    })
+    .filter((partner) => partner.name && partner.url && partner.logoUrl)
+    .slice(0, 24)
+}
+
+// Default rendered during SSR and whenever CMS partner data is unavailable.
+export const KSOP_PARTNERS = DEFAULT_KSOP_PARTNERS
