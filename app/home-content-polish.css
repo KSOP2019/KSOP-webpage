@@ -188,3 +188,129 @@ main:has(> .premium-hero) > .site-footer .footer-logo {
   height: auto !important;
   object-fit: contain !important;
 }
+
+/* Partnership logo wall replaces the former closing schedule/result banner. */
+main:has(> .premium-hero) > .ksop-partners-section {
+  width: 1920px !important;
+  min-width: 1920px !important;
+  max-width: 1920px !important;
+  padding: 118px 154px 126px !important;
+  border-top: 1px solid rgba(23, 26, 36, .10);
+  border-bottom: 1px solid rgba(23, 26, 36, .10);
+  background:
+    radial-gradient(circle at 14% 18%, rgba(191, 211, 239, .34), transparent 28rem),
+    radial-gradient(circle at 86% 24%, rgba(219, 207, 171, .22), transparent 30rem),
+    rgba(250, 248, 242, .94);
+}
+
+main:has(> .premium-hero) .ksop-partners-heading {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  max-width: 940px;
+  margin-bottom: 58px;
+}
+
+main:has(> .premium-hero) .ksop-partners-heading > span {
+  color: #8a6d1f;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .20em;
+}
+
+main:has(> .premium-hero) .ksop-partners-heading h2 {
+  margin: 0;
+  color: #171a24;
+  font-size: 54px;
+  line-height: 1.04;
+  font-weight: 760;
+  letter-spacing: -.045em;
+}
+
+main:has(> .premium-hero) .ksop-partners-heading p {
+  margin: 4px 0 0;
+  color: #70737d;
+  font-size: 16px;
+}
+
+main:has(> .premium-hero) .ksop-partners-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+}
+
+main:has(> .premium-hero) .ksop-partner-link {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-rows: 220px auto;
+  align-items: center;
+  min-height: 292px;
+  padding: 26px 28px 22px;
+  overflow: hidden;
+  color: #171a24;
+  text-decoration: none;
+  border: 1px solid rgba(23, 26, 36, .10);
+  border-radius: 28px;
+  background: rgba(255, 255, 255, .72);
+  box-shadow: 0 20px 60px rgba(31, 36, 49, .08), inset 0 1px rgba(255,255,255,.92);
+  backdrop-filter: blur(18px) saturate(120%);
+  -webkit-backdrop-filter: blur(18px) saturate(120%);
+  transition: transform .28s ease, box-shadow .28s ease, border-color .28s ease;
+}
+
+main:has(> .premium-hero) .ksop-partner-logo-wrap {
+  grid-column: 1 / -1;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 220px;
+  padding: 22px 36px;
+  overflow: hidden;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, .92);
+}
+
+main:has(> .premium-hero) .ksop-partner-logo {
+  display: block;
+  width: 100%;
+  max-width: 320px;
+  height: 100%;
+  max-height: 166px;
+  object-fit: contain;
+  object-position: center;
+  mix-blend-mode: multiply;
+  filter: saturate(.92) contrast(1.03);
+  transition: transform .28s ease, filter .28s ease;
+}
+
+main:has(> .premium-hero) .ksop-partner-name {
+  align-self: end;
+  padding-top: 18px;
+  font-size: 14px;
+  font-weight: 760;
+  letter-spacing: -.01em;
+}
+
+main:has(> .premium-hero) .ksop-partner-link > svg {
+  align-self: end;
+  width: 19px;
+  height: 19px;
+  margin-top: 18px;
+  color: #8a6d1f;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  main:has(> .premium-hero) .ksop-partner-link:hover,
+  main:has(> .premium-hero) .ksop-partner-link:focus-visible {
+    transform: translateY(-7px);
+    border-color: rgba(138, 109, 31, .26);
+    box-shadow: 0 30px 80px rgba(31, 36, 49, .14), 0 12px 32px rgba(138, 109, 31, .08), inset 0 1px rgba(255,255,255,.96);
+  }
+
+  main:has(> .premium-hero) .ksop-partner-link:hover .ksop-partner-logo,
+  main:has(> .premium-hero) .ksop-partner-link:focus-visible .ksop-partner-logo {
+    transform: scale(1.035);
+    filter: saturate(1) contrast(1.06);
+  }
+}
