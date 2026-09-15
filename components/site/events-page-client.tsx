@@ -45,15 +45,16 @@ export function EventsPageClient({ events }: { events: EventItem[] }) {
 
       <div className="event-filters" role="tablist" aria-label="Event filters">
         {EVENT_CATEGORIES.map((category) => (
-            <button
-              type="button"
-              className={selectedCategory === category ? 'is-active' : ''}
-              aria-selected={selectedCategory === category}
-              onClick={() => {
+          <button
+            type="button"
+            className={selectedCategory === category ? 'is-active' : ''}
+            aria-selected={selectedCategory === category}
+            onClick={() => {
               setSelectedCategory(category)
               setSelectedDate('ALL')
               setVisibleCount(PAGE_SIZE)
             }}
+            key={category}
           >
             {category}
           </button>
@@ -62,7 +63,7 @@ export function EventsPageClient({ events }: { events: EventItem[] }) {
 
       {selectedCategory === 'DAY' ? (
         <div className="date-filter" style={{ display: 'flex', gap: '14px', marginBottom: '20px' }}>
-          <button type="button" className={selectedDate === 'ALL' ? 'is-active' : ''} onClick={() => { setSelectedDate('ALL'); setVisibleCount(PAGE_SIZE); }}>
+          <button type="button" className={selectedDate === 'ALL' ? 'is-active' : ''} onClick={() => { setSelectedDate('ALL'); setVisibleCount(PAGE_SIZE) }}>
             {t.allDates}
           </button>
           {dates.map((date) => (
@@ -106,7 +107,19 @@ export function EventsPageClient({ events }: { events: EventItem[] }) {
           </div>
         ) : null}
         {shownEvents.map((event) => (
-          <article className="schedule-item event-row-hover" key={event.id}>
+          <article
+            className="schedule-item event-row glass"
+            data-glass="card"
+            key={event.id}
+            style={{
+              border: '1px solid var(--border)',
+              borderRadius: 18,
+              overflow: 'hidden',
+              padding: '18px 20px',
+              marginBottom: 12,
+              background: 'var(--glass-surface, rgba(255,255,255,.62))',
+            }}
+          >
             <Link
               className="schedule-trigger event-row-link"
               href={`/events/${event.id}`}
@@ -120,7 +133,7 @@ export function EventsPageClient({ events }: { events: EventItem[] }) {
                   src={eventCardImage(event)}
                   alt=""
                   loading="lazy"
-                  style={{ width: 56, height: 56, borderRadius: 10, objectFit: 'cover', flex: '0 0 56px' }}
+                  style={{ width: 56, height: 56, borderRadius: 12, objectFit: 'cover', flex: '0 0 56px' }}
                 />
               ) : null}
               <span className="event-title">
