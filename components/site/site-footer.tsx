@@ -3,23 +3,22 @@
 import Link from 'next/link'
 import { useSite } from '@/components/site/site-provider'
 import { SnsDock } from '@/components/effects/sns-dock'
-import { getNavItems, socials, SOCIAL_URLS } from '@/lib/nav'
+import { getNavItems } from '@/lib/nav'
+import { useSocialLinks } from '@/components/site/use-social-links'
 
-function SocialIcon({ name, src }: { name: string; src: string }) {
-  const href = SOCIAL_URLS[name]
-  // Confirmed URL only. Unconfirmed → hidden (never "#" or "/#social").
-  if (!href) return null
-  return (
-    <SnsDock name={name} ariaLabel={name} href={href}>
-      <img src={src} alt="" />
-    </SnsDock>
-  )
-}
+const SOCIAL_ORDER = [
+  ['FLOPIN', 'F'],
+  ['Instagram', '◎'],
+  ['X', '𝕏'],
+  ['Discord', '◌'],
+  ['Facebook', 'f'],
+  ['YouTube', '▶'],
+] as const
 
 export function SiteFooter() {
   const { t, darkMode, language } = useSite()
+  const socialLinks = useSocialLinks()
   const logo = darkMode ? '/images/ksop-dark-approved.png' : '/images/ksop-light-approved.png'
-  const confirmedSocials = Object.entries(socials).filter(([name]) => SOCIAL_URLS[name])
 
   return (
     <footer className="site-footer" id="social">
@@ -32,22 +31,28 @@ export function SiteFooter() {
         </p>
       </div>
       <div className="footer-nav">
-        {getNavItems(t.nav, language).slice(0, 4).map(({ href, label }) => (
+        {getNavItems(t.nav, language).map(({ href, label }) => (
           <Link href={href} key={href}>
             {label}
           </Link>
         ))}
       </div>
-      {confirmedSocials.length > 0 ? (
-        <div className="socials">
-          <span>{t.follow}</span>
-          <div>
-            {confirmedSocials.map(([name, src]) => (
-              <SocialIcon key={name} name={name} src={src} />
-            ))}
-          </div>
+      <div className="socials">
+        <span>{t.follow}</span>
+        <div aria-label="KSOP social channels">
+          {SOCIAL_ORDER.map(([name, symbol]) => {
+            const href = socialLinks[name]
+            if (!href) {
+              return <span key={name} className="social-text is-disabled" aria-label={`${name} link not configured`} aria-disabled="true">{symbol}</span>
+            }
+            return (
+              <SnsDock key={name} name={name} ariaLabel={name} href={href} className="social-text">
+                <span aria-hidden="true">{symbol}</span>
+              </SnsDock>
+            )
+          })}
         </div>
-      ) : null}
+      </div>
       <div className="copyright">© 2026 KSOP · ALL RIGHTS RESERVED</div>
     </footer>
   )
