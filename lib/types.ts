@@ -233,7 +233,7 @@ export interface SiteContent {
   heroImage: string
   logoBlack: string
   logoWhite: string
-  heroLayout: HeroLayoutSettings
+  heroLayout?: HeroLayoutSettings
   seriesDate: string
   seriesVenue: string
   seriesGtd: string
