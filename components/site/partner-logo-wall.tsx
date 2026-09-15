@@ -1,8 +1,48 @@
 'use client'
 
+import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { ArrowUpRight } from 'lucide-react'
 import { DEFAULT_KSOP_PARTNERS, normalizePartners, type KsopPartner } from '@/lib/partners'
+
+function PartnerItem({ partner }: { partner: KsopPartner }) {
+  const content = (
+    <>
+      <span className="ksop-partner-logo-wrap">
+        <img
+          className="ksop-partner-logo"
+          src={partner.logoUrl}
+          alt={partner.logoAlt || partner.name}
+          loading="lazy"
+          referrerPolicy="no-referrer"
+        />
+      </span>
+      <span className="ksop-partner-name">{partner.name}</span>
+      {partner.url ? <ArrowUpRight aria-hidden="true" /> : null}
+    </>
+  )
+
+  if (!partner.url) {
+    return (
+      <div className="ksop-partner-link is-static" aria-label={partner.name}>
+        {content}
+      </div>
+    )
+  }
+
+  const external = /^https?:\/\//i.test(partner.url)
+  return (
+    <a
+      className="ksop-partner-link"
+      href={partner.url}
+      target={external ? '_blank' : undefined}
+      rel={external ? 'noopener noreferrer' : undefined}
+      aria-label={`${partner.name} 공식 사이트로 이동`}
+    >
+      {content}
+    </a>
+  )
+}
 
 export function PartnerLogoWall() {
   const [partners, setPartners] = useState<KsopPartner[]>(DEFAULT_KSOP_PARTNERS)
@@ -22,35 +62,20 @@ export function PartnerLogoWall() {
     }
   }, [])
 
+  const visiblePartners = partners.slice(0, 6)
+
   return (
     <section className="ksop-partners-section" aria-labelledby="ksop-partners-title">
-      <div className="ksop-partners-heading">
-        <span>OFFICIAL PARTNERS</span>
-        <h2 id="ksop-partners-title">KSOP와 함께하는 파트너십</h2>
-        <p>KSOP와 공식 협력 관계에 있는 파트너를 소개합니다.</p>
+      <div className="section-top ksop-partners-heading">
+        <div>
+          <div className="section-label" id="ksop-partners-title">OFFICIAL PARTNERS</div>
+        </div>
+        <Link className="text-link" href="/partners">전체 파트너 보기 <ArrowUpRight /></Link>
       </div>
+
       <div className="ksop-partners-grid">
-        {partners.map((partner) => (
-          <a
-            className="ksop-partner-link"
-            href={partner.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label={`${partner.name} 공식 사이트로 이동`}
-            key={`${partner.name}-${partner.url}`}
-          >
-            <span className="ksop-partner-logo-wrap">
-              <img
-                className="ksop-partner-logo"
-                src={partner.logoUrl}
-                alt={partner.logoAlt || partner.name}
-                loading="lazy"
-                referrerPolicy="no-referrer"
-              />
-            </span>
-            <span className="ksop-partner-name">{partner.name}</span>
-            <ArrowUpRight aria-hidden="true" />
-          </a>
+        {visiblePartners.map((partner) => (
+          <PartnerItem partner={partner} key={`${partner.name}-${partner.logoUrl}`} />
         ))}
       </div>
     </section>
