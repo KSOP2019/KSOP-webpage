@@ -75,7 +75,10 @@ export function HomeViewV2({ events, news, ranked, scheduleContent }: HomeViewV2
   const rankingSnapshot = useMemo(() => buildRankingTrendSnapshot(ranked), [ranked])
   const homeTop3 = ranked.slice(0, 3)
   const homeTop3Visual = homeTop3.length === 3 ? [homeTop3[1], homeTop3[0], homeTop3[2]] : homeTop3
-  const upcomingSeries = scheduleContent.items.filter((item) => item.status !== 'past').slice(0, 6)
+  const allUpcomingSeries = scheduleContent.items.filter((item) => item.status !== 'past')
+  const upcomingSeries = allUpcomingSeries.slice(0, 6)
+  const heroSeries = allUpcomingSeries[0]
+  const heroSeriesHref = heroSeries ? `/schedule/${slugifySeriesLabel(heroSeries.label)}` : '/schedule'
   const importantEvents = events
     .filter((event) => event.type === 'MAIN EVENT' || event.type === 'HIGH ROLLER')
     .slice(0, 6)
@@ -91,10 +94,9 @@ export function HomeViewV2({ events, news, ranked, scheduleContent }: HomeViewV2
 
         <div className="hero-visual premium-poster">
           <img src={heroPhoto} alt="KSOP tournament arena" fetchPriority="high" decoding="async" width={1920} height={1080} />
-          <div className="hero-stamp glass" data-glass="popover">
-            <span>{content.seriesDate}</span>
-            <strong>{content.seriesVenue}</strong>
-            <small>{content.seriesGtd}</small>
+          <div className="hero-official-mark" aria-label="KSOP Official Series">
+            <span>KSOP</span>
+            <strong>OFFICIAL SERIES</strong>
           </div>
         </div>
 
@@ -107,10 +109,44 @@ export function HomeViewV2({ events, news, ranked, scheduleContent }: HomeViewV2
               ))}
             </h1>
             <p className="hero-intro">{t.intro}</p>
+
+            {heroSeries ? (
+              <Link className="hero-next-series" href={heroSeriesHref}>
+                <span className="hero-next-label">{language === 'KR' ? 'NEXT SERIES · 다음 일정' : 'NEXT SERIES'}</span>
+                <strong>{heroSeries.label}</strong>
+                {(heroSeries.dateRange || heroSeries.venue) ? (
+                  <span className="hero-next-meta">
+                    {heroSeries.dateRange ? <span>{heroSeries.dateRange}</span> : null}
+                    {heroSeries.venue ? <span>{heroSeries.venue}</span> : null}
+                  </span>
+                ) : null}
+                <ArrowUpRight aria-hidden="true" />
+              </Link>
+            ) : null}
+
             <div className="hero-actions">
               <Link className="primary-cta" href="/events">{heroPrimaryLabel} <ArrowUpRight /></Link>
               <Link className="hero-secondary-cta" href="/schedule">{label('/schedule')} <CalendarDays /></Link>
             </div>
+          </div>
+        </div>
+
+        <div className="hero-info-rail" aria-label="KSOP series overview">
+          <div className="hero-rail-item is-count">
+            <span>UPCOMING SERIES</span>
+            <strong>{String(allUpcomingSeries.length).padStart(2, '0')}</strong>
+          </div>
+          <Link className="hero-rail-item is-series" href={heroSeriesHref}>
+            <span>NEXT SERIES</span>
+            <strong>{heroSeries?.label || 'KSOP SERIES'}</strong>
+          </Link>
+          <div className="hero-rail-item">
+            <span>DATE</span>
+            <strong>{heroSeries?.dateRange || (language === 'KR' ? '일정 추후 공개' : 'TO BE ANNOUNCED')}</strong>
+          </div>
+          <div className="hero-rail-item">
+            <span>LOCATION</span>
+            <strong>{heroSeries?.venue || (language === 'KR' ? '장소 추후 공개' : 'TO BE ANNOUNCED')}</strong>
           </div>
         </div>
       </section>
