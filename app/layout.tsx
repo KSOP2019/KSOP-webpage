@@ -14,6 +14,7 @@ import './premium-glass-preview.css'
 import './home-hero-reference.css'
 import './ranking-premium.css'
 import './home-content-polish.css'
+import './partners-preview.css'
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
