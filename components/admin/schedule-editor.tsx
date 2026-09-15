@@ -2,9 +2,10 @@
 
 import { useState } from 'react'
 import type { ScheduleContent } from '@/lib/schedule-content'
+import type { SeriesOption } from '@/lib/series-db'
 import { AdminImageField } from '@/components/admin/admin-image-field'
 
-export function ScheduleEditor({ initialContent }: { initialContent: ScheduleContent }) {
+export function ScheduleEditor({ initialContent, seriesOptions = [] }: { initialContent: ScheduleContent; seriesOptions?: SeriesOption[] }) {
   const [content, setContent] = useState(initialContent)
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
@@ -30,7 +31,7 @@ export function ScheduleEditor({ initialContent }: { initialContent: ScheduleCon
   function addItem() {
     setContent({
       ...content,
-      items: [...content.items, { label: 'NEW SERIES', image: '', status: 'upcoming', dateRange: '', venue: '', matchType: '', matchName: '' }],
+      items: [...content.items, { label: 'NEW SERIES', image: '', status: 'upcoming', dateRange: '', venue: '', seriesId: '', matchType: '', matchName: '' }],
     })
   }
 
@@ -54,13 +55,22 @@ export function ScheduleEditor({ initialContent }: { initialContent: ScheduleCon
       </label>
 
       <h3>Series / schedule cards</h3>
-      <p>각 카드는 홈 일정 → 일정 페이지 → 시리즈 상세로 동일하게 연결됩니다. 연결 조건은 해당 시리즈에 포함될 이벤트를 자동 분류하는 기준입니다.</p>
+      <p>홈 일정 → 시리즈 상세 → 개별 이벤트는 Canonical Series로 정확히 연결됩니다. Legacy 필터는 이전 Preview 데이터 호환용입니다.</p>
       {content.items.map((item, index) => (
         <fieldset key={index} style={{ border: '1px solid #d8dde5', borderRadius: 10, padding: 16 }}>
           <legend style={{ padding: '0 8px', fontWeight: 700 }}>Series {index + 1}</legend>
           <label>
             Series title
             <input value={item.label} onChange={(e) => updateItem(index, 'label', e.target.value)} />
+          </label>
+          <label>
+            Canonical Series
+            <select value={item.seriesId || ''} onChange={(e) => updateItem(index, 'seriesId', e.target.value)}>
+              <option value="">Legacy / not assigned</option>
+              {seriesOptions.map((series) => (
+                <option key={series.id} value={series.id}>{series.title} · {series.status}</option>
+              ))}
+            </select>
           </label>
           <label>
             Status
@@ -85,8 +95,8 @@ export function ScheduleEditor({ initialContent }: { initialContent: ScheduleCon
             aspectHint="홈 일정 카드와 일정 페이지 시리즈 카드에 공통 사용됩니다. 저장 후 공개 페이지에 반영됩니다."
           />
           <label>
-            Linked event type
-            <select value={item.matchType || ''} onChange={(e) => updateItem(index, 'matchType', e.target.value)}>
+            Legacy linked event type
+            <select value={item.matchType || ''} onChange={(e) => updateItem(index, 'matchType', e.target.value)} disabled={!!item.seriesId}>
               <option value="">No type filter</option>
               <option value="NLH">NLH</option>
               <option value="PLO">PLO</option>
@@ -96,8 +106,8 @@ export function ScheduleEditor({ initialContent }: { initialContent: ScheduleCon
             </select>
           </label>
           <label>
-            Event name contains
-            <input value={item.matchName || ''} onChange={(e) => updateItem(index, 'matchName', e.target.value)} placeholder="예: Warm-up" />
+            Legacy event name contains
+            <input value={item.matchName || ''} onChange={(e) => updateItem(index, 'matchName', e.target.value)} placeholder="예: Warm-up" disabled={!!item.seriesId} />
           </label>
           <button className="admin-button secondary" type="button" onClick={() => removeItem(index)}>Remove series</button>
         </fieldset>
