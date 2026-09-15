@@ -11,6 +11,7 @@ import './header-stability.css'
 import '@/components/design-system/glass.css'
 import './detail-polish.css'
 import './premium-glass-preview.css'
+import './home-hero-reference.css'
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
