@@ -1,0 +1,306 @@
+/* KSOP HOME HERO — approved visual reference, 1920x1080 desktop baseline.
+   The image, glass card, typography and CTAs are one stable composition.
+   Browser zoom scales the composition; it must not reflow the pieces independently. */
+
+main:has(> .premium-hero) > .premium-hero {
+  position: relative !important;
+  width: 1920px !important;
+  min-width: 1920px !important;
+  max-width: 1920px !important;
+  height: 998px !important;
+  min-height: 998px !important;
+  max-height: 998px !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  isolation: isolate !important;
+}
+
+main:has(> .premium-hero) > .premium-hero .hero-visual {
+  position: absolute !important;
+  inset: 22px 40px 20px !important;
+  width: auto !important;
+  height: auto !important;
+  min-height: 0 !important;
+  border-radius: 30px !important;
+  overflow: hidden !important;
+  transform: none !important;
+  transform-origin: center !important;
+  background: #06111f !important;
+  box-shadow: 0 28px 76px rgba(5, 17, 35, .24), 0 7px 22px rgba(5, 17, 35, .12) !important;
+}
+
+main:has(> .premium-hero) > .premium-hero .hero-visual img,
+main:has(> .premium-hero) > .premium-hero .hero-visual picture,
+main:has(> .premium-hero) > .premium-hero .hero-visual picture img {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: center center !important;
+  display: block !important;
+  opacity: 1 !important;
+  filter: saturate(.96) contrast(1.03) !important;
+  transform: none !important;
+  animation: none !important;
+}
+
+main:has(> .premium-hero) > .premium-hero .hero-visual::before {
+  content: '' !important;
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 2 !important;
+  pointer-events: none !important;
+  background:
+    linear-gradient(90deg, rgba(3, 14, 29, .91) 0%, rgba(3, 14, 29, .76) 20%, rgba(3, 14, 29, .44) 36%, rgba(3, 14, 29, .12) 55%, rgba(3, 14, 29, .02) 75%),
+    linear-gradient(0deg, rgba(2, 10, 21, .24), transparent 44%) !important;
+}
+
+main:has(> .premium-hero) > .premium-hero .hero-visual::after {
+  content: '' !important;
+  display: block !important;
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 2 !important;
+  pointer-events: none !important;
+  border-radius: inherit !important;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.09), inset 0 1px rgba(255,255,255,.13) !important;
+}
+
+main:has(> .premium-hero) > .premium-hero .hero-copy {
+  position: absolute !important;
+  left: 125px !important;
+  top: 332px !important;
+  right: auto !important;
+  bottom: auto !important;
+  width: 620px !important;
+  min-width: 620px !important;
+  max-width: 620px !important;
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  padding: 0 !important;
+  display: block !important;
+  z-index: 6 !important;
+  color: #fff !important;
+  pointer-events: auto !important;
+}
+
+main:has(> .premium-hero) > .premium-hero .hero-title-box {
+  position: relative !important;
+  width: 620px !important;
+  min-width: 620px !important;
+  max-width: 620px !important;
+  min-height: 472px !important;
+  padding: 46px 52px 42px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  justify-content: flex-start !important;
+  gap: 0 !important;
+  overflow: hidden !important;
+  border: 1px solid rgba(255,255,255,.20) !important;
+  border-radius: 28px !important;
+  background: linear-gradient(145deg, rgba(26, 39, 57, .74), rgba(11, 24, 42, .58)) !important;
+  box-shadow: 0 28px 70px rgba(0,0,0,.30), inset 0 1px rgba(255,255,255,.16), inset 0 0 34px rgba(255,255,255,.025) !important;
+  backdrop-filter: blur(24px) saturate(120%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(120%) !important;
+  transform: none !important;
+}
+
+main:has(> .premium-hero) > .premium-hero .hero-title-box::before {
+  opacity: .42 !important;
+  background: linear-gradient(135deg, rgba(255,255,255,.18), transparent 38%, transparent 72%, rgba(51,128,255,.05)) !important;
+}
+
+main:has(> .premium-hero) > .premium-hero .hero-title-box .eyebrow {
+  display: flex !important;
+  align-items: center !important;
+  width: 100% !important;
+  min-height: 24px !important;
+  margin: 0 !important;
+  color: rgba(255,255,255,.68) !important;
+  font-size: 15px !important;
+  font-weight: 500 !important;
+  line-height: 1.4 !important;
+  letter-spacing: .08em !important;
+  white-space: nowrap !important;
+  overflow: visible !important;
+}
+
+main:has(> .premium-hero) > .premium-hero .hero-title-box .eyebrow::after {
+  content: '' !important;
+  width: 112px !important;
+  height: 1px !important;
+  margin-left: 18px !important;
+  background: rgba(255,255,255,.34) !important;
+}
+
+main:has(> .premium-hero) > .premium-hero .hero-title-box h1,
+main:has(> .premium-hero).lang-kr .hero-title-box h1,
+main:has(> .premium-hero).lang-en .hero-title-box h1,
+main:has(> .premium-hero).lang-jp .hero-title-box h1,
+main:has(> .premium-hero).lang-cn .hero-title-box h1 {
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  height: auto !important;
+  min-height: 0 !important;
+  margin: 30px 0 22px !important;
+  padding: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 2px !important;
+  color: #fff !important;
+  font-family: var(--font-korean), Arial, sans-serif !important;
+  font-size: 78px !important;
+  font-weight: 500 !important;
+  line-height: .98 !important;
+  letter-spacing: -.055em !important;
+  white-space: normal !important;
+  overflow: visible !important;
+  text-wrap: initial !important;
+}
+
+main:has(> .premium-hero) > .premium-hero .hero-title-line {
+  display: block !important;
+  width: 100% !important;
+  white-space: nowrap !important;
+  color: #fff !important;
+}
+
+main:has(> .premium-hero) > .premium-hero .hero-intro {
+  display: block !important;
+  width: 100% !important;
+  max-width: 470px !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  color: rgba(255,255,255,.72) !important;
+  font-size: 18px !important;
+  font-weight: 400 !important;
+  line-height: 1.62 !important;
+  white-space: pre-line !important;
+  overflow: visible !important;
+}
+
+main:has(> .premium-hero) > .premium-hero .hero-actions {
+  display: flex !important;
+  align-items: center !important;
+  width: 100% !important;
+  min-height: 64px !important;
+  margin-top: 30px !important;
+  gap: 12px !important;
+}
+
+main:has(> .premium-hero) > .premium-hero .hero-actions .primary-cta,
+main:has(> .premium-hero) > .premium-hero .hero-actions .hero-secondary-cta {
+  height: 64px !important;
+  min-height: 64px !important;
+  max-height: 64px !important;
+  padding: 0 28px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 14px !important;
+  border-radius: 999px !important;
+  font-size: 16px !important;
+  font-weight: 700 !important;
+  line-height: 1 !important;
+  letter-spacing: -.01em !important;
+  white-space: nowrap !important;
+  text-decoration: none !important;
+  transform: none !important;
+}
+
+main:has(> .premium-hero) > .premium-hero .hero-actions .primary-cta {
+  width: 236px !important;
+  color: #fff !important;
+  border: 1px solid rgba(113,178,255,.9) !important;
+  background: linear-gradient(135deg, #4d9cff 0%, #1677ff 55%, #0b63e8 100%) !important;
+  box-shadow: 0 12px 30px rgba(22,119,255,.36), inset 0 1px rgba(255,255,255,.34) !important;
+}
+
+main:has(> .premium-hero) > .premium-hero .hero-actions .hero-secondary-cta {
+  width: 216px !important;
+  color: rgba(255,255,255,.92) !important;
+  border: 1px solid rgba(255,255,255,.28) !important;
+  background: rgba(10, 23, 40, .34) !important;
+  box-shadow: inset 0 1px rgba(255,255,255,.08) !important;
+  backdrop-filter: blur(14px) !important;
+  -webkit-backdrop-filter: blur(14px) !important;
+}
+
+main:has(> .premium-hero) > .premium-hero .hero-actions svg {
+  width: 20px !important;
+  height: 20px !important;
+  flex: 0 0 20px !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  main:has(> .premium-hero) > .premium-hero .hero-actions .primary-cta:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 16px 36px rgba(22,119,255,.44), inset 0 1px rgba(255,255,255,.38) !important;
+  }
+
+  main:has(> .premium-hero) > .premium-hero .hero-actions .hero-secondary-cta:hover {
+    transform: translateY(-2px) !important;
+    background: rgba(18, 34, 56, .54) !important;
+  }
+}
+
+main:has(> .premium-hero) > .premium-hero .hero-visual .hero-stamp {
+  position: absolute !important;
+  top: 116px !important;
+  right: 28px !important;
+  bottom: auto !important;
+  left: auto !important;
+  width: 168px !important;
+  min-width: 168px !important;
+  height: 44px !important;
+  min-height: 44px !important;
+  margin: 0 !important;
+  padding: 11px 0 0 !important;
+  display: flex !important;
+  align-items: flex-start !important;
+  justify-content: flex-end !important;
+  gap: 0 !important;
+  color: rgba(255,255,255,.88) !important;
+  background: transparent !important;
+  border: 0 !important;
+  border-top: 1px solid rgba(255,255,255,.62) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  transform: none !important;
+  z-index: 4 !important;
+}
+
+main:has(> .premium-hero) > .premium-hero .hero-visual .hero-stamp > span,
+main:has(> .premium-hero) > .premium-hero .hero-visual .hero-stamp > small {
+  display: none !important;
+}
+
+main:has(> .premium-hero) > .premium-hero .hero-visual .hero-stamp > strong {
+  display: block !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  color: #fff !important;
+  font-family: var(--font-korean), Arial, sans-serif !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  line-height: 1.1 !important;
+  letter-spacing: .04em !important;
+  white-space: nowrap !important;
+}
+
+/* Keep the hero group intact during browser zoom: no tablet/mobile reflow. */
+@media (max-width: 1100px) {
+  main:has(> .premium-hero) > .premium-hero,
+  main:has(> .premium-hero) > .premium-hero .hero-copy,
+  main:has(> .premium-hero) > .premium-hero .hero-title-box,
+  main:has(> .premium-hero) > .premium-hero .hero-actions,
+  main:has(> .premium-hero) > .premium-hero .hero-visual {
+    flex-direction: initial !important;
+  }
+}
