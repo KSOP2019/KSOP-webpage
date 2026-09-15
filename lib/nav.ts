@@ -19,33 +19,32 @@ export const ABOUT_NAV_LABELS = {
  * routes always come from NAV_ROUTES so a CMS length/order drift can never
  * misroute a link (e.g. NEWS must always resolve to `/news`).
  */
-export const NAV_FALLBACK_LABELS = ['SCHEDULE', 'EVENT', 'RANKING', 'NEWS', 'ABOUT'] as const
+export const NAV_FALLBACK_LABELS = ['SCHEDULE', 'EVENTS', 'RANKING', 'NEWS', 'ABOUT'] as const
 
 export interface NavEntry {
   href: (typeof NAV_ROUTES)[number]
   label: string
 }
 
-/**
- * Route-driven nav: iterate routes (source of truth), pick CMS label per index.
- * ONLY href === '/about' uses ABOUT_NAV_LABELS[language]; every other label
- * may continue to come from CMS copy.
- */
 export function getNavItems(labels: readonly string[] | undefined | null, language: Language): NavEntry[] {
-  return NAV_ROUTES.map((href, index) => ({
-    href,
-    label:
+  return NAV_ROUTES.map((href, index) => {
+    const supplied = labels?.[index] ?? NAV_FALLBACK_LABELS[index] ?? `NAV ${index + 1}`
+    const label =
       href === '/about'
         ? ABOUT_NAV_LABELS[language]
-        : (labels?.[index] ?? NAV_FALLBACK_LABELS[index] ?? `NAV ${index + 1}`),
-  }))
+        : href === '/events' && language === 'EN' && supplied.trim().toUpperCase() === 'EVENT'
+          ? 'EVENTS'
+          : supplied
+
+    return { href, label }
+  })
 }
 
 export const EVENT_CATEGORIES = ['ALL EVENT', 'MAIN EVENT', 'HIGH ROLLER', 'DAY'] as const
 
 /**
- * Confirmed social profile URLs only. Empty string = unconfirmed → hidden.
- * Never use "#" or "/#social" as href.
+ * Legacy fallback only. Runtime Header/Footer now read CMS social settings
+ * from site_settings.global.social via /api/social.
  */
 export const SOCIAL_URLS: Record<string, string> = {
   FLOPIN: '',
