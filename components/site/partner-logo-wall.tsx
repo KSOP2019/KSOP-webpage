@@ -68,7 +68,7 @@ export function PartnerLogoWall() {
     <section className="ksop-partners-section" aria-labelledby="ksop-partners-title">
       <div className="section-top ksop-partners-heading">
         <div>
-          <div className="section-label" id="ksop-partners-title">OFFICIAL PARTNERS</div>
+          <div className="section-label" id="ksop-partners-title">06 / 파트너</div>
         </div>
         <Link className="text-link" href="/partners">전체 파트너 보기 <ArrowUpRight /></Link>
       </div>
