@@ -4,15 +4,17 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import type { EventItem, EventType } from '@/lib/types'
+import type { SeriesOption } from '@/lib/series-db'
 import { AdminImageField } from '@/components/admin/admin-image-field'
 
 const eventTypes: EventType[] = ['NLH', 'PLO', 'SATELLITE', 'MAIN EVENT', 'HIGH ROLLER']
 
-export function EventEditor({ initialEvent }: { initialEvent?: EventItem }) {
+export function EventEditor({ initialEvent, seriesOptions = [] }: { initialEvent?: EventItem; seriesOptions?: SeriesOption[] }) {
   const router = useRouter()
   const [event, setEvent] = useState<EventItem>(
     initialEvent ?? ({
       id: '',
+      seriesId: '',
       date: '',
       dayLabel: '',
       name: '',
@@ -60,6 +62,15 @@ export function EventEditor({ initialEvent }: { initialEvent?: EventItem }) {
 
   return (
     <form className="admin-form" onSubmit={handleSubmit}>
+      <label>
+        Series
+        <select value={event.seriesId || ''} onChange={(e) => setEvent({ ...event, seriesId: e.target.value })}>
+          <option value="">Unassigned</option>
+          {seriesOptions.map((series) => (
+            <option key={series.id} value={series.id}>{series.title} · {series.status}</option>
+          ))}
+        </select>
+      </label>
       <label>
         Event name
         <input value={event.name} onChange={(e) => setEvent({ ...event, name: e.target.value })} />
