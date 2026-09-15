@@ -2,12 +2,10 @@
 
 import Link from 'next/link'
 import { useRef } from 'react'
-import { ArrowUpRight } from 'lucide-react'
+import { ArrowUpRight, CalendarDays } from 'lucide-react'
 import { useSite } from '@/components/site/site-provider'
 import { Reveal } from '@/components/site/reveal'
 import { GlassCard } from '@/components/ui/glass-card'
-import { KineticText } from '@/components/effects/kinetic-text'
-import { ParallaxImage } from '@/components/effects/parallax-image'
 import { Spotlight } from '@/components/effects/spotlight'
 import { eventCardImage, realPhotoOrBlank } from '@/lib/event-images'
 import { getNavItems } from '@/lib/nav'
@@ -24,35 +22,41 @@ export function HomeViewV2({ events, news, ranked }: HomeViewV2Props) {
   const heroRef = useRef<HTMLElement | null>(null)
   const nav = getNavItems(t.nav, language)
   const label = (href: string) => nav.find((item) => item.href === href)?.label ?? href.replace('/', '').toUpperCase()
-  const heroPhoto = realPhotoOrBlank(content.heroImage)
+  const heroPhoto = realPhotoOrBlank(content.heroImage) || '/images/ksop-hero-arena.png'
   const about = copy.about
+  const heroWords = t.hero.trim().split(/\s+/).filter(Boolean)
+  const heroTitleParts = language === 'KR' && heroWords.length > 1
+    ? [heroWords[0], heroWords.slice(1).join(' ')]
+    : [t.hero]
+  const heroPrimaryLabel = language === 'KR' && t.explore === '이벤트 보기' ? '이벤트 확인' : t.explore
 
   return (
     <>
       <section className="hero premium-hero" id="top" ref={heroRef}>
         <Spotlight containerRef={heroRef} />
-        <div className="hero-copy">
-          <div className="hero-title-box premium-depth-card">
-            <p className="eyebrow">{t.eyebrow}</p>
-            <h1><KineticText text={t.hero} /></h1>
-            <p className="hero-intro">{t.intro}</p>
-            <div className="hero-actions">
-              <Link className="primary-cta" href="/events">{t.explore} <ArrowUpRight /></Link>
-              <Link className="text-link" href="/schedule">{label('/schedule')} <ArrowUpRight /></Link>
-            </div>
-          </div>
-        </div>
 
-        <div className="hero-visual premium-poster" style={heroPhoto ? undefined : { background: '#000' }}>
-          {heroPhoto ? (
-            <ParallaxImage>
-              <img src={heroPhoto} alt="KSOP tournament arena" fetchPriority="high" decoding="async" width={1600} height={900} />
-            </ParallaxImage>
-          ) : null}
+        <div className="hero-visual premium-poster">
+          <img src={heroPhoto} alt="KSOP tournament arena" fetchPriority="high" decoding="async" width={1920} height={1080} />
           <div className="hero-stamp glass" data-glass="popover">
             <span>{content.seriesDate}</span>
             <strong>{content.seriesVenue}</strong>
             <small>{content.seriesGtd}</small>
+          </div>
+        </div>
+
+        <div className="hero-copy">
+          <div className="hero-title-box premium-depth-card">
+            <p className="eyebrow">{t.eyebrow}</p>
+            <h1 aria-label={t.hero}>
+              {heroTitleParts.map((part, index) => (
+                <span className="hero-title-line" key={`${part}-${index}`}>{part}</span>
+              ))}
+            </h1>
+            <p className="hero-intro">{t.intro}</p>
+            <div className="hero-actions">
+              <Link className="primary-cta" href="/events">{heroPrimaryLabel} <ArrowUpRight /></Link>
+              <Link className="hero-secondary-cta" href="/schedule">{label('/schedule')} <CalendarDays /></Link>
+            </div>
           </div>
         </div>
       </section>
