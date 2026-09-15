@@ -25,6 +25,7 @@ function mapAdminEvent(row: any): EventItem {
   return {
     // Admin mutations must use the immutable database UUID, never slug.
     id: String(row.id),
+    seriesId: row.series_id ? String(row.series_id) : '',
     date,
     dayLabel: `DAY ${row.event_number || 1}`,
     name: row.title || '',
@@ -55,6 +56,7 @@ function toAdminEventPayload(event: EventItem) {
   }
 
   return {
+    series_id: event.seriesId || null,
     title: event.name,
     category: event.type,
     entry_type: event.buyInType,
