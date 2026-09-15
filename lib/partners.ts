@@ -24,6 +24,24 @@ export const DEFAULT_KSOP_PARTNERS: KsopPartner[] = [
     logoUrl: 'https://pbs.twimg.com/profile_images/1460279332031586307/VF39Q_gb_400x400.jpg',
     logoAlt: 'Global Poker Index',
   },
+  {
+    name: 'PLAYSOFT',
+    url: '',
+    logoUrl: '/images/partners/playsoft.svg',
+    logoAlt: 'PLAYSOFT',
+  },
+  {
+    name: 'PLAYPLACE',
+    url: '',
+    logoUrl: '/images/partners/playplace.svg',
+    logoAlt: 'PLAYPLACE',
+  },
+  {
+    name: 'FLOPIN',
+    url: '',
+    logoUrl: '/images/partners/flopin-wordmark.svg',
+    logoAlt: 'FLOPIN',
+  },
 ]
 
 export function normalizePartners(value: unknown): KsopPartner[] {
@@ -38,8 +56,8 @@ export function normalizePartners(value: unknown): KsopPartner[] {
       const logoAlt = typeof source.logoAlt === 'string' ? source.logoAlt.trim() : name
       return { name, url, logoUrl, logoAlt }
     })
-    .filter((partner) => partner.name && partner.url && partner.logoUrl)
-    .slice(0, 24)
+    .filter((partner) => partner.name && partner.logoUrl)
+    .slice(0, 60)
 }
 
 // Default rendered during SSR and whenever CMS partner data is unavailable.
