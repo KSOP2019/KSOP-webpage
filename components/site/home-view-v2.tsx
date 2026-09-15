@@ -45,6 +45,20 @@ function movementClass(trend?: RankingTrend): string {
   return 'is-same'
 }
 
+function HomeSectionDivider() {
+  return (
+    <div
+      aria-hidden="true"
+      style={{
+        height: 1,
+        margin: '0 154px',
+        background: 'var(--border)',
+        opacity: 0.82,
+      }}
+    />
+  )
+}
+
 export function HomeViewV2({ events, news, ranked, scheduleContent }: HomeViewV2Props) {
   const { content, t, copy, language } = useSite()
   const heroRef = useRef<HTMLElement | null>(null)
@@ -64,6 +78,10 @@ export function HomeViewV2({ events, news, ranked, scheduleContent }: HomeViewV2
   const importantEvents = events
     .filter((event) => event.type === 'MAIN EVENT' || event.type === 'HIGH ROLLER')
     .slice(0, 6)
+  const latestNews = useMemo(
+    () => [...news].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 3),
+    [news],
+  )
 
   return (
     <>
@@ -100,7 +118,6 @@ export function HomeViewV2({ events, news, ranked, scheduleContent }: HomeViewV2
         <div className="section-top">
           <div>
             <div className="section-label">01 · {label('/schedule')}</div>
-            <h2>{label('/schedule')}</h2>
           </div>
           <Link className="text-link" href="/schedule">{t.exploreSchedule} <ArrowUpRight /></Link>
         </div>
@@ -119,8 +136,34 @@ export function HomeViewV2({ events, news, ranked, scheduleContent }: HomeViewV2
                 className="home-event-card premium-depth-card"
                 key={series.label}
               >
-                <div className="home-event-media" style={series.image ? undefined : { background: '#0a0a0c' }}>
-                  {series.image ? <img src={series.image} alt="" loading="lazy" /> : <span>KSOP SERIES</span>}
+                <div
+                  className="home-event-media"
+                  style={{
+                    height: 210,
+                    minHeight: 210,
+                    maxHeight: 210,
+                    display: 'grid',
+                    placeItems: 'center',
+                    overflow: 'hidden',
+                    padding: series.image ? 12 : 0,
+                    background: series.image ? 'rgba(10, 10, 12, 0.035)' : '#0a0a0c',
+                  }}
+                >
+                  {series.image ? (
+                    <img
+                      src={series.image}
+                      alt=""
+                      loading="lazy"
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'contain',
+                        objectPosition: 'center',
+                      }}
+                    />
+                  ) : (
+                    <span>KSOP SERIES</span>
+                  )}
                 </div>
                 <div className="home-event-copy">
                   <span>{language === 'KR' ? 'UPCOMING SERIES · 일정' : 'UPCOMING SERIES'}</span>
@@ -139,11 +182,12 @@ export function HomeViewV2({ events, news, ranked, scheduleContent }: HomeViewV2
         )}
       </section>
 
+      <HomeSectionDivider />
+
       <section className="section-pad home-section" id="events">
         <div className="section-top">
           <div>
             <div className="section-label">02 · {label('/events')}</div>
-            <h2>{label('/events')}</h2>
           </div>
           <Link className="text-link" href="/events">{t.viewAllEvents} <ArrowUpRight /></Link>
         </div>
@@ -197,11 +241,12 @@ export function HomeViewV2({ events, news, ranked, scheduleContent }: HomeViewV2
         )}
       </section>
 
+      <HomeSectionDivider />
+
       <section className="section-pad home-section" id="ranking">
         <div className="section-top">
           <div>
             <div className="section-label">03 · {label('/ranking')}</div>
-            <h2>{label('/ranking')}</h2>
           </div>
           <Link className="text-link" href="/ranking">{t.fullRanking} <ArrowUpRight /></Link>
         </div>
@@ -247,36 +292,42 @@ export function HomeViewV2({ events, news, ranked, scheduleContent }: HomeViewV2
         )}
       </section>
 
+      <HomeSectionDivider />
+
       <section className="section-pad home-section" id="news">
         <div className="section-top">
           <div>
             <div className="section-label">04 · {label('/news')}</div>
-            <h2>{label('/news')}</h2>
           </div>
           <Link className="text-link" href="/news">{t.allNews} <ArrowUpRight /></Link>
         </div>
 
-        {news.length === 0 ? (
+        {latestNews.length === 0 ? (
           <GlassCard asChild><div className="premium-empty-state"><strong>{t.newsEmptyBody}</strong></div></GlassCard>
         ) : (
           <Reveal className="premium-news-grid">
-            {news.slice(0, 3).map((item, index) => (
-              <Link href={`/news/${item.slug}`} className={`premium-news-card premium-depth-card${index === 0 ? ' is-featured' : ''}`} key={item.slug}>
-                <span>{item.date} · {item.category}</span>
-                <h3>{item.title}</h3>
-                <p>{item.excerpt}</p>
-                <span className="text-link">{t.readStory} <ArrowUpRight /></span>
-              </Link>
-            ))}
+            {latestNews.map((item, index) => {
+              const isPreviewOnly = item.slug.startsWith('preview-home-news-')
+              const newsHref = isPreviewOnly ? '/news' : `/news/${item.slug}`
+              return (
+                <Link href={newsHref} className={`premium-news-card premium-depth-card${index === 0 ? ' is-featured' : ''}`} key={item.slug}>
+                  <span>{isPreviewOnly ? 'PREVIEW · ' : ''}{item.date} · {item.category}</span>
+                  <h3>{item.title}</h3>
+                  <p>{item.excerpt}</p>
+                  <span className="text-link">{t.readStory} <ArrowUpRight /></span>
+                </Link>
+              )
+            })}
           </Reveal>
         )}
       </section>
+
+      <HomeSectionDivider />
 
       <section className="section-pad home-section" id="about">
         <div className="section-top">
           <div>
             <div className="section-label">05 · {label('/about')}</div>
-            <h2>{label('/about')}</h2>
           </div>
           <Link className="text-link" href="/about">{t.backToAbout || label('/about')} <ArrowUpRight /></Link>
         </div>
@@ -299,6 +350,8 @@ export function HomeViewV2({ events, news, ranked, scheduleContent }: HomeViewV2
           </Link>
         </Reveal>
       </section>
+
+      <HomeSectionDivider />
 
       <section className="image-break premium-brand-strip">
         <div className="image-break-copy">
