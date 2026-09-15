@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 180" role="img" aria-labelledby="title desc">
+  <title id="title">PLAYPLACE</title>
+  <desc id="desc">Temporary PLAYPLACE partner logo</desc>
+  <g fill="none" fill-rule="evenodd">
+    <g transform="translate(30 20)">
+      <path d="M66 0c36.45 0 66 29.55 66 66 0 47-66 78-66 78S0 113 0 66C0 29.55 29.55 0 66 0Z" fill="#171A24"/>
+      <circle cx="66" cy="63" r="30" fill="#FFF"/>
+      <path d="M53 83V43h22c18 0 29 8 29 20s-11 20-29 20H53Zm17-14h7c7 0 11-2 11-6s-4-6-11-6h-7v12Z" fill="#B3923F"/>
+    </g>
+    <text x="190" y="91" fill="#171A24" font-family="Arial, Helvetica, sans-serif" font-size="54" font-weight="800" letter-spacing="2">PLAYPLACE</text>
+    <text x="193" y="126" fill="#7A7D86" font-family="Arial, Helvetica, sans-serif" font-size="15" font-weight="700" letter-spacing="4">VENUE · EXPERIENCE</text>
+  </g>
+</svg>
