@@ -13,6 +13,7 @@ export interface SeriesItem {
   status: 'upcoming' | 'past'
   periodHint: string | null
   venue: string
+  eventIds: string[]
   seriesId: string
   match: SeriesEventMatch | null
 }
@@ -41,6 +42,7 @@ export function seriesFromCard(card: ScheduleCard): SeriesItem {
     status: card.status === 'past' ? 'past' : 'upcoming',
     periodHint: card.dateRange?.trim() || labelPeriod,
     venue: card.venue?.trim() || '',
+    eventIds: card.eventIds ?? [],
     seriesId: card.seriesId?.trim() || '',
     match: cardMatch(card),
   }
@@ -71,9 +73,12 @@ function legacyMatchesSeries(series: SeriesItem, event: EventItem): boolean {
 }
 
 function matchesSeries(series: SeriesItem, event: EventItem): boolean {
-  // Canonical DB ownership always wins. Legacy type/name matching is only for
-  // old preview/CMS cards that have not yet been assigned a public.series.id.
+  // Explicit CMS membership is the preferred source because it is exact and
+  // works without creating or mutating public.series rows.
+  if (series.eventIds.length > 0) return series.eventIds.includes(event.id)
+  // Native DB ownership is the second exact source when public.series is used.
   if (series.seriesId) return event.seriesId === series.seriesId
+  // Only old preview/CMS cards reach this compatibility fallback.
   return legacyMatchesSeries(series, event)
 }
 
@@ -86,11 +91,13 @@ export function getSeriesEvents(series: SeriesItem, events: EventItem[]): EventI
 
 export function findSeriesForEvent(scheduleContent: ScheduleContent, event: EventItem): SeriesItem | undefined {
   const all = getAllSeries(scheduleContent)
+  const explicitlyAssigned = all.find((series) => series.eventIds.includes(event.id))
+  if (explicitlyAssigned) return explicitlyAssigned
   if (event.seriesId) {
     const exact = all.find((series) => series.seriesId && series.seriesId === event.seriesId)
     if (exact) return exact
   }
-  return all.find((series) => !series.seriesId && legacyMatchesSeries(series, event))
+  return all.find((series) => series.eventIds.length === 0 && !series.seriesId && legacyMatchesSeries(series, event))
 }
 
 export function getSeriesDateRange(seriesEvents: EventItem[]): string | null {
