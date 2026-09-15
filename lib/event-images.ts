@@ -13,9 +13,14 @@ const OFFICIAL_LOGOS = [
   '/images/ksop-logo-white.png',
 ]
 
+const APPROVED_REAL_MEDIA = [
+  '/images/ksop-hero-arena.png',
+]
+
 /**
  * Documentary imagery policy: real KSOP photos first.
- * Accepts /images/real/*, official logos, and confirmed CMS uploads (http/https).
+ * Accepts /images/real/*, approved site media, official logos,
+ * and confirmed CMS uploads (http/https).
  * Anything else (AI/synthetic placeholders) resolves to '' so callers
  * render solid black + typography instead of fake imagery.
  */
@@ -23,6 +28,7 @@ export function isRealPhoto(url: string | undefined): boolean {
   const value = clean(url)
   if (!value) return false
   if (value.startsWith('/images/real/')) return true
+  if ((APPROVED_REAL_MEDIA as readonly string[]).includes(value)) return true
   if ((OFFICIAL_LOGOS as readonly string[]).includes(value)) return true
   if (/^https?:\/\//.test(value)) return true
   return false
