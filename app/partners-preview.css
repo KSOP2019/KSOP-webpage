@@ -1,0 +1,241 @@
+/* PARTNERS — compact homepage strip + scalable all-partners page. */
+
+/* Home: reuse the same inset separator geometry as the 01–05 section dividers. */
+main:has(> .premium-hero) > .ksop-partners-section {
+  position: relative !important;
+  width: 1920px !important;
+  min-width: 1920px !important;
+  max-width: 1920px !important;
+  padding: 62px 154px 72px !important;
+  border-top: 0 !important;
+  border-bottom: 0 !important;
+}
+
+main:has(> .premium-hero) > .ksop-partners-section::after {
+  content: '';
+  position: absolute;
+  left: 154px;
+  right: 154px;
+  bottom: 0;
+  height: 1px;
+  background: var(--border);
+  opacity: .82;
+  pointer-events: none;
+}
+
+main:has(> .premium-hero) .ksop-partners-heading.section-top {
+  display: flex !important;
+  max-width: none !important;
+  min-height: 0 !important;
+  margin: 0 0 30px !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 24px !important;
+}
+
+main:has(> .premium-hero) .ksop-partners-heading .section-label {
+  margin: 0 !important;
+  color: var(--foreground) !important;
+  font-size: 20px !important;
+  line-height: 1 !important;
+  font-weight: 700 !important;
+  letter-spacing: .12em !important;
+  white-space: nowrap !important;
+}
+
+main:has(> .premium-hero) .ksop-partners-heading .text-link {
+  flex: 0 0 auto;
+}
+
+main:has(> .premium-hero) .ksop-partners-grid {
+  display: grid !important;
+  grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+  gap: 16px !important;
+}
+
+main:has(> .premium-hero) .ksop-partner-link {
+  position: relative !important;
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto !important;
+  grid-template-rows: 96px 30px !important;
+  align-items: center !important;
+  min-height: 150px !important;
+  height: 150px !important;
+  padding: 12px 14px 10px !important;
+  border-radius: 18px !important;
+}
+
+main:has(> .premium-hero) .ksop-partner-logo-wrap {
+  grid-column: 1 / -1 !important;
+  display: grid !important;
+  place-items: center !important;
+  width: 100% !important;
+  height: 96px !important;
+  padding: 10px 16px !important;
+  border-radius: 12px !important;
+}
+
+main:has(> .premium-hero) .ksop-partner-logo {
+  width: 100% !important;
+  max-width: 158px !important;
+  height: 100% !important;
+  max-height: 70px !important;
+  object-fit: contain !important;
+}
+
+main:has(> .premium-hero) .ksop-partner-name {
+  align-self: end !important;
+  min-width: 0 !important;
+  padding-top: 8px !important;
+  overflow: hidden !important;
+  font-size: 11px !important;
+  line-height: 1.15 !important;
+  font-weight: 760 !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+main:has(> .premium-hero) .ksop-partner-link > svg {
+  align-self: end !important;
+  width: 15px !important;
+  height: 15px !important;
+  margin-top: 8px !important;
+}
+
+main:has(> .premium-hero) .ksop-partner-link.is-static {
+  cursor: default !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  main:has(> .premium-hero) .ksop-partner-link.is-static:hover,
+  main:has(> .premium-hero) .ksop-partner-link.is-static:focus-visible {
+    transform: none !important;
+    border-color: rgba(23, 26, 36, .10) !important;
+    box-shadow: 0 20px 60px rgba(31, 36, 49, .08), inset 0 1px rgba(255,255,255,.92) !important;
+  }
+}
+
+/* /partners — complete partner directory. */
+.partners-page {
+  min-height: 72vh;
+}
+
+.partners-page-head {
+  align-items: flex-end;
+}
+
+.partners-page-intro {
+  max-width: 520px;
+  margin: 0;
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1.7;
+  text-align: right;
+}
+
+.partners-full-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 18px;
+  margin-top: 38px;
+}
+
+.partners-full-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-rows: 132px auto;
+  min-width: 0;
+  min-height: 188px;
+  padding: 16px 18px 14px;
+  color: inherit;
+  text-decoration: none;
+  border: 1px solid var(--premium-border);
+  border-radius: 20px;
+  background: var(--premium-surface);
+  box-shadow: var(--premium-shadow);
+  overflow: hidden;
+  backdrop-filter: blur(18px) saturate(120%);
+  -webkit-backdrop-filter: blur(18px) saturate(120%);
+  transition: transform .28s ease, box-shadow .28s ease, border-color .28s ease;
+}
+
+.partners-full-logo-wrap {
+  grid-column: 1 / -1;
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  height: 132px;
+  padding: 18px 22px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, .88);
+}
+
+.partners-full-logo {
+  display: block;
+  width: 100%;
+  max-width: 190px;
+  height: 100%;
+  max-height: 88px;
+  object-fit: contain;
+  object-position: center;
+  mix-blend-mode: multiply;
+}
+
+.partners-full-name {
+  align-self: end;
+  min-width: 0;
+  padding-top: 12px;
+  overflow: hidden;
+  font-size: 13px;
+  font-weight: 760;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.partners-full-card > svg {
+  align-self: end;
+  width: 17px;
+  height: 17px;
+  margin-top: 12px;
+  color: var(--premium-gold);
+}
+
+.partners-full-card.is-static {
+  cursor: default;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  a.partners-full-card:hover,
+  a.partners-full-card:focus-visible {
+    transform: translateY(-5px);
+    border-color: color-mix(in srgb, var(--premium-gold) 34%, var(--premium-border));
+    box-shadow: var(--premium-shadow-hover);
+  }
+}
+
+@media (max-width: 1180px) {
+  .partners-full-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  .partners-page-head {
+    align-items: flex-start;
+  }
+
+  .partners-page-intro {
+    max-width: none;
+    text-align: left;
+  }
+
+  .partners-full-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .partners-full-grid {
+    grid-template-columns: 1fr;
+  }
+}
