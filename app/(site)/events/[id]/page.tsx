@@ -2,11 +2,12 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { EventDetailClient } from '@/components/site/event-detail-client'
 import { getEvent, getSiteContent } from '@/lib/data'
+import { getScheduleContent } from '@/lib/schedule-content'
+import { findSeriesForEvent } from '@/lib/series'
 import { SITE_OG_IMAGE } from '@/lib/site-url'
 
 type PageProps = { params: Promise<{ id: string }> }
 
-// Event CMS edits (title/content/images/publish) refresh without redeploy.
 export const revalidate = 120
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -25,11 +26,22 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function EventDetailPage({ params }: PageProps) {
   const { id } = await params
-  const [event, content] = await Promise.all([getEvent(id), getSiteContent()])
+  const [event, content, scheduleContent] = await Promise.all([
+    getEvent(id),
+    getSiteContent(),
+    getScheduleContent(),
+  ])
 
   if (!event || !event.published) notFound()
 
+  const series = findSeriesForEvent(scheduleContent, event)
+
   return (
-    <EventDetailClient event={event} seriesVenue={content.seriesVenue} seriesDate={content.seriesDate} />
+    <EventDetailClient
+      event={event}
+      series={series}
+      seriesVenue={series?.venue || content.seriesVenue}
+      seriesDate={series?.periodHint || content.seriesDate}
+    />
   )
 }
