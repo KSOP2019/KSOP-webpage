@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import { EventDetailClient } from '@/components/site/event-detail-client'
 import { getEvent, getSiteContent } from '@/lib/data'
 import { getScheduleContent } from '@/lib/schedule-content'
+import { getEventSeriesLinkMap } from '@/lib/series-db'
 import { findSeriesForEvent } from '@/lib/series'
 import { SITE_OG_IMAGE } from '@/lib/site-url'
 
@@ -26,19 +27,21 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function EventDetailPage({ params }: PageProps) {
   const { id } = await params
-  const [event, content, scheduleContent] = await Promise.all([
+  const [event, content, scheduleContent, seriesLinks] = await Promise.all([
     getEvent(id),
     getSiteContent(),
     getScheduleContent(),
+    getEventSeriesLinkMap(),
   ])
 
   if (!event || !event.published) notFound()
 
-  const series = findSeriesForEvent(scheduleContent, event)
+  const linkedEvent = { ...event, seriesId: seriesLinks[event.id] || event.seriesId }
+  const series = findSeriesForEvent(scheduleContent, linkedEvent)
 
   return (
     <EventDetailClient
-      event={event}
+      event={linkedEvent}
       series={series}
       seriesVenue={series?.venue || content.seriesVenue}
       seriesDate={series?.periodHint || content.seriesDate}
