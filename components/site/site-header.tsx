@@ -7,19 +7,12 @@ import { useEffect, useRef, useState } from 'react'
 import { useSite } from '@/components/site/site-provider'
 import { LanguageMenu, ThemeSwitch } from '@/components/site/header-controls'
 import { SnsDock } from '@/components/effects/sns-dock'
-import { getNavItems, SOCIAL_URLS } from '@/lib/nav'
+import { useSocialLinks } from '@/components/site/use-social-links'
+import { getNavItems } from '@/lib/nav'
+import { SOCIAL_ORDER, SOCIAL_SYMBOLS } from '@/lib/social-links'
 
 const LIGHT_LOGO = '/images/ksop-light-approved.png'
 const DARK_LOGO = '/images/ksop-dark-approved.png'
-
-const SOCIAL_ORDER = [
-  ['FLOPIN', 'F'],
-  ['Instagram', '◎'],
-  ['X', '𝕏'],
-  ['Discord', '◌'],
-  ['Facebook', 'f'],
-  ['YouTube', '▶'],
-] as const
 
 function socialTooltip(name: string): string {
   return name.toUpperCase()
@@ -27,6 +20,7 @@ function socialTooltip(name: string): string {
 
 export function SiteHeader() {
   const { darkMode, t, language } = useSite()
+  const socialLinks = useSocialLinks()
   const [menuOpen, setMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const pathname = usePathname()
@@ -41,8 +35,6 @@ export function SiteHeader() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  // Mobile drawer: body scroll lock, ESC close, outside click close, first-item focus.
-  // Focus is returned to the hamburger trigger on close (ESC/outside/route/toggle).
   useEffect(() => {
     if (!menuOpen) return
     const prevOverflow = document.body.style.overflow
@@ -51,7 +43,6 @@ export function SiteHeader() {
     firstLink instanceof HTMLElement && firstLink.focus()
     const closeAndRefocus = () => {
       setMenuOpen(false)
-      // Return focus to trigger; queue after handlers so trap listeners are removed first.
       requestAnimationFrame(() => toggleRef.current?.focus())
     }
     const onKeyDown = (event: KeyboardEvent) => {
@@ -121,17 +112,13 @@ export function SiteHeader() {
       </nav>
 
       <div className="header-right">
-        <div className="header-socials">
-          {SOCIAL_ORDER.map(([name, symbol]) => {
-            const href = SOCIAL_URLS[name]
-            if (!href) return null
-            return (
-              <SnsDock key={name} name={name} ariaLabel={name} href={href} className="social-text">
-                <span aria-hidden="true">{symbol}</span>
-                <span className="social-tooltip">{socialTooltip(name)}</span>
-              </SnsDock>
-            )
-          })}
+        <div className="header-socials" aria-label="KSOP social channels">
+          {SOCIAL_ORDER.map((name) => (
+            <SnsDock key={name} name={name} ariaLabel={name} href={socialLinks[name] || undefined} className="social-text">
+              <span aria-hidden="true">{SOCIAL_SYMBOLS[name]}</span>
+              <span className="social-tooltip">{socialTooltip(name)}</span>
+            </SnsDock>
+          ))}
         </div>
 
         <div className="header-actions">
