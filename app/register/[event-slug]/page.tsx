@@ -1,5 +1,16 @@
-import Link from 'next/link'
+import { notFound } from 'next/navigation'
+import { RegistrationPageClient } from '@/components/site/registration-page-client'
+import { getEvent, getSiteContent } from '@/lib/data'
 
-export default function RegisterPage() {
-  return <main className="detail-page"><section className="detail-hero"><div className="detail-kicker">REGISTRATION</div><div className="detail-hero-grid"><h1>REGISTER</h1><p>Reserve your place at the next KSOP event.</p></div></section><footer className="detail-footer"><span>THE KOREA SERIES OF POKER · 2026</span><Link href="/events">VIEW EVENTS ↗</Link></footer></main>
+type PageProps = { params: Promise<{ 'event-slug': string }> }
+
+export const revalidate = 120
+
+export default async function RegisterPage({ params }: PageProps) {
+  const { 'event-slug': eventSlug } = await params
+  const [event, content] = await Promise.all([getEvent(eventSlug), getSiteContent()])
+
+  if (!event || !event.published) notFound()
+
+  return <RegistrationPageClient event={event} venue={content.seriesVenue} />
 }
