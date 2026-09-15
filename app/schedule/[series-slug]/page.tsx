@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import { SeriesDetailClient } from '@/components/site/series-detail-client'
 import { getEvents, getSiteContent } from '@/lib/data'
 import { getScheduleContent } from '@/lib/schedule-content'
+import { getEventSeriesLinkMap } from '@/lib/series-db'
 import { getSeries, getSeriesDateRange, getSeriesEvents } from '@/lib/series'
 
 type PageProps = { params: Promise<{ 'series-slug': string }> }
@@ -23,16 +24,18 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function SeriesDetailPage({ params }: PageProps) {
   const { 'series-slug': slug } = await params
-  const [events, content, scheduleContent] = await Promise.all([
+  const [events, content, scheduleContent, seriesLinks] = await Promise.all([
     getEvents(),
     getSiteContent(),
     getScheduleContent(),
+    getEventSeriesLinkMap(),
   ])
   const series = getSeries(scheduleContent, slug)
 
   if (!series) notFound()
 
-  const seriesEvents = getSeriesEvents(series, events)
+  const linkedEvents = events.map((event) => ({ ...event, seriesId: seriesLinks[event.id] || event.seriesId }))
+  const seriesEvents = getSeriesEvents(series, linkedEvents)
   const dateRange = getSeriesDateRange(seriesEvents) ?? series.periodHint
 
   return (
