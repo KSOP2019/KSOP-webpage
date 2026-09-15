@@ -9,6 +9,7 @@ import { GlassCard } from '@/components/ui/glass-card'
 import { Spotlight } from '@/components/effects/spotlight'
 import { eventCardImage, realPhotoOrBlank } from '@/lib/event-images'
 import { getNavItems } from '@/lib/nav'
+import { KSOP_PARTNERS } from '@/lib/partners'
 import { slugifySeriesLabel } from '@/lib/series'
 import { buildRankingTrendSnapshot, type RankingTrend } from '@/lib/ranking-trend'
 import type { ScheduleContent } from '@/lib/schedule-content'
@@ -353,11 +354,35 @@ export function HomeViewV2({ events, news, ranked, scheduleContent }: HomeViewV2
 
       <HomeSectionDivider />
 
-      <section className="image-break premium-brand-strip">
-        <div className="image-break-copy">
-          <span>{content.imageBreakLabel}</span>
-          <h2>{content.imageBreakTitle}<br />{content.imageBreakEmphasis}</h2>
-          <Link className="button-link" href="/about">{label('/about')} <ArrowUpRight /></Link>
+      <section className="ksop-partners-section" aria-labelledby="ksop-partners-title">
+        <div className="ksop-partners-heading">
+          <span>OFFICIAL PARTNERS</span>
+          <h2 id="ksop-partners-title">KSOP와 함께하는 파트너십</h2>
+          <p>KSOP와 공식 협력 관계에 있는 파트너를 소개합니다.</p>
+        </div>
+        <div className="ksop-partners-grid">
+          {KSOP_PARTNERS.map((partner) => (
+            <a
+              className="ksop-partner-link"
+              href={partner.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={`${partner.name} 공식 사이트로 이동`}
+              key={partner.name}
+            >
+              <span className="ksop-partner-logo-wrap">
+                <img
+                  className="ksop-partner-logo"
+                  src={partner.logoUrl}
+                  alt={partner.logoAlt}
+                  loading="lazy"
+                  referrerPolicy="no-referrer"
+                />
+              </span>
+              <span className="ksop-partner-name">{partner.name}</span>
+              <ArrowUpRight aria-hidden="true" />
+            </a>
+          ))}
         </div>
       </section>
     </>
