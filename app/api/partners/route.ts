@@ -4,6 +4,8 @@ import { createAdminClient, createPublicClient } from '@/lib/supabase-server'
 import { DEFAULT_KSOP_PARTNERS, normalizePartners } from '@/lib/partners'
 
 function isAllowedUrl(value: string) {
+  if (!value) return true
+  if (value.startsWith('/')) return true
   try {
     const url = new URL(value)
     return url.protocol === 'https:' || url.protocol === 'http:'
