@@ -6,23 +6,17 @@ import { useEffect, useRef, useState } from 'react'
 import { useSite } from '@/components/site/site-provider'
 import { LanguageMenu, ThemeSwitch } from '@/components/site/header-controls'
 import { SnsDock } from '@/components/effects/sns-dock'
-import { getNavItems, SOCIAL_URLS } from '@/lib/nav'
+import { useSocialLinks } from '@/components/site/use-social-links'
+import { getNavItems } from '@/lib/nav'
+import { SOCIAL_ORDER, SOCIAL_SYMBOLS } from '@/lib/social-links'
 
 const LIGHT_LOGO = '/images/ksop-light-approved.png'
 const DARK_LOGO = '/images/ksop-dark-approved.png'
 
-const SOCIAL_ORDER = [
-  ['FLOPIN', 'F'],
-  ['Instagram', '◎'],
-  ['X', '𝕏'],
-  ['Discord', '◌'],
-  ['Facebook', 'f'],
-  ['YouTube', '▶'],
-] as const
-
 /** Shared fixed-geometry detail header (Schedule/Events/Ranking/News/About + series pages). */
 export function DetailHeader({ activeHref }: { activeHref?: string }) {
   const { t, darkMode, language } = useSite()
+  const socialLinks = useSocialLinks()
   const [menuOpen, setMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const navRef = useRef<HTMLElement | null>(null)
@@ -115,17 +109,13 @@ export function DetailHeader({ activeHref }: { activeHref?: string }) {
         })}
       </nav>
       <div className="header-right">
-        <div className="header-socials">
-          {SOCIAL_ORDER.map(([name, symbol]) => {
-            const href = SOCIAL_URLS[name]
-            if (!href) return null
-            return (
-              <SnsDock key={name} name={name} ariaLabel={name} href={href} className="social-icon social-text">
-                <span aria-hidden="true">{symbol}</span>
-                <span className="social-tooltip">{name.toUpperCase()}</span>
-              </SnsDock>
-            )
-          })}
+        <div className="header-socials" aria-label="KSOP social channels">
+          {SOCIAL_ORDER.map((name) => (
+            <SnsDock key={name} name={name} ariaLabel={name} href={socialLinks[name] || undefined} className="social-icon social-text">
+              <span aria-hidden="true">{SOCIAL_SYMBOLS[name]}</span>
+              <span className="social-tooltip">{name.toUpperCase()}</span>
+            </SnsDock>
+          ))}
         </div>
         <div className="detail-actions header-actions">
           <LanguageMenu />
