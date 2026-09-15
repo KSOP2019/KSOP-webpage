@@ -9,6 +9,7 @@ import { getAllSeries } from './series'
 export function revalidateContentPages() {
   revalidatePath('/')
   revalidatePath('/about')
+  revalidatePath('/partners')
 }
 
 export function revalidateSchedulePages() {
