@@ -30,8 +30,11 @@ export default async function AdminDashboardPage() {
       </div>
 
       <div className="admin-actions" style={{ marginTop: '24px' }}>
-        <Link className="admin-button" href="/admin/content">
-          Edit hero & posters
+        <Link className="admin-button" href="/admin/hero">
+          Open HERO Layout Editor
+        </Link>
+        <Link className="admin-button secondary" href="/admin/content">
+          Edit home content
         </Link>
         <Link className="admin-button secondary" href="/admin/events/new">
           Add event
