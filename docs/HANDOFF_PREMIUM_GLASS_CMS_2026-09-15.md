@@ -31,6 +31,22 @@ Complete the existing KSOP website without rebuilding it: repair empty/broken ro
 12. Registration page is event-aware and uses the normal site shell. No fake registration submission was invented because an official registration endpoint/channel is not confirmed.
 13. Existing production-only real-data safeguards remain unchanged; Preview/dev may show QA seed data only.
 
+## Homepage 1920×1080 zoom stability pass
+
+Representative request: at browser 100% the desktop reference is 1920×1080, and Ctrl+wheel zoom must scale the page without moving text/cards into tablet/mobile geometry.
+
+- Scope: homepage first only. Other page responsive behavior is intentionally unchanged.
+- Reference geometry: 1920px page width; 82px header + 998px hero = 1080px first-screen reference.
+- Implementation file: `app/premium-glass-preview.css`.
+- Homepage-only desktop canvas lock is scoped with `:has(main > .premium-hero)`.
+- Home canvas/header/hero/section widths and key typography/grid geometry use fixed desktop pixel values instead of viewport-driven `vw`, `vh`, or `clamp()` values that were causing browser-zoom reflow.
+- Header keeps the five desktop navigation items, six SNS slots, language/theme controls, and no mobile hamburger on the homepage zoomed desktop canvas.
+- Schedule remains two-column; Events/About remain three-column; News remains three-column; section headings and hero copy keep desktop geometry under browser zoom.
+- At zoom levels above 100%, the browser may show less of the fixed 1920px canvas or horizontal overflow; that is expected. The requirement is that internal boxes/text do not recompose into another responsive layout.
+- Functional code, CMS, DB, and production `main` were not changed by this pass.
+- Implementation commit: `5bc97e5ed369ac3b2496421a21be2086570f4736` (`fix(home): lock 1920x1080 desktop canvas against browser zoom reflow`).
+- Vercel Preview for the implementation commit reached READY and `/` returned HTTP 200.
+
 ## Validation performed
 
 - Vercel Preview build: READY.
@@ -47,9 +63,11 @@ Complete the existing KSOP website without rebuilding it: repair empty/broken ro
 ## Still intentionally pending
 
 1. Representative visual approval on Preview before merging to `main`.
-2. Real SNS URLs are still blank and should be entered through CMS when confirmed.
-3. Official event registration submission/backend is not confirmed; current page displays truthful pending state rather than a dummy form.
-4. Final Production smoke test is required only after approved PR merge.
+2. Desktop visual check of homepage at 80% / 100% / 125% browser zoom. Automated build/HTTP validation is complete, but the available deployment tools do not emulate the representative's physical Ctrl+wheel browser interaction.
+3. After homepage approval, apply the same stable desktop geometry policy page-by-page to Schedule / Events / Ranking / News / About without changing functionality.
+4. Real SNS URLs are still blank and should be entered through CMS when confirmed.
+5. Official event registration submission/backend is not confirmed; current page displays truthful pending state rather than a dummy form.
+6. Final Production smoke test is required only after approved PR merge.
 
 ## Merge gate
 
