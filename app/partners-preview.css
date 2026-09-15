@@ -1,6 +1,6 @@
 /* PARTNERS — compact homepage strip + scalable all-partners page. */
 
-/* Home: reuse the same inset separator geometry as the 01–05 section dividers. */
+/* Home: keep the existing homepage canvas background and avoid a hard shelf above the footer. */
 main:has(> .premium-hero) > .ksop-partners-section {
   position: relative !important;
   width: 1920px !important;
@@ -9,18 +9,16 @@ main:has(> .premium-hero) > .ksop-partners-section {
   padding: 62px 154px 72px !important;
   border-top: 0 !important;
   border-bottom: 0 !important;
+  background: transparent !important;
 }
 
 main:has(> .premium-hero) > .ksop-partners-section::after {
-  content: '';
-  position: absolute;
-  left: 154px;
-  right: 154px;
-  bottom: 0;
-  height: 1px;
-  background: var(--border);
-  opacity: .82;
-  pointer-events: none;
+  content: none !important;
+  display: none !important;
+}
+
+main:has(> .premium-hero) > .site-footer {
+  border-top: 0 !important;
 }
 
 main:has(> .premium-hero) .ksop-partners-heading.section-top {
