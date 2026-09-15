@@ -47,6 +47,23 @@ Representative request: at browser 100% the desktop reference is 1920×1080, and
 - Implementation commit: `5bc97e5ed369ac3b2496421a21be2086570f4736` (`fix(home): lock 1920x1080 desktop canvas against browser zoom reflow`).
 - Vercel Preview for the implementation commit reached READY and `/` returned HTTP 200.
 
+## Homepage Hero approved visual reference pass
+
+Representative supplied a homepage screenshot and requested that the actual website Hero match the approved arena/glass composition rather than generating a standalone image.
+
+- Scope: homepage Hero only; production `main` remains unchanged.
+- Hero uses the approved site arena asset `/images/ksop-hero-arena.png` and no longer falls back to a black panel because the image allow-list now explicitly accepts this asset.
+- The old `KineticText` and `ParallaxImage` wrappers were removed from the Hero to stop the title/image from moving independently under browser zoom.
+- Hero visual is a single 1920-reference composition with balanced 40px left/right inset and a dark left-to-right overlay for legibility.
+- Glass card, title, description and two CTAs are one fixed group: they must scale together under browser zoom and must not reflow separately.
+- Korean Hero title is grouped as two lines inside the card: `라이브` / `포커의 정점`.
+- Primary CTA is restored as `이벤트 확인` → `/events`.
+- Secondary CTA is restored as `일정` → `/schedule` with a calendar icon.
+- The top-right pending marker remains deliberately small and secondary.
+- Final Hero override file: `app/home-hero-reference.css`, imported after the existing premium layer so the approved geometry wins without rewriting the global design system.
+- Relevant commits: `6f2cf4478bcc337b4b3f84057764d3a4fccd2679`, `fe02ea3d2490e92663d210e4f530710894102428`, `d230d1b757fe76ec0b0eb71d022e37495180b01b`, `e29047f9f0906957be477d5f51e2bea4fcf3fbb8`.
+- Latest Vercel Preview reached READY and `/` returned HTTP 200. Rendered HTML confirms the arena image, the full `라이브 포커의 정점` title, the `이벤트 확인` link, and the schedule link are present.
+
 ## Validation performed
 
 - Vercel Preview build: READY.
