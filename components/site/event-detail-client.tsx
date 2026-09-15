@@ -84,12 +84,10 @@ export function EventDetailClient({
           ))}
         </div>
 
-        {/* Results/live render only when verified data exists — no default pending exposure. */}
-
         <div className="detail-actions">
-          <button className="primary-cta" type="button" disabled aria-disabled="true" title={t.regPending ?? 'Registration not yet available'}>
-            {t.regPending}
-          </button>
+          <Link className="primary-cta" href={`/register/${event.id}`}>
+            {t.registerShort || t.register}
+          </Link>
           <Link className="ghost-button" href="/events">
             {t.backToSchedule}
           </Link>
