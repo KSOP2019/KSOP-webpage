@@ -40,30 +40,12 @@ export function EventDetailClient({
 
       <Reveal className="event-detail" style={{ marginTop: 0 }}>
         <div className="detail-facts">
-          <div>
-            <span>{t.factBuyin}</span>
-            <strong>{event.buyIn}</strong>
-          </div>
-          <div>
-            <span>GTD</span>
-            <strong>{event.gtd}</strong>
-          </div>
-          <div>
-            <span>{t.factChips}</span>
-            <strong>{event.startingChips.toLocaleString()}</strong>
-          </div>
-          <div>
-            <span>{t.factLate}</span>
-            <strong>{event.lateReg}</strong>
-          </div>
-          <div>
-            <span>{t.eventStatus}</span>
-            <strong>{t.statusPending}</strong>
-          </div>
-          <div>
-            <span>{t.regStatus}</span>
-            <strong>{t.regPending}</strong>
-          </div>
+          <div><span>{t.factBuyin}</span><strong>{event.buyIn}</strong></div>
+          <div><span>GTD</span><strong>{event.gtd}</strong></div>
+          <div><span>{t.factChips}</span><strong>{event.startingChips.toLocaleString()}</strong></div>
+          <div><span>{t.factLate}</span><strong>{event.lateReg}</strong></div>
+          <div><span>{t.eventStatus}</span><strong>{t.statusPending}</strong></div>
+          <div><span>{t.regStatus}</span><strong>{t.regPending}</strong></div>
         </div>
 
         <div className="blind-label">{t.blindStructure}</div>
@@ -76,20 +58,16 @@ export function EventDetailClient({
           {event.blindStructure.map((level) => (
             <div key={level.level}>
               <span>{level.level}</span>
-              <strong>
-                {level.small} / {level.big}
-              </strong>
+              <strong>{level.small} / {level.big}</strong>
               <span>{level.ante}</span>
             </div>
           ))}
         </div>
 
-        {/* Results/live render only when verified data exists — no default pending exposure. */}
-
         <div className="detail-actions">
-          <button className="primary-cta" type="button" disabled aria-disabled="true" title={t.regPending ?? 'Registration not yet available'}>
-            {t.regPending}
-          </button>
+          <Link className="primary-cta" href={`/register/${event.id}`}>
+            {t.registerShort || t.register}
+          </Link>
           <Link className="ghost-button" href="/events">
             {t.backToSchedule}
           </Link>
