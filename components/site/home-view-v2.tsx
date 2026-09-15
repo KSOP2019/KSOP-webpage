@@ -1,20 +1,45 @@
 'use client'
 
 import Link from 'next/link'
-import { useRef } from 'react'
-import { ArrowUpRight, CalendarDays } from 'lucide-react'
+import { useMemo, useRef } from 'react'
+import { ArrowUpRight, CalendarDays, Trophy } from 'lucide-react'
 import { useSite } from '@/components/site/site-provider'
 import { Reveal } from '@/components/site/reveal'
 import { GlassCard } from '@/components/ui/glass-card'
 import { Spotlight } from '@/components/effects/spotlight'
 import { eventCardImage, realPhotoOrBlank } from '@/lib/event-images'
 import { getNavItems } from '@/lib/nav'
+import { buildRankingTrendSnapshot, type RankingTrend } from '@/lib/ranking-trend'
 import type { EventItem, NewsItem, RankedPlayer } from '@/lib/types'
 
 type HomeViewV2Props = {
   events: EventItem[]
   news: NewsItem[]
   ranked: RankedPlayer[]
+}
+
+function playerInitials(name: string): string {
+  return name
+    .trim()
+    .split(/\s+/)
+    .map((part) => part[0])
+    .join('')
+    .slice(0, 2)
+    .toUpperCase()
+}
+
+function movementText(trend?: RankingTrend): string {
+  if (!trend || trend.previousRank == null || trend.direction === 'same') return '—'
+  if (trend.direction === 'new') return 'NEW'
+  return trend.change > 0 ? `▲${trend.change}` : `▼${Math.abs(trend.change)}`
+}
+
+function movementClass(trend?: RankingTrend): string {
+  if (!trend) return 'is-same'
+  if (trend.direction === 'up') return 'is-up'
+  if (trend.direction === 'down') return 'is-down'
+  if (trend.direction === 'new') return 'is-new'
+  return 'is-same'
 }
 
 export function HomeViewV2({ events, news, ranked }: HomeViewV2Props) {
@@ -29,6 +54,9 @@ export function HomeViewV2({ events, news, ranked }: HomeViewV2Props) {
     ? [heroWords[0], heroWords.slice(1).join(' ')]
     : [t.hero]
   const heroPrimaryLabel = language === 'KR' && t.explore === '이벤트 보기' ? '이벤트 확인' : t.explore
+  const rankingSnapshot = useMemo(() => buildRankingTrendSnapshot(ranked), [ranked])
+  const homeTop3 = ranked.slice(0, 3)
+  const homeTop3Visual = homeTop3.length === 3 ? [homeTop3[1], homeTop3[0], homeTop3[2]] : homeTop3
 
   return (
     <>
@@ -134,17 +162,40 @@ export function HomeViewV2({ events, news, ranked }: HomeViewV2Props) {
         {ranked.length === 0 ? (
           <GlassCard asChild><div className="premium-empty-state"><strong>{t.rankingEmptyBody}</strong></div></GlassCard>
         ) : (
-          <Reveal className="podium-grid">
-            {ranked.slice(0, 3).map((player) => (
-              <Link href={`/ranking/${player.playerId}`} className={`podium-card premium-depth-card place-0${player.rank}`} key={player.playerId}>
-                <span className="podium-rank">{player.rank}</span>
-                {realPhotoOrBlank(player.portrait) ? <img className="podium-portrait" src={realPhotoOrBlank(player.portrait)} alt={`${player.name} portrait`} /> : null}
-                <strong className="player-name">{player.name}</strong>
-                <span>{player.country}</span>
-                <b>{player.score}</b>
-                <span className="text-link">{t.viewProfile} <ArrowUpRight /></span>
-              </Link>
-            ))}
+          <Reveal className="ksop-home-ranking-grid">
+            {homeTop3Visual.map((player) => {
+              const portrait = realPhotoOrBlank(player.portrait)
+              const trend = rankingSnapshot.trends.get(player.playerId)
+              return (
+                <Link
+                  href={`/ranking/${player.playerId}`}
+                  className={`ksop-home-rank-card rank-${player.rank}${player.rank === 1 ? ' is-champion' : ''}`}
+                  key={player.playerId}
+                >
+                  <div className="ksop-home-rank-head">
+                    <span className="ksop-home-rank-number"><Trophy />#{player.rank}</span>
+                    <span className={`ksop-rank-movement ${movementClass(trend)}`}>{movementText(trend)}</span>
+                  </div>
+                  {portrait ? (
+                    <img className="ksop-home-rank-portrait" src={portrait} alt={`${player.name} portrait`} loading="lazy" />
+                  ) : (
+                    <div className="ksop-home-rank-portrait is-fallback" aria-label={`${player.name} avatar`}>
+                      <span>{playerInitials(player.name) || String(player.rank)}</span>
+                    </div>
+                  )}
+                  <div className="ksop-home-rank-copy">
+                    <span>{player.country} · KSOP PLAYER</span>
+                    <strong>{player.name}</strong>
+                    <b>{Number(player.score || 0).toLocaleString('en-US', { maximumFractionDigits: 2 })}<small> PTS</small></b>
+                    <div className="ksop-home-rank-meta">
+                      <span>{player.titles ?? 0}<small>TITLES</small></span>
+                      <span>{player.finalTables ?? 0}<small>FINAL TABLES</small></span>
+                    </div>
+                    <span className="text-link">{t.viewProfile} <ArrowUpRight /></span>
+                  </div>
+                </Link>
+              )
+            })}
           </Reveal>
         )}
       </section>
