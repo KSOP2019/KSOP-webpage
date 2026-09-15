@@ -262,7 +262,7 @@ export function RankingPageClient({ ranked }: { ranked: RankedPlayer[] }) {
         </div>
       </div>
 
-      <Reveal className="ksop-ranking-list" role="table" aria-label="KSOP player ranking">
+      <Reveal className="ksop-ranking-list">
         <div className="ksop-ranking-list-head" role="row">
           <span role="columnheader">{ui.rank}</span>
           <span role="columnheader">{ui.change}</span>
