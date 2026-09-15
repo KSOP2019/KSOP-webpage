@@ -64,10 +64,33 @@ Representative supplied a homepage screenshot and requested that the actual webs
 - Relevant commits: `6f2cf4478bcc337b4b3f84057764d3a4fccd2679`, `fe02ea3d2490e92663d210e4f530710894102428`, `d230d1b757fe76ec0b0eb71d022e37495180b01b`, `e29047f9f0906957be477d5f51e2bea4fcf3fbb8`.
 - Latest Vercel Preview reached READY and `/` returned HTTP 200. Rendered HTML confirms the arena image, the full `라이브 포커의 정점` title, the `이벤트 확인` link, and the schedule link are present.
 
+## Homepage compact partner directory pass
+
+Representative requested the former large partnership block to behave like the other homepage sections and remain compact even after the partner list grows beyond 20 companies.
+
+- Removed the large `KSOP와 함께하는 파트너십` headline from the homepage partner strip.
+- Homepage partner header now uses `OFFICIAL PARTNERS` with the same section-label visual scale as sections 01–05.
+- Added `전체 파트너 보기` → `/partners`, matching the existing Schedule / Events / News view-all pattern.
+- The partner strip uses the same 154px-inset 1px separator geometry as the other homepage section dividers; the bottom boundary now follows the same rule instead of a full-width border.
+- Homepage partner cards were reduced to a compact 150px-high six-column strip and only the first six partners render on Home, preventing future 20+ partner lists from expanding the homepage vertically.
+- Added full `/partners` directory page. It displays the complete CMS partner list in a scalable desktop/mobile grid.
+- Partner CMS remains inside the existing admin content flow and now supports up to 60 entries. Each entry manages company name, optional destination URL, partner logo, and alt text.
+- Partner data remains in existing `site_settings.global.partners`; no Supabase table/schema/auth migration was introduced.
+- Current default partners: Japan Open Poker Tour, China Poker Games, Global Poker Index, PLAYSOFT, PLAYPLACE, FLOPIN.
+- Added temporary local SVG assets for PLAYSOFT and PLAYPLACE as requested. FLOPIN uses a neutral temporary wordmark until its approved final brand asset is supplied/reused.
+- PLAYSOFT / PLAYPLACE / FLOPIN have intentionally blank destination URLs because no official URLs were supplied; they render as non-clickable cards until URLs are entered through CMS.
+- Current default external partner URLs remain JOPT `https://japanopenpoker.com/`, China Poker Games `http://www.chinapokergames.com/`, and GPI `https://www.globalpokerindex.com/`.
+- Partner saves revalidate both `/` and `/partners`.
+- Latest functional commit before this handoff update: `0dba8bec98c124e2e4cd583ffbbaf60b21621f6c` (`feat(cms): scale partner editor beyond twenty entries`).
+- Vercel Preview for that commit reached READY. `/`, `/partners`, and `/api/partners` returned HTTP 200, and `/api/partners` returned all six current partners.
+- Production `main` remains unchanged.
+
 ## Validation performed
 
 - Vercel Preview build: READY.
 - `/`: 200.
+- `/partners`: 200.
+- `/api/partners`: 200 and returns all six current partners.
 - `/events`: 200.
 - `/events/event-1`: 200 in Preview QA data; registration href confirmed.
 - `/register/event-1`: initially exposed a missing-provider 500; fixed with `app/register/layout.tsx`; revalidated 200.
@@ -83,9 +106,11 @@ Representative supplied a homepage screenshot and requested that the actual webs
 2. Desktop visual check of homepage at 80% / 100% / 125% browser zoom. Automated build/HTTP validation is complete, but the available deployment tools do not emulate the representative's physical Ctrl+wheel browser interaction.
 3. After homepage approval, apply the same stable desktop geometry policy page-by-page to Schedule / Events / Ranking / News / About without changing functionality.
 4. Real SNS URLs are still blank and should be entered through CMS when confirmed.
-5. Official event registration submission/backend is not confirmed; current page displays truthful pending state rather than a dummy form.
-6. Final Production smoke test is required only after approved PR merge.
+5. PLAYSOFT / PLAYPLACE / FLOPIN destination URLs remain intentionally blank until their official destinations are confirmed.
+6. Replace temporary PLAYSOFT / PLAYPLACE / FLOPIN partner assets with approved brand originals when available; no layout/code rewrite is required.
+7. Official event registration submission/backend is not confirmed; current page displays truthful pending state rather than a dummy form.
+8. Final Production smoke test is required only after approved PR merge.
 
 ## Merge gate
 
-Do not merge to `main` until the representative confirms the Preview visual result. After approval: merge PR → Vercel Production deploy → verify root/nav/CMS/social/events/register/light-dark/languages/mobile.
+Do not merge to `main` until the representative confirms the Preview visual result. After approval: merge PR → Vercel Production deploy → verify root/nav/CMS/social/events/register/partners/light-dark/languages/mobile.
