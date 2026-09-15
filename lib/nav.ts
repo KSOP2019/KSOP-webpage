@@ -19,7 +19,7 @@ export const ABOUT_NAV_LABELS = {
  * routes always come from NAV_ROUTES so a CMS length/order drift can never
  * misroute a link (e.g. NEWS must always resolve to `/news`).
  */
-export const NAV_FALLBACK_LABELS = ['SCHEDULE', 'EVENT', 'RANKING', 'NEWS', 'ABOUT'] as const
+export const NAV_FALLBACK_LABELS = ['SCHEDULE', 'EVENTS', 'RANKING', 'NEWS', 'ABOUT'] as const
 
 export interface NavEntry {
   href: (typeof NAV_ROUTES)[number]
@@ -43,11 +43,14 @@ export function getNavItems(labels: readonly string[] | undefined | null, langua
 
 export const EVENT_CATEGORIES = ['ALL EVENT', 'MAIN EVENT', 'HIGH ROLLER', 'DAY'] as const
 
+export const SOCIAL_KEYS = ['FLOPIN', 'Instagram', 'X', 'Discord', 'Facebook', 'YouTube'] as const
+export type SocialKey = (typeof SOCIAL_KEYS)[number]
+
 /**
- * Confirmed social profile URLs only. Empty string = unconfirmed → hidden.
- * Never use "#" or "/#social" as href.
+ * Legacy fallback only. Public Header/Footer must keep all six slots visible
+ * even when the CMS URL is not configured yet; empty URL means disabled.
  */
-export const SOCIAL_URLS: Record<string, string> = {
+export const SOCIAL_URLS: Record<SocialKey, string> = {
   FLOPIN: '',
   Instagram: '',
   X: '',
