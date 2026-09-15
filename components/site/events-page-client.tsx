@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useMemo, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
-import { ArrowUpRight } from 'lucide-react'
+import { ArrowUpRight, CalendarDays, Search } from 'lucide-react'
 import { useSite } from '@/components/site/site-provider'
 import { Reveal } from '@/components/site/reveal'
 import { EVENT_CATEGORIES } from '@/lib/nav'
@@ -14,18 +14,30 @@ import type { EventItem } from '@/lib/types'
 const PAGE_SIZE = 15
 
 export function EventsPageClient({ events }: { events: EventItem[] }) {
-  const { t, content } = useSite()
+  const { t, content, language } = useSite()
   const searchParams = useSearchParams()
   const initialCategory = searchParams.get('category') ?? 'ALL EVENT'
   const [selectedCategory, setSelectedCategory] = useState(initialCategory)
   const [selectedDate, setSelectedDate] = useState('ALL')
+  const [query, setQuery] = useState('')
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE)
 
+  const labels = {
+    KR: { kicker: '02 / 전체 이벤트', title: '전체 이벤트', series: '시리즈 일정', search: '이벤트명 · 종목 검색' },
+    EN: { kicker: '02 / ALL EVENTS', title: 'ALL EVENTS', series: 'SERIES SCHEDULE', search: 'Search event or game type' },
+    JP: { kicker: '02 / 全イベント', title: '全イベント', series: 'シリーズ日程', search: 'イベント名・種目を検索' },
+    CN: { kicker: '02 / 全部赛事', title: '全部赛事', series: '系列赛日程', search: '搜索赛事名称或类型' },
+  }[language]
+
   const dates = Array.from(new Set(events.map((event) => event.date)))
-  const visibleEvents = useMemo(
-    () => filterEvents(events, selectedCategory, selectedDate),
-    [events, selectedCategory, selectedDate],
-  )
+  const visibleEvents = useMemo(() => {
+    const base = filterEvents(events, selectedCategory, selectedDate)
+    const normalizedQuery = query.trim().toLowerCase()
+    if (!normalizedQuery) return base
+    return base.filter((event) =>
+      `${event.name} ${event.type} ${event.dayLabel}`.toLowerCase().includes(normalizedQuery),
+    )
+  }, [events, selectedCategory, selectedDate, query])
   const shownEvents = visibleEvents.slice(0, visibleCount)
   const remainingCount = visibleEvents.length - shownEvents.length
 
@@ -33,56 +45,73 @@ export function EventsPageClient({ events }: { events: EventItem[] }) {
     <section className="schedule-section section-pad events-density">
       <div className="section-top">
         <div>
-          <div className="section-label">{t.scheduleLabel}</div>
-          <h2>{t.schedule}</h2>
+          <div className="section-label">{labels.kicker}</div>
+          <h2>{labels.title}</h2>
         </div>
         <div className="series-meta">
           <strong>{content.seriesDate}</strong>
           <span>{content.seriesVenue}</span>
-          <span>{content.seriesGtd}</span>
+          <Link className="text-link" href="/schedule">{labels.series} <ArrowUpRight /></Link>
         </div>
       </div>
 
-      <div className="event-filters" role="tablist" aria-label="Event filters">
-        {EVENT_CATEGORIES.map((category) => (
-          <button
-            type="button"
-            className={selectedCategory === category ? 'is-active' : ''}
-            aria-selected={selectedCategory === category}
-            onClick={() => {
-              setSelectedCategory(category)
-              setSelectedDate('ALL')
-              setVisibleCount(PAGE_SIZE)
-            }}
-            key={category}
-          >
-            {category}
-          </button>
-        ))}
-      </div>
-
-      {selectedCategory === 'DAY' ? (
-        <div className="date-filter" style={{ display: 'flex', gap: '14px', marginBottom: '20px' }}>
-          <button type="button" className={selectedDate === 'ALL' ? 'is-active' : ''} onClick={() => { setSelectedDate('ALL'); setVisibleCount(PAGE_SIZE) }}>
-            {t.allDates}
-          </button>
-          {dates.map((date) => (
+      <div style={{ display: 'grid', gap: 14, marginBottom: 22 }}>
+        <div className="event-filters" role="tablist" aria-label="Event filters">
+          {EVENT_CATEGORIES.map((category) => (
             <button
-              key={date}
               type="button"
-              className={selectedDate === date ? 'is-active' : ''}
-              aria-selected={selectedDate === date}
-              onClick={() => { setSelectedDate(date); setVisibleCount(PAGE_SIZE) }}
+              className={selectedCategory === category ? 'is-active' : ''}
+              aria-selected={selectedCategory === category}
+              onClick={() => {
+                setSelectedCategory(category)
+                setSelectedDate('ALL')
+                setVisibleCount(PAGE_SIZE)
+              }}
+              key={category}
             >
-              {date}
+              {category}
             </button>
           ))}
         </div>
-      ) : null}
+
+        <label
+          className="glass"
+          data-glass="subtle"
+          style={{ display: 'flex', alignItems: 'center', gap: 10, borderRadius: 14, padding: '12px 14px' }}
+        >
+          <Search size={17} aria-hidden="true" />
+          <input
+            value={query}
+            onChange={(e) => { setQuery(e.target.value); setVisibleCount(PAGE_SIZE) }}
+            placeholder={labels.search}
+            aria-label={labels.search}
+            style={{ width: '100%', border: 0, outline: 0, background: 'transparent', color: 'inherit', font: 'inherit' }}
+          />
+        </label>
+
+        {dates.length > 0 ? (
+          <div className="date-filter" style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+            <button type="button" className={selectedDate === 'ALL' ? 'is-active' : ''} onClick={() => { setSelectedDate('ALL'); setVisibleCount(PAGE_SIZE) }}>
+              <CalendarDays size={14} aria-hidden="true" /> {t.allDates}
+            </button>
+            {dates.map((date) => (
+              <button
+                key={date}
+                type="button"
+                className={selectedDate === date ? 'is-active' : ''}
+                aria-selected={selectedDate === date}
+                onClick={() => { setSelectedDate(date); setVisibleCount(PAGE_SIZE) }}
+              >
+                {date}
+              </button>
+            ))}
+          </div>
+        ) : null}
+      </div>
 
       <Reveal className="schedule-list">
         {visibleEvents.length > 0 ? (
-          <p className="muted-copy" style={{ marginBottom: '12px' }}>
+          <p className="muted-copy" style={{ marginBottom: 12 }}>
             {t.showing
               .replace('{shown}', String(shownEvents.length))
               .replace('{total}', String(visibleEvents.length))}
@@ -91,13 +120,14 @@ export function EventsPageClient({ events }: { events: EventItem[] }) {
         {visibleEvents.length === 0 ? (
           <div>
             <p className="muted-copy">{t.noEvents}</p>
-            <div className="detail-actions" style={{ marginTop: '16px' }}>
+            <div className="detail-actions" style={{ marginTop: 16 }}>
               <button
                 type="button"
                 className="ghost-button"
                 onClick={() => {
                   setSelectedCategory('ALL EVENT')
                   setSelectedDate('ALL')
+                  setQuery('')
                   setVisibleCount(PAGE_SIZE)
                 }}
               >
@@ -138,16 +168,14 @@ export function EventsPageClient({ events }: { events: EventItem[] }) {
               ) : null}
               <span className="event-title">
                 <b>{event.name}</b>
-                <small>
-                  {event.type} · {t.buyin} {event.buyInType} · {event.gtd} GTD
-                </small>
+                <small>{event.type} · {t.buyin} {event.buyIn} · {event.gtd} GTD</small>
               </span>
               <ArrowUpRight className="chevron" aria-hidden="true" />
             </Link>
           </article>
         ))}
         {remainingCount > 0 ? (
-          <div className="detail-actions" style={{ marginTop: '20px' }}>
+          <div className="detail-actions" style={{ marginTop: 20 }}>
             <button type="button" className="ghost-button" onClick={() => setVisibleCount((count) => count + PAGE_SIZE)}>
               {t.showMore.replace('{remaining}', String(remainingCount))}
             </button>
