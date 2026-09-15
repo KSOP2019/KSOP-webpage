@@ -1,46 +1,70 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import type { Language, LocaleCopy, SiteContent } from '@/lib/types'
 import { AdminImageField } from '@/components/admin/admin-image-field'
+import { EMPTY_SOCIAL_LINKS, SOCIAL_ORDER, type SocialLinks } from '@/lib/social-links'
 
 const languages: Language[] = ['EN', 'KR', 'JP', 'CN']
-const copyFields: Array<{ key: keyof LocaleCopy; label: string }> = [
-  { key: 'ticker', label: 'Ticker' },
-  { key: 'eyebrow', label: 'Eyebrow' },
-  { key: 'hero', label: 'Hero title' },
-  { key: 'intro', label: 'Hero intro' },
-  { key: 'register', label: 'Register button' },
-  { key: 'explore', label: 'Explore button' },
-  { key: 'guaranteed', label: 'Guaranteed label' },
-  { key: 'invitation', label: 'Invitation label' },
-  { key: 'stack', label: 'Starting stack label' },
-  { key: 'reg', label: 'Registration label' },
-  { key: 'schedule', label: 'Schedule section label' },
-  { key: 'ranking', label: 'Ranking section label' },
-  { key: 'news', label: 'News section label' },
-  { key: 'follow', label: 'Follow label' },
-  { key: 'buyin', label: 'Buy-in label' },
-]
+
+function humanize(value: string) {
+  return value.replace(/([a-z])([A-Z])/g, '$1 $2').replace(/[_-]/g, ' ').replace(/^./, (letter) => letter.toUpperCase())
+}
 
 export function ContentEditor({ initialContent }: { initialContent: SiteContent }) {
   const [content, setContent] = useState(initialContent)
+  const [social, setSocial] = useState<SocialLinks>(EMPTY_SOCIAL_LINKS)
   const [saved, setSaved] = useState(false)
   const [saving, setSaving] = useState(false)
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    fetch('/api/social', { cache: 'no-store' })
+      .then((response) => (response.ok ? response.json() : EMPTY_SOCIAL_LINKS))
+      .then((value) => setSocial({ ...EMPTY_SOCIAL_LINKS, ...value }))
+      .catch(() => setSocial(EMPTY_SOCIAL_LINKS))
+  }, [])
+
+  const copyFields = useMemo(() => {
+    const keys = new Set<string>()
+    languages.forEach((language) => {
+      Object.entries(content.copy[language]).forEach(([key, value]) => {
+        if (key !== 'nav' && key !== 'about' && typeof value === 'string') keys.add(key)
+      })
+    })
+    return Array.from(keys).sort()
+  }, [content.copy])
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault()
     setSaved(false)
+    setError('')
     setSaving(true)
 
-    const response = await fetch('/api/content', {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(content),
-    })
+    try {
+      const contentResponse = await fetch('/api/content', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(content),
+      })
+      if (!contentResponse.ok) throw new Error('Content save failed')
 
-    setSaving(false)
-    if (response.ok) setSaved(true)
+      const socialResponse = await fetch('/api/social', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(social),
+      })
+      if (!socialResponse.ok) {
+        const payload = await socialResponse.json().catch(() => ({}))
+        throw new Error(payload.error || 'Social URL save failed')
+      }
+
+      setSaved(true)
+    } catch (saveError) {
+      setError(saveError instanceof Error ? saveError.message : 'Save failed')
+    } finally {
+      setSaving(false)
+    }
   }
 
   function updateCopy(language: Language, key: keyof LocaleCopy, value: string) {
@@ -68,14 +92,14 @@ export function ContentEditor({ initialContent }: { initialContent: SiteContent 
         value={content.logoBlack}
         onChange={(url) => setContent({ ...content, logoBlack: url })}
         folder="logos"
-        aspectHint="권장: 투명 배경 PNG/WebP. 공개 헤더는 승인된 로고를 사용하므로, 변경 후 반드시 미리보기로 확인하세요."
+        aspectHint="권장: 투명 배경 PNG/WebP. 변경 후 반드시 미리보기로 확인하세요."
       />
       <AdminImageField
         label="Dark mode logo"
         value={content.logoWhite}
         onChange={(url) => setContent({ ...content, logoWhite: url })}
         folder="logos"
-        aspectHint="권장: 투명 배경 PNG/WebP (밝은 글자). 공개 헤더는 승인된 로고를 사용하므로, 변경 후 반드시 미리보기로 확인하세요."
+        aspectHint="권장: 투명 배경 PNG/WebP (밝은 글자). 변경 후 반드시 미리보기로 확인하세요."
       />
 
       <h3>Series information</h3>
@@ -118,6 +142,20 @@ export function ContentEditor({ initialContent }: { initialContent: SiteContent 
         <input value={content.imageBreakEmphasis} onChange={(event) => setContent({ ...content, imageBreakEmphasis: event.target.value })} />
       </label>
 
+      <h3>Social channels</h3>
+      <p>6개 채널은 홈페이지에 항상 표시됩니다. 주소가 비어 있으면 비활성 상태로 보이고, URL 저장 즉시 Header/Footer에서 활성화됩니다.</p>
+      {SOCIAL_ORDER.map((name) => (
+        <label key={name}>
+          {name} URL
+          <input
+            type="url"
+            placeholder="https://"
+            value={social[name]}
+            onChange={(event) => setSocial({ ...social, [name]: event.target.value })}
+          />
+        </label>
+      ))}
+
       <h3>Navigation & multilingual copy</h3>
       {languages.map((language) => (
         <fieldset key={language} style={{ border: '1px solid #d8dde5', borderRadius: 10, padding: 16 }}>
@@ -140,12 +178,13 @@ export function ContentEditor({ initialContent }: { initialContent: SiteContent 
               }
             />
           </label>
-          {copyFields.map(({ key, label }) => (
-            <label key={`${language}-${String(key)}`}>
-              {label}
+
+          {copyFields.map((key) => (
+            <label key={`${language}-${key}`}>
+              {humanize(key)}
               <input
-                value={String(content.copy[language][key] ?? '')}
-                onChange={(event) => updateCopy(language, key, event.target.value)}
+                value={String(content.copy[language][key as keyof LocaleCopy] ?? '')}
+                onChange={(event) => updateCopy(language, key as keyof LocaleCopy, event.target.value)}
               />
             </label>
           ))}
@@ -156,7 +195,8 @@ export function ContentEditor({ initialContent }: { initialContent: SiteContent 
         <button className="admin-button" type="submit" disabled={saving}>
           {saving ? 'Saving…' : 'Save content'}
         </button>
-        {saved ? <span>Saved.</span> : null}
+        {saved ? <span>Saved. Public content and social links updated.</span> : null}
+        {error ? <span role="alert">{error}</span> : null}
       </div>
     </form>
   )
