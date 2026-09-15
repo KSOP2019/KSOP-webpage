@@ -9,13 +9,16 @@ import { GlassCard } from '@/components/ui/glass-card'
 import { Spotlight } from '@/components/effects/spotlight'
 import { eventCardImage, realPhotoOrBlank } from '@/lib/event-images'
 import { getNavItems } from '@/lib/nav'
+import { slugifySeriesLabel } from '@/lib/series'
 import { buildRankingTrendSnapshot, type RankingTrend } from '@/lib/ranking-trend'
+import type { ScheduleContent } from '@/lib/schedule-content'
 import type { EventItem, NewsItem, RankedPlayer } from '@/lib/types'
 
 type HomeViewV2Props = {
   events: EventItem[]
   news: NewsItem[]
   ranked: RankedPlayer[]
+  scheduleContent: ScheduleContent
 }
 
 function playerInitials(name: string): string {
@@ -42,7 +45,7 @@ function movementClass(trend?: RankingTrend): string {
   return 'is-same'
 }
 
-export function HomeViewV2({ events, news, ranked }: HomeViewV2Props) {
+export function HomeViewV2({ events, news, ranked, scheduleContent }: HomeViewV2Props) {
   const { content, t, copy, language } = useSite()
   const heroRef = useRef<HTMLElement | null>(null)
   const nav = getNavItems(t.nav, language)
@@ -57,7 +60,7 @@ export function HomeViewV2({ events, news, ranked }: HomeViewV2Props) {
   const rankingSnapshot = useMemo(() => buildRankingTrendSnapshot(ranked), [ranked])
   const homeTop3 = ranked.slice(0, 3)
   const homeTop3Visual = homeTop3.length === 3 ? [homeTop3[1], homeTop3[0], homeTop3[2]] : homeTop3
-  const scheduleEvents = events.slice(0, 6)
+  const upcomingSeries = scheduleContent.items.filter((item) => item.status !== 'past').slice(0, 6)
   const importantEvents = events
     .filter((event) => event.type === 'MAIN EVENT' || event.type === 'HIGH ROLLER')
     .slice(0, 6)
@@ -102,7 +105,7 @@ export function HomeViewV2({ events, news, ranked }: HomeViewV2Props) {
           <Link className="text-link" href="/schedule">{t.exploreSchedule} <ArrowUpRight /></Link>
         </div>
 
-        {scheduleEvents.length === 0 ? (
+        {upcomingSeries.length === 0 ? (
           <GlassCard asChild>
             <div className="premium-empty-state" role="status">
               <strong>{t.schedulePending}</strong>
@@ -110,22 +113,28 @@ export function HomeViewV2({ events, news, ranked }: HomeViewV2Props) {
           </GlassCard>
         ) : (
           <Reveal className="home-event-grid">
-            {scheduleEvents.map((event) => {
-              const image = eventCardImage(event)
-              return (
-                <Link href={`/events/${event.id}`} className="home-event-card premium-depth-card" key={event.id}>
-                  <div className="home-event-media" style={image ? undefined : { background: '#0a0a0c' }}>
-                    {image ? <img src={image} alt="" loading="lazy" /> : <span>{event.type}</span>}
-                  </div>
-                  <div className="home-event-copy">
-                    <span>{event.date} · {event.dayLabel}</span>
-                    <h3>{event.name}</h3>
-                    <div className="home-event-meta"><span>{event.buyIn}</span><span>{event.gtd} GTD</span></div>
-                    <span className="text-link">{t.viewEvent} <ArrowUpRight /></span>
-                  </div>
-                </Link>
-              )
-            })}
+            {upcomingSeries.map((series) => (
+              <Link
+                href={`/schedule/${slugifySeriesLabel(series.label)}`}
+                className="home-event-card premium-depth-card"
+                key={series.label}
+              >
+                <div className="home-event-media" style={series.image ? undefined : { background: '#0a0a0c' }}>
+                  {series.image ? <img src={series.image} alt="" loading="lazy" /> : <span>KSOP SERIES</span>}
+                </div>
+                <div className="home-event-copy">
+                  <span>{language === 'KR' ? 'UPCOMING SERIES · 일정' : 'UPCOMING SERIES'}</span>
+                  <h3>{series.label}</h3>
+                  {(series.dateRange || series.venue) ? (
+                    <div className="home-event-meta">
+                      {series.dateRange ? <span>{series.dateRange}</span> : null}
+                      {series.venue ? <span>{series.venue}</span> : null}
+                    </div>
+                  ) : null}
+                  <span className="text-link">{t.exploreSchedule} <ArrowUpRight /></span>
+                </div>
+              </Link>
+            ))}
           </Reveal>
         )}
       </section>
