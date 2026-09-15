@@ -13,6 +13,7 @@ export interface SeriesItem {
   status: 'upcoming' | 'past'
   periodHint: string | null
   venue: string
+  seriesId: string
   match: SeriesEventMatch | null
 }
 
@@ -40,6 +41,7 @@ export function seriesFromCard(card: ScheduleCard): SeriesItem {
     status: card.status === 'past' ? 'past' : 'upcoming',
     periodHint: card.dateRange?.trim() || labelPeriod,
     venue: card.venue?.trim() || '',
+    seriesId: card.seriesId?.trim() || '',
     match: cardMatch(card),
   }
 }
@@ -61,11 +63,18 @@ function compareEvents(a: EventItem, b: EventItem): number {
   return numA - numB
 }
 
-function matchesSeries(series: SeriesItem, event: EventItem): boolean {
+function legacyMatchesSeries(series: SeriesItem, event: EventItem): boolean {
   if (!series.match) return false
   if (series.match.types && !series.match.types.includes(event.type)) return false
   if (series.match.nameContains && !event.name.toLowerCase().includes(series.match.nameContains.toLowerCase())) return false
   return true
+}
+
+function matchesSeries(series: SeriesItem, event: EventItem): boolean {
+  // Canonical DB ownership always wins. Legacy type/name matching is only for
+  // old preview/CMS cards that have not yet been assigned a public.series.id.
+  if (series.seriesId) return event.seriesId === series.seriesId
+  return legacyMatchesSeries(series, event)
 }
 
 export function getSeriesEvents(series: SeriesItem, events: EventItem[]): EventItem[] {
@@ -76,7 +85,12 @@ export function getSeriesEvents(series: SeriesItem, events: EventItem[]): EventI
 }
 
 export function findSeriesForEvent(scheduleContent: ScheduleContent, event: EventItem): SeriesItem | undefined {
-  return getAllSeries(scheduleContent).find((series) => matchesSeries(series, event))
+  const all = getAllSeries(scheduleContent)
+  if (event.seriesId) {
+    const exact = all.find((series) => series.seriesId && series.seriesId === event.seriesId)
+    if (exact) return exact
+  }
+  return all.find((series) => !series.seriesId && legacyMatchesSeries(series, event))
 }
 
 export function getSeriesDateRange(seriesEvents: EventItem[]): string | null {
