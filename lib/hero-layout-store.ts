@@ -3,6 +3,8 @@ import path from 'path'
 import { createAdminClient, createPublicClient } from './supabase-server'
 import { DEFAULT_HERO_LAYOUT, normalizeHeroLayout, type HeroLayoutSettings } from './hero-layout'
 
+const PRODUCTION_HERO_LAYOUT_URL = 'https://ksophomepage.vercel.app/api/hero-layout'
+
 const fallbackPath = process.env.VERCEL_ENV === 'preview'
   ? path.join('/tmp', 'ksop-preview-data', 'hero-layout.json')
   : path.join(process.cwd(), 'data', 'hero-layout.json')
@@ -21,7 +23,28 @@ async function writeFallback(layout: HeroLayoutSettings) {
   await fs.writeFile(fallbackPath, JSON.stringify(layout, null, 2), 'utf8')
 }
 
+async function readProductionAdminLayout(): Promise<HeroLayoutSettings | null> {
+  if (process.env.VERCEL_ENV !== 'preview') return null
+
+  try {
+    const response = await fetch(PRODUCTION_HERO_LAYOUT_URL, {
+      cache: 'no-store',
+      headers: { 'cache-control': 'no-cache' },
+    })
+    if (!response.ok) return null
+    return normalizeHeroLayout(await response.json())
+  } catch {
+    return null
+  }
+}
+
 export async function getHeroLayout(): Promise<HeroLayoutSettings> {
+  // Preview is the visual approval surface, while the editor lives on Production.
+  // Read the Production admin value first so the server-rendered HERO already uses
+  // the saved CMS coordinates/text/image on the very first paint after refresh.
+  const productionLayout = await readProductionAdminLayout()
+  if (productionLayout) return productionLayout
+
   const client = createPublicClient()
   if (!client) return readFallback()
 
