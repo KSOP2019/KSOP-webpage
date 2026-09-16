@@ -16,6 +16,7 @@ import './home-hero-brand.css'
 import './hero-layout-runtime.css'
 import './ranking-premium.css'
 import './home-content-polish.css'
+import './home-news-match-about.css'
 import './partners-preview.css'
 
 export const metadata: Metadata = {
