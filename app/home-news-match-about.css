@@ -54,30 +54,39 @@ main:has(> .premium-hero) #news .premium-news-card > .text-link {
   display: none !important;
 }
 
-/* HOME HERO BACKDROP CLEANUP
-   Remove the legacy pale-blue body/radial layer that was visible around and below
-   the rounded HERO image. Keep dark theme behavior untouched. */
+/* HOME FLOW BACKGROUND
+   The HERO must not own a separate backdrop. It floats directly on the same
+   continuous page background used by 01 · Schedule and the following sections. */
 html:not(.theme-dark) body:has(main > .premium-hero) {
-  background: #ffffff !important;
-  background-image: none !important;
-}
-
-html:not(.theme-dark) body:has(main > .premium-hero)::before,
-html:not(.theme-dark) body:has(main > .premium-hero)::after {
-  content: none !important;
-  display: none !important;
-  background: none !important;
+  background-color: #f7faff !important;
 }
 
 html:not(.theme-dark) main:has(> .premium-hero),
-html:not(.theme-dark) main:has(> .premium-hero) > .premium-hero {
+html:not(.theme-dark) main:has(> .premium-hero) > .premium-hero,
+html:not(.theme-dark) main:has(> .premium-hero) > .ksop-shared-hero,
+html:not(.theme-dark) main:has(> .premium-hero) > #top {
   background: transparent !important;
+  background-color: transparent !important;
   background-image: none !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
 }
 
 html:not(.theme-dark) main:has(> .premium-hero) > .premium-hero::before,
-html:not(.theme-dark) main:has(> .premium-hero) > .premium-hero::after {
+html:not(.theme-dark) main:has(> .premium-hero) > .premium-hero::after,
+html:not(.theme-dark) main:has(> .premium-hero) > .ksop-shared-hero::before,
+html:not(.theme-dark) main:has(> .premium-hero) > .ksop-shared-hero::after {
   content: none !important;
   display: none !important;
   background: none !important;
+  box-shadow: none !important;
+}
+
+/* Do not paint a separate band between HERO and Schedule. Both areas inherit the
+   same body backdrop so the scroll reads as one continuous surface. */
+html:not(.theme-dark) main:has(> .premium-hero) > #schedule,
+html:not(.theme-dark) main:has(> .premium-hero) > .home-section:first-of-type {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
 }
