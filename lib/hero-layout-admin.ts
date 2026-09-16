@@ -18,6 +18,7 @@ export type HeroLayoutSettings = {
   railHeight: number
   cardIntro: string
   cardKicker: string
+  cardTitleText: string
   cardPrimaryText: string
   cardSecondaryText: string
   cardImageUrl: string
@@ -41,6 +42,7 @@ export const DEFAULT_HERO_LAYOUT: HeroLayoutSettings = {
   railHeight: 86,
   cardIntro: '확정된 일정과 결과를 안내합니다.',
   cardKicker: 'NEXT SERIES · 다음 일정',
+  cardTitleText: '',
   cardPrimaryText: '이벤트 확인',
   cardSecondaryText: '일정',
   cardImageUrl: '',
@@ -73,7 +75,7 @@ export function normalizeHeroLayout(input?: Partial<HeroLayoutSettings> | null):
   return {
     brandX: clamp(num(value.brandX, DEFAULT_HERO_LAYOUT.brandX), 0, 1700),
     brandY: clamp(num(value.brandY, DEFAULT_HERO_LAYOUT.brandY), 0, 900),
-    brandWidth: clamp(num(value.brandWidth, DEFAULT_HERO_LAYOUT.brandWidth), 240, 1700),
+    brandWidth: clamp(num(value.brandWidth, DEFAULT_HERO_LAYOUT.brandWidth), 180, 1800),
     brandFontSize: clamp(num(value.brandFontSize, DEFAULT_HERO_LAYOUT.brandFontSize), 28, 300),
     cardX: clamp(num(value.cardX, DEFAULT_HERO_LAYOUT.cardX), 0, 1550),
     cardY: clamp(num(value.cardY, DEFAULT_HERO_LAYOUT.cardY), 0, 820),
@@ -88,6 +90,7 @@ export function normalizeHeroLayout(input?: Partial<HeroLayoutSettings> | null):
     railHeight: clamp(num(value.railHeight, DEFAULT_HERO_LAYOUT.railHeight), 54, 180),
     cardIntro: text(value.cardIntro, DEFAULT_HERO_LAYOUT.cardIntro, 180),
     cardKicker: text(value.cardKicker, DEFAULT_HERO_LAYOUT.cardKicker, 80),
+    cardTitleText: text(value.cardTitleText, DEFAULT_HERO_LAYOUT.cardTitleText, 100),
     cardPrimaryText: text(value.cardPrimaryText, DEFAULT_HERO_LAYOUT.cardPrimaryText, 40),
     cardSecondaryText: text(value.cardSecondaryText, DEFAULT_HERO_LAYOUT.cardSecondaryText, 40),
     cardImageUrl: url(value.cardImageUrl, DEFAULT_HERO_LAYOUT.cardImageUrl),
