@@ -1,5 +1,7 @@
-/* HOME NEWS — match the ABOUT card treatment and card proportions.
-   The whole news card remains the link target; redundant in-card "read story" CTA is hidden. */
+/* HOME NEWS — size-match the ABOUT cards on the fixed 1920px homepage canvas.
+   ABOUT is the visual reference. News width stays in the same 3-column grid and its
+   height is reduced to the ABOUT card height. The whole news card remains the link
+   target; the redundant in-card "read story" CTA stays hidden. */
 main:has(> .premium-hero) #news .premium-news-grid {
   display: grid !important;
   grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
@@ -13,9 +15,9 @@ main:has(> .premium-hero) #news .premium-news-card.is-featured {
   flex-direction: column !important;
   width: 100% !important;
   min-width: 0 !important;
-  height: 330px !important;
-  min-height: 330px !important;
-  max-height: 330px !important;
+  height: 208px !important;
+  min-height: 208px !important;
+  max-height: 208px !important;
   padding: 24px !important;
   box-sizing: border-box !important;
   color: inherit !important;
@@ -30,7 +32,7 @@ main:has(> .premium-hero) #news .premium-news-card.is-featured {
 main:has(> .premium-hero) #news .premium-news-card h3 {
   display: -webkit-box !important;
   margin: 10px 0 !important;
-  min-height: 2.3em !important;
+  min-height: 0 !important;
   overflow: hidden !important;
   -webkit-box-orient: vertical !important;
   -webkit-line-clamp: 2 !important;
@@ -38,13 +40,13 @@ main:has(> .premium-hero) #news .premium-news-card h3 {
 
 main:has(> .premium-hero) #news .premium-news-card p {
   display: -webkit-box !important;
-  flex: 1 1 auto !important;
+  flex: 0 1 auto !important;
   margin: 0 !important;
   opacity: .76 !important;
   line-height: 1.7 !important;
   overflow: hidden !important;
   -webkit-box-orient: vertical !important;
-  -webkit-line-clamp: 5 !important;
+  -webkit-line-clamp: 2 !important;
 }
 
 /* The section already has an ALL NEWS link. The card itself is the detail link. */
