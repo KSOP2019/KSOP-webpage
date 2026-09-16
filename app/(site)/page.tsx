@@ -1,9 +1,10 @@
 import type { Metadata } from 'next'
 import { HomeViewV2 } from '@/components/site/home-view-v2'
-import { HeroLayoutRuntime } from '@/components/site/hero-layout-runtime'
+import { HeroCanvasRuntime } from '@/components/site/hero-canvas-runtime'
 import { getEvents, getNews, getRankedPlayers } from '@/lib/data'
 import { getHeroLayout } from '@/lib/hero-layout-store'
 import { getScheduleContent } from '@/lib/schedule-content'
+import { slugifySeriesLabel } from '@/lib/series'
 import { SITE_DESCRIPTION } from '@/lib/site-url'
 import type { NewsItem } from '@/lib/types'
 
@@ -60,10 +61,20 @@ export default async function HomePage() {
   const homeNews = process.env.VERCEL_ENV === 'preview' && publishedNews.length === 0
     ? previewFallbackNews
     : publishedNews
+  const upcomingSeries = scheduleContent.items.filter((item) => item.status !== 'past')
+  const heroSeries = upcomingSeries[0]
+  const heroSeriesHref = heroSeries ? `/schedule/${slugifySeriesLabel(heroSeries.label)}` : '/schedule'
 
   return (
     <>
-      <HeroLayoutRuntime initialLayout={heroLayout} />
+      <HeroCanvasRuntime
+        initialLayout={heroLayout}
+        seriesCount={upcomingSeries.length}
+        seriesLabel={heroSeries?.label || 'KSOP SERIES'}
+        seriesDate={heroSeries?.dateRange || '일정 추후 공개'}
+        seriesLocation={heroSeries?.venue || '장소 추후 공개'}
+        seriesHref={heroSeriesHref}
+      />
       <HomeViewV2
         events={events}
         news={homeNews}
