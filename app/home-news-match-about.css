@@ -1,4 +1,4 @@
-/* HOME NEWS — match the ABOUT card treatment exactly at the container level.
+/* HOME NEWS — match the ABOUT card treatment and card proportions.
    The whole news card remains the link target; redundant in-card "read story" CTA is hidden. */
 main:has(> .premium-hero) #news .premium-news-grid {
   display: grid !important;
@@ -9,13 +9,15 @@ main:has(> .premium-hero) #news .premium-news-grid {
 
 main:has(> .premium-hero) #news .premium-news-card,
 main:has(> .premium-hero) #news .premium-news-card.is-featured {
-  display: block !important;
+  display: flex !important;
+  flex-direction: column !important;
   width: 100% !important;
   min-width: 0 !important;
-  height: auto !important;
-  min-height: 0 !important;
-  max-height: none !important;
+  height: 330px !important;
+  min-height: 330px !important;
+  max-height: 330px !important;
   padding: 24px !important;
+  box-sizing: border-box !important;
   color: inherit !important;
   text-decoration: none !important;
   border-radius: 24px !important;
@@ -26,22 +28,23 @@ main:has(> .premium-hero) #news .premium-news-card.is-featured {
 }
 
 main:has(> .premium-hero) #news .premium-news-card h3 {
-  display: block !important;
+  display: -webkit-box !important;
   margin: 10px 0 !important;
-  min-height: 0 !important;
-  overflow: visible !important;
-  -webkit-box-orient: initial !important;
-  -webkit-line-clamp: unset !important;
+  min-height: 2.3em !important;
+  overflow: hidden !important;
+  -webkit-box-orient: vertical !important;
+  -webkit-line-clamp: 2 !important;
 }
 
 main:has(> .premium-hero) #news .premium-news-card p {
-  display: block !important;
+  display: -webkit-box !important;
+  flex: 1 1 auto !important;
   margin: 0 !important;
   opacity: .76 !important;
   line-height: 1.7 !important;
-  overflow: visible !important;
-  -webkit-box-orient: initial !important;
-  -webkit-line-clamp: unset !important;
+  overflow: hidden !important;
+  -webkit-box-orient: vertical !important;
+  -webkit-line-clamp: 5 !important;
 }
 
 /* The section already has an ALL NEWS link. The card itself is the detail link. */
