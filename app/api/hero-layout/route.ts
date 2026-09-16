@@ -3,7 +3,9 @@ import { getHeroLayout, saveHeroLayout } from '@/lib/hero-layout-store'
 import { isAdminAuthenticated } from '@/lib/auth'
 
 export async function GET() {
-  return NextResponse.json(await getHeroLayout())
+  const response = NextResponse.json(await getHeroLayout())
+  response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+  return response
 }
 
 export async function PUT(request: Request) {
