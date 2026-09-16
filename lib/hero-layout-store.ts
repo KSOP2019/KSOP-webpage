@@ -1,8 +1,7 @@
 import { promises as fs } from 'fs'
 import path from 'path'
 import { createAdminClient, createPublicClient } from './supabase-server'
-import { DEFAULT_HERO_LAYOUT, normalizeHeroLayout } from './hero-layout'
-import type { HeroLayoutSettings } from './types'
+import { DEFAULT_HERO_LAYOUT, normalizeHeroLayout, type HeroLayoutSettings } from './hero-layout'
 
 const fallbackPath = process.env.VERCEL_ENV === 'preview'
   ? path.join('/tmp', 'ksop-preview-data', 'hero-layout.json')

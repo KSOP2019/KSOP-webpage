@@ -9,30 +9,95 @@ main:has(> .premium-hero) > .premium-hero .hero-copy {
 }
 
 main:has(> .premium-hero) > .premium-hero .hero-copy::before {
+  content: 'KOREA SERIES OF POKER' !important;
   left: calc(var(--hero-brand-x, 295px) - var(--hero-card-x, 135px)) !important;
   top: calc(var(--hero-brand-y, 138px) - var(--hero-card-y, 430px)) !important;
   width: var(--hero-brand-width, 780px) !important;
+  max-width: var(--hero-brand-width, 780px) !important;
   font-size: var(--hero-brand-font-size, 76px) !important;
+  white-space: normal !important;
+  text-wrap: balance !important;
+  overflow-wrap: normal !important;
+  word-break: normal !important;
 }
 
-/* Use the approved dark-mode lockup and crop its left symbol only. */
+/* Exact symbol asset only. Upload/replacement is controlled by the HERO editor. */
 main:has(> .premium-hero) > .premium-hero .hero-copy::after {
+  display: var(--hero-symbol-display, block) !important;
   left: calc(var(--hero-symbol-x, 112px) - var(--hero-card-x, 135px)) !important;
   top: calc(var(--hero-symbol-y, 122px) - var(--hero-card-y, 430px)) !important;
   width: var(--hero-symbol-size, 384px) !important;
   height: var(--hero-symbol-size, 384px) !important;
-  background-image: url('/images/ksop-dark-approved.png') !important;
+  background-image: var(--hero-symbol-image, url('/images/ksop-symbol-dark.svg')) !important;
   background-repeat: no-repeat !important;
-  background-position: left center !important;
-  background-size: auto var(--hero-symbol-size, 384px) !important;
+  background-position: center !important;
+  background-size: contain !important;
   opacity: var(--hero-symbol-opacity, .08) !important;
   filter: grayscale(1) brightness(1.25) !important;
 }
 
 main:has(> .premium-hero) > .premium-hero .hero-title-box {
+  position: relative !important;
   width: var(--hero-card-width, 570px) !important;
   min-width: var(--hero-card-width, 570px) !important;
   max-width: var(--hero-card-width, 570px) !important;
+  overflow: hidden !important;
+}
+
+main:has(> .premium-hero) > .premium-hero .hero-title-box::before {
+  content: '' !important;
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 0 !important;
+  background-image:
+    linear-gradient(90deg, rgba(6,18,34,.92), rgba(6,18,34,.50)),
+    var(--hero-card-image, none) !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  background-size: cover !important;
+  pointer-events: none !important;
+}
+
+main:has(> .premium-hero) > .premium-hero .hero-title-box > * {
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+main:has(> .premium-hero) > .premium-hero .hero-intro {
+  font-size: 0 !important;
+}
+
+main:has(> .premium-hero) > .premium-hero .hero-intro::before {
+  content: var(--hero-card-intro, '확정된 일정과 결과를 안내합니다.') !important;
+  font-size: 15px !important;
+  line-height: 1.5 !important;
+}
+
+main:has(> .premium-hero) > .premium-hero .hero-next-label {
+  font-size: 0 !important;
+}
+
+main:has(> .premium-hero) > .premium-hero .hero-next-label::before {
+  content: var(--hero-card-kicker, 'NEXT SERIES · 다음 일정') !important;
+  font-size: 10px !important;
+  line-height: 1 !important;
+  font-weight: 750 !important;
+  letter-spacing: .13em !important;
+}
+
+main:has(> .premium-hero) > .premium-hero .hero-actions .primary-cta,
+main:has(> .premium-hero) > .premium-hero .hero-actions .hero-secondary-cta {
+  font-size: 0 !important;
+}
+
+main:has(> .premium-hero) > .premium-hero .hero-actions .primary-cta::before {
+  content: var(--hero-card-primary-text, '이벤트 확인') !important;
+  font-size: 15px !important;
+}
+
+main:has(> .premium-hero) > .premium-hero .hero-actions .hero-secondary-cta::before {
+  content: var(--hero-card-secondary-text, '일정') !important;
+  font-size: 15px !important;
 }
 
 main:has(> .premium-hero) > .premium-hero .hero-info-rail {
