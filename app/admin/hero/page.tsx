@@ -15,12 +15,11 @@ export default async function AdminHeroLayoutPage() {
   return (
     <section className="admin-card">
       <h2>HERO Layout</h2>
-      <p>Drag the title, action card, and KSOP symbol. Fine-tune with sliders, then save. These values are used by the Preview HERO.</p>
-      <HeroLayoutEditorMain
-        initialLayout={heroLayout}
-        heroImage={content.heroImage}
-        darkLogo={content.logoWhite}
-      />
+      <p>
+        왼쪽 축소 미리보기와 오른쪽 컨트롤을 동시에 보면서 조정합니다. 타이틀·액션 카드·심볼은 미리보기에서 직접 드래그할 수 있고,
+        심볼과 카드 이미지는 파일로 추가하거나 제거할 수 있습니다.
+      </p>
+      <HeroLayoutEditorMain initialLayout={heroLayout} heroImage={content.heroImage} />
     </section>
   )
 }
