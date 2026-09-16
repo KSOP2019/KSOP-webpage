@@ -1,0 +1,50 @@
+/* HOME NEWS — match the ABOUT card treatment exactly at the container level.
+   The whole news card remains the link target; redundant in-card "read story" CTA is hidden. */
+main:has(> .premium-hero) #news .premium-news-grid {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 20px !important;
+  align-items: stretch !important;
+}
+
+main:has(> .premium-hero) #news .premium-news-card,
+main:has(> .premium-hero) #news .premium-news-card.is-featured {
+  display: block !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  padding: 24px !important;
+  color: inherit !important;
+  text-decoration: none !important;
+  border-radius: 24px !important;
+  overflow: hidden !important;
+  background: var(--premium-surface) !important;
+  backdrop-filter: blur(18px) saturate(120%) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(120%) !important;
+}
+
+main:has(> .premium-hero) #news .premium-news-card h3 {
+  display: block !important;
+  margin: 10px 0 !important;
+  min-height: 0 !important;
+  overflow: visible !important;
+  -webkit-box-orient: initial !important;
+  -webkit-line-clamp: unset !important;
+}
+
+main:has(> .premium-hero) #news .premium-news-card p {
+  display: block !important;
+  margin: 0 !important;
+  opacity: .76 !important;
+  line-height: 1.7 !important;
+  overflow: visible !important;
+  -webkit-box-orient: initial !important;
+  -webkit-line-clamp: unset !important;
+}
+
+/* The section already has an ALL NEWS link. The card itself is the detail link. */
+main:has(> .premium-hero) #news .premium-news-card > .text-link {
+  display: none !important;
+}
