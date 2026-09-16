@@ -1,11 +1,20 @@
 /* HERO LAYOUT RUNTIME — values are supplied by HeroLayoutRuntime from CMS. */
 
 main:has(> .premium-hero) > .premium-hero .hero-copy {
+  position: absolute !important;
   left: var(--hero-card-x, 135px) !important;
   top: var(--hero-card-y, 430px) !important;
+  right: auto !important;
+  bottom: auto !important;
   width: var(--hero-card-width, 570px) !important;
   min-width: var(--hero-card-width, 570px) !important;
   max-width: var(--hero-card-width, 570px) !important;
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  padding: 0 !important;
+  display: block !important;
+  box-sizing: border-box !important;
 }
 
 main:has(> .premium-hero) > .premium-hero .hero-copy::before {
@@ -45,6 +54,8 @@ main:has(> .premium-hero) > .premium-hero .hero-title-box {
   width: var(--hero-card-width, 570px) !important;
   min-width: var(--hero-card-width, 570px) !important;
   max-width: var(--hero-card-width, 570px) !important;
+  min-height: 316px !important;
+  box-sizing: border-box !important;
   overflow: hidden !important;
 }
 
@@ -89,8 +100,20 @@ main:has(> .premium-hero) > .premium-hero .hero-next-label::before {
   letter-spacing: .13em !important;
 }
 
+main:has(> .premium-hero) > .premium-hero .hero-actions {
+  display: flex !important;
+  align-items: center !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
 main:has(> .premium-hero) > .premium-hero .hero-actions .primary-cta,
 main:has(> .premium-hero) > .premium-hero .hero-actions .hero-secondary-cta {
+  flex: 1 1 0 !important;
+  width: auto !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  box-sizing: border-box !important;
   font-size: 0 !important;
 }
 
