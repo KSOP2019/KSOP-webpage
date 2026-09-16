@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import type { HeroLayoutSettings } from '@/lib/hero-layout'
 import { normalizeHeroLayout } from '@/lib/hero-layout'
 
@@ -12,7 +13,41 @@ function cssUrl(value: string) {
 }
 
 export function HeroLayoutRuntime({ initialLayout }: { initialLayout: HeroLayoutSettings }) {
-  const layout = normalizeHeroLayout(initialLayout)
+  const [liveLayout, setLiveLayout] = useState(() => normalizeHeroLayout(initialLayout))
+
+  useEffect(() => {
+    let cancelled = false
+
+    async function refreshLayout() {
+      try {
+        const response = await fetch(`/api/hero-layout?ts=${Date.now()}`, {
+          cache: 'no-store',
+          headers: { 'cache-control': 'no-cache' },
+        })
+        if (!response.ok) return
+        const next = normalizeHeroLayout(await response.json())
+        if (!cancelled) setLiveLayout(next)
+      } catch {
+        // Keep the server-rendered layout if the live refresh is temporarily unavailable.
+      }
+    }
+
+    void refreshLayout()
+    const onFocus = () => void refreshLayout()
+    const onVisibility = () => {
+      if (document.visibilityState === 'visible') void refreshLayout()
+    }
+
+    window.addEventListener('focus', onFocus)
+    document.addEventListener('visibilitychange', onVisibility)
+    return () => {
+      cancelled = true
+      window.removeEventListener('focus', onFocus)
+      document.removeEventListener('visibilitychange', onVisibility)
+    }
+  }, [])
+
+  const layout = liveLayout
   const titleOverride = layout.cardTitleText
     ? `
 main:has(> .premium-hero) > .premium-hero .hero-next-series > strong {
