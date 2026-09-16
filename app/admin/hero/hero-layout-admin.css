@@ -8,3 +8,41 @@
   max-width: none !important;
   box-sizing: border-box !important;
 }
+
+/*
+ * The admin editor must render the exact 1920x998 HeroCanvas used by the site.
+ * globals.css owns the legacy public `.hero` layout and contains viewport-driven
+ * sizing, grid, animation and pseudo-element rules. Those rules must never alter
+ * the editor canvas because they change the containing block used by bottom/right
+ * positioned elements such as the information rail.
+ */
+.hero-layout-admin .ksop-shared-hero {
+  position: relative !important;
+  display: block !important;
+  width: 1920px !important;
+  min-width: 1920px !important;
+  max-width: 1920px !important;
+  height: 998px !important;
+  min-height: 998px !important;
+  max-height: 998px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  gap: 0 !important;
+  grid-template-columns: none !important;
+  align-items: initial !important;
+  overflow: hidden !important;
+  isolation: isolate !important;
+  animation: none !important;
+  transform: none !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+}
+
+.hero-layout-admin .ksop-shared-hero::before,
+.hero-layout-admin .ksop-shared-hero::after {
+  content: none !important;
+  display: none !important;
+}
