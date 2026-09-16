@@ -6,8 +6,6 @@ import { DEFAULT_HERO_LAYOUT, normalizeHeroLayout } from '@/lib/hero-layout-admi
 
 const HERO_W = 1920
 const HERO_H = 998
-const PREVIEW_ORIGIN = 'https://ksophomepage-git-preview-premium-glass-cms-20260915-ksop.vercel.app'
-const HERO_STAGE_URL = `${PREVIEW_ORIGIN}/hero-stage`
 
 type DragTarget = 'brand' | 'card' | 'symbol' | null
 type NumberControl = [keyof HeroLayoutSettings, string, number, number, number]
@@ -29,17 +27,15 @@ export function HeroLayoutEditorV2({
   initialLayout: HeroLayoutSettings
   heroImage: string
 }) {
-  void heroImage
-
   const [layout, setLayout] = useState(() => normalizeHeroLayout(initialLayout))
   const [dragTarget, setDragTarget] = useState<DragTarget>(null)
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState('')
   const [previewScale, setPreviewScale] = useState(0.4)
   const [uploading, setUploading] = useState<'symbol' | 'card' | null>(null)
+  const [heroSrc, setHeroSrc] = useState(heroImage || '/images/ksop-hero-arena.png')
   const previewRef = useRef<HTMLDivElement>(null)
   const stageHostRef = useRef<HTMLDivElement>(null)
-  const stageFrameRef = useRef<HTMLIFrameElement>(null)
   const dragOffsetRef = useRef({ x: 0, y: 0 })
 
   const fitPreview = useCallback(() => {
@@ -51,22 +47,11 @@ export function HeroLayoutEditorV2({
     setPreviewScale(Number(next.toFixed(3)))
   }, [])
 
-  const postLayoutToStage = useCallback((next: HeroLayoutSettings) => {
-    stageFrameRef.current?.contentWindow?.postMessage(
-      { type: 'KSOP_HERO_EDITOR_LAYOUT', layout: normalizeHeroLayout(next) },
-      PREVIEW_ORIGIN,
-    )
-  }, [])
-
   useEffect(() => {
     fitPreview()
     window.addEventListener('resize', fitPreview)
     return () => window.removeEventListener('resize', fitPreview)
   }, [fitPreview])
-
-  useEffect(() => {
-    postLayoutToStage(layout)
-  }, [layout, postLayoutToStage])
 
   function setField<K extends keyof HeroLayoutSettings>(key: K, value: HeroLayoutSettings[K]) {
     setLayout((current) => normalizeHeroLayout({ ...current, [key]: value }))
@@ -153,10 +138,8 @@ export function HeroLayoutEditorV2({
       })
       const payload = await response.json().catch(() => ({}))
       if (!response.ok) throw new Error(payload.error || 'Save failed')
-      const saved = normalizeHeroLayout(payload)
-      setLayout(saved)
-      postLayoutToStage(saved)
-      setMessage('저장 완료. 이 미리보기와 Preview 홈페이지는 동일한 HERO를 사용합니다.')
+      setLayout(normalizeHeroLayout(payload))
+      setMessage('저장 완료. Preview 홈페이지를 새로고침하면 같은 좌표가 적용됩니다.')
     } catch (error) {
       setMessage(error instanceof Error ? error.message : '저장 실패')
     } finally {
@@ -198,13 +181,14 @@ export function HeroLayoutEditorV2({
     ))
   }
 
-  const titleHandleHeight = Math.max(72, Math.min(420, layout.brandFontSize * 2.05))
+  const titleHandleHeight = Math.max(72, Math.min(460, layout.brandFontSize * 2.05))
+  const cardTitle = layout.cardTitleText || '실제 NEXT SERIES 제목'
 
   return (
     <div style={{ display: 'grid', gap: 10, minWidth: 0 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', minHeight: 40 }}>
         <button type="button" className="admin-button secondary" onClick={fitPreview}>화면 맞춤</button>
-        <strong style={{ fontSize: 13 }}>실제 Preview HERO · 1:1 좌표</strong>
+        <strong style={{ fontSize: 13 }}>HERO 1920×998 동일 좌표 미리보기</strong>
         <input
           aria-label="HERO 미리보기 축소"
           type="range"
@@ -216,7 +200,7 @@ export function HeroLayoutEditorV2({
           style={{ width: 180 }}
         />
         <span style={{ minWidth: 42, fontSize: 12, fontWeight: 700 }}>{Math.round(previewScale * 100)}%</span>
-        <span style={{ color: '#687386', fontSize: 12 }}>가짜 재현 화면이 아니라 실제 Preview HERO 위에서 조정합니다. 점선은 드래그 가이드입니다.</span>
+        <span style={{ color: '#687386', fontSize: 12 }}>외부 Preview iframe 없이 실제 HERO 좌표/크롭/카드 치수를 관리자 안에서 직접 렌더링합니다.</span>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 370px', gap: 14, height: 'calc(100vh - 205px)', minHeight: 560, maxHeight: 860, alignItems: 'stretch', minWidth: 0 }}>
@@ -224,44 +208,62 @@ export function HeroLayoutEditorV2({
           <div style={{ width: HERO_W * previewScale, height: HERO_H * previewScale, position: 'relative', flex: '0 0 auto' }}>
             <div
               ref={previewRef}
-              style={{ position: 'absolute', left: 0, top: 0, width: HERO_W, height: HERO_H, overflow: 'hidden', borderRadius: 24, background: '#07111f', border: '2px solid #cfd6df', touchAction: 'none', transform: `scale(${previewScale})`, transformOrigin: 'top left' }}
+              style={{ position: 'absolute', left: 0, top: 0, width: HERO_W, height: HERO_H, overflow: 'hidden', background: '#07111f', touchAction: 'none', transform: `scale(${previewScale})`, transformOrigin: 'top left' }}
             >
-              <iframe
-                ref={stageFrameRef}
-                src={HERO_STAGE_URL}
-                title="실제 KSOP Preview HERO"
-                onLoad={() => postLayoutToStage(layout)}
-                style={{ position: 'absolute', inset: 0, width: HERO_W, height: HERO_H, border: 0, pointerEvents: 'none', background: '#07111f' }}
-              />
+              <div style={{ position: 'absolute', left: 40, right: 40, top: 22, bottom: 20, overflow: 'hidden', borderRadius: 30, background: '#06111f', boxShadow: '0 28px 76px rgba(5,17,35,.24), 0 7px 22px rgba(5,17,35,.12)' }}>
+                <img
+                  src={heroSrc}
+                  alt="KSOP HERO"
+                  onError={() => setHeroSrc('/images/ksop-hero-arena.png')}
+                  style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center center', display: 'block', filter: 'saturate(.96) contrast(1.03)' }}
+                />
+                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg, rgba(3,14,29,.91) 0%, rgba(3,14,29,.76) 20%, rgba(3,14,29,.44) 36%, rgba(3,14,29,.12) 55%, rgba(3,14,29,.02) 75%), linear-gradient(0deg, rgba(2,10,21,.24), transparent 44%)' }} />
+                <div style={{ position: 'absolute', inset: 0, borderRadius: 'inherit', boxShadow: 'inset 0 0 0 1px rgba(255,255,255,.09), inset 0 1px rgba(255,255,255,.13)' }} />
+              </div>
 
-              <div
-                onPointerDown={(event) => beginDrag(event, 'brand')}
-                onPointerMove={onMove}
-                onPointerUp={endDrag}
-                onPointerCancel={endDrag}
-                title="대형 타이틀 드래그"
-                style={{ position: 'absolute', left: layout.brandX, top: layout.brandY, width: layout.brandWidth, height: titleHandleHeight, boxSizing: 'border-box', cursor: 'move', border: '2px dashed rgba(72,164,255,.82)', background: 'rgba(72,164,255,.025)', zIndex: 20 }}
-              />
-
-              <div
-                onPointerDown={(event) => beginDrag(event, 'card')}
-                onPointerMove={onMove}
-                onPointerUp={endDrag}
-                onPointerCancel={endDrag}
-                title="액션 카드 드래그"
-                style={{ position: 'absolute', left: layout.cardX, top: layout.cardY, width: layout.cardWidth, height: 316, boxSizing: 'border-box', cursor: 'move', border: '2px dashed rgba(255,193,79,.82)', background: 'rgba(255,193,79,.018)', zIndex: 21 }}
-              />
+              <div style={{ position: 'absolute', top: 52, right: 54, zIndex: 5, display: 'flex', alignItems: 'center', gap: 12, minHeight: 38, padding: '0 14px', color: 'rgba(255,255,255,.82)', border: '1px solid rgba(255,255,255,.14)', borderRadius: 999, background: 'rgba(5,16,30,.24)', backdropFilter: 'blur(12px)' }}>
+                <span style={{ color: '#fff', fontSize: 12, fontWeight: 850, letterSpacing: '.10em' }}>KSOP</span>
+                <strong style={{ paddingLeft: 12, borderLeft: '1px solid rgba(255,255,255,.18)', color: 'rgba(255,255,255,.64)', fontSize: 10, fontWeight: 700, letterSpacing: '.14em' }}>OFFICIAL SERIES</strong>
+              </div>
 
               {layout.symbolEnabled && layout.symbolImageUrl ? (
-                <div
-                  onPointerDown={(event) => beginDrag(event, 'symbol')}
-                  onPointerMove={onMove}
-                  onPointerUp={endDrag}
-                  onPointerCancel={endDrag}
-                  title="KSOP 심볼 드래그"
-                  style={{ position: 'absolute', left: layout.symbolX, top: layout.symbolY, width: layout.symbolSize, height: layout.symbolSize, boxSizing: 'border-box', cursor: 'move', border: '2px dashed rgba(110,222,170,.82)', background: 'rgba(110,222,170,.015)', zIndex: 19 }}
+                <img
+                  src={layout.symbolImageUrl}
+                  alt="KSOP symbol"
+                  style={{ position: 'absolute', left: layout.symbolX, top: layout.symbolY, width: layout.symbolSize, height: layout.symbolSize, objectFit: 'contain', objectPosition: 'center', opacity: layout.symbolOpacity, filter: 'grayscale(1) brightness(1.25)', zIndex: 4, pointerEvents: 'none' }}
                 />
               ) : null}
+
+              <div style={{ position: 'absolute', left: layout.brandX, top: layout.brandY, width: layout.brandWidth, minWidth: layout.brandWidth, maxWidth: layout.brandWidth, zIndex: 6, boxSizing: 'border-box', color: 'rgba(255,255,255,.90)', fontFamily: 'Arial, Helvetica, sans-serif', fontSize: layout.brandFontSize, fontWeight: 760, lineHeight: .88, letterSpacing: '-.055em', whiteSpace: 'normal', wordBreak: 'keep-all', overflowWrap: 'normal', textShadow: '0 14px 40px rgba(0,0,0,.34)', pointerEvents: 'none' }}>
+                KOREA SERIES OF POKER
+              </div>
+
+              <div style={{ position: 'absolute', left: layout.cardX, top: layout.cardY, width: layout.cardWidth, minWidth: layout.cardWidth, maxWidth: layout.cardWidth, minHeight: 316, padding: '30px 34px 26px', boxSizing: 'border-box', overflow: 'hidden', color: '#fff', border: '1px solid rgba(255,255,255,.20)', borderRadius: 24, background: 'linear-gradient(145deg, rgba(20,35,55,.76), rgba(8,20,37,.60))', boxShadow: '0 28px 72px rgba(0,0,0,.30), inset 0 1px rgba(255,255,255,.15), inset 0 0 34px rgba(255,255,255,.022)', backdropFilter: 'blur(24px) saturate(120%)', zIndex: 6 }}>
+                {layout.cardImageUrl ? <div style={{ position: 'absolute', inset: 0, backgroundImage: `linear-gradient(90deg, rgba(6,18,34,.92), rgba(6,18,34,.50)), url(${JSON.stringify(layout.cardImageUrl)})`, backgroundPosition: 'center', backgroundRepeat: 'no-repeat', backgroundSize: 'cover', zIndex: 0 }} /> : null}
+                <div style={{ position: 'relative', zIndex: 2 }}>
+                  <p style={{ width: '100%', maxWidth: 500, margin: 0, color: 'rgba(255,255,255,.68)', fontSize: 15, lineHeight: 1.5 }}>{layout.cardIntro}</p>
+                  <div style={{ position: 'relative', display: 'grid', gridTemplateColumns: 'minmax(0,1fr) auto', gridTemplateRows: 'auto auto auto', width: '100%', minHeight: 100, marginTop: 16, padding: '14px 17px 13px', boxSizing: 'border-box', overflow: 'hidden', color: '#fff', border: '1px solid rgba(255,255,255,.15)', borderRadius: 17, background: 'linear-gradient(135deg, rgba(255,255,255,.10), rgba(255,255,255,.03))' }}>
+                    <span style={{ gridColumn: '1 / 2', color: 'rgba(150,194,255,.94)', fontSize: 10, lineHeight: 1, fontWeight: 750, letterSpacing: '.13em' }}>{layout.cardKicker}</span>
+                    <strong style={{ gridColumn: '1 / 2', marginTop: 8, overflow: 'hidden', color: '#fff', fontSize: 19, lineHeight: 1.2, fontWeight: 700, letterSpacing: '-.02em', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{cardTitle}</strong>
+                    <span style={{ gridColumn: '1 / 2', display: 'flex', alignItems: 'center', gap: 14, marginTop: 8, color: 'rgba(255,255,255,.58)', fontSize: 11, lineHeight: 1, letterSpacing: '.035em' }}><span>DATE</span><span>·</span><span>LOCATION</span></span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', width: '100%', minHeight: 56, marginTop: 16, gap: 10 }}>
+                    <span style={{ width: 218, height: 56, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', borderRadius: 999, color: '#fff', border: '1px solid rgba(113,178,255,.9)', background: 'linear-gradient(135deg,#4d9cff 0%,#1677ff 55%,#0b63e8 100%)', boxShadow: '0 12px 30px rgba(22,119,255,.36)', fontSize: 15, fontWeight: 700 }}>{layout.cardPrimaryText}</span>
+                    <span style={{ width: 188, height: 56, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', borderRadius: 999, color: 'rgba(255,255,255,.92)', border: '1px solid rgba(255,255,255,.28)', background: 'rgba(10,23,40,.34)', fontSize: 15, fontWeight: 700 }}>{layout.cardSecondaryText}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ position: 'absolute', left: 92, right: 92, bottom: layout.railBottom, height: layout.railHeight, minHeight: layout.railHeight, zIndex: 7, display: 'grid', gridTemplateColumns: '.72fr 1.65fr 1fr 1fr', overflow: 'hidden', color: '#fff', border: '1px solid rgba(255,255,255,.14)', borderRadius: 20, background: 'linear-gradient(90deg, rgba(7,19,35,.74), rgba(7,19,35,.46))', boxShadow: '0 18px 48px rgba(0,0,0,.20), inset 0 1px rgba(255,255,255,.08)', backdropFilter: 'blur(18px) saturate(115%)' }}>
+                {['UPCOMING SERIES|04', 'NEXT SERIES|KSOP SERIES', 'DATE|일정 추후 공개', 'LOCATION|장소 추후 공개'].map((value, index) => {
+                  const [label, text] = value.split('|')
+                  return <div key={label} style={{ position: 'relative', display: 'flex', flexDirection: 'column', justifyContent: 'center', minWidth: 0, padding: '16px 24px', borderLeft: index ? '1px solid rgba(255,255,255,.12)' : 0 }}><span style={{ color: 'rgba(255,255,255,.48)', fontSize: 10, fontWeight: 700, letterSpacing: '.15em' }}>{label}</span><strong style={{ marginTop: 9, overflow: 'hidden', color: 'rgba(255,255,255,.92)', fontSize: index === 0 ? 24 : 14, lineHeight: index === 0 ? .9 : 1.15, fontWeight: index === 0 ? 760 : 650, textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{text}</strong></div>
+                })}
+              </div>
+
+              <div onPointerDown={(event) => beginDrag(event, 'brand')} onPointerMove={onMove} onPointerUp={endDrag} onPointerCancel={endDrag} title="대형 타이틀 드래그" style={{ position: 'absolute', left: layout.brandX, top: layout.brandY, width: layout.brandWidth, height: titleHandleHeight, boxSizing: 'border-box', cursor: 'move', border: '2px dashed rgba(72,164,255,.82)', background: 'rgba(72,164,255,.018)', zIndex: 20 }} />
+              <div onPointerDown={(event) => beginDrag(event, 'card')} onPointerMove={onMove} onPointerUp={endDrag} onPointerCancel={endDrag} title="액션 카드 드래그" style={{ position: 'absolute', left: layout.cardX, top: layout.cardY, width: layout.cardWidth, height: 316, boxSizing: 'border-box', cursor: 'move', border: '2px dashed rgba(255,193,79,.82)', background: 'rgba(255,193,79,.012)', zIndex: 21 }} />
+              {layout.symbolEnabled && layout.symbolImageUrl ? <div onPointerDown={(event) => beginDrag(event, 'symbol')} onPointerMove={onMove} onPointerUp={endDrag} onPointerCancel={endDrag} title="KSOP 심볼 드래그" style={{ position: 'absolute', left: layout.symbolX, top: layout.symbolY, width: layout.symbolSize, height: layout.symbolSize, boxSizing: 'border-box', cursor: 'move', border: '2px dashed rgba(110,222,170,.82)', background: 'rgba(110,222,170,.01)', zIndex: 19 }} /> : null}
             </div>
           </div>
         </div>
@@ -270,7 +272,7 @@ export function HeroLayoutEditorV2({
           <div style={panelStyle}>
             <h3 style={{ margin: '0 0 4px', fontSize: 16 }}>대형 타이틀</h3>
             {renderNumberControls(titleControls)}
-            <small style={{ display: 'block', marginTop: 8, color: '#687386' }}>파란 점선은 실제 HERO 좌표입니다. 글자 렌더링과 줄바꿈은 iframe 안의 실제 홈페이지 CSS가 담당합니다.</small>
+            <small style={{ display: 'block', marginTop: 8, color: '#687386' }}>파란 점선이 저장되는 실제 HERO 좌표입니다. 글자 크기는 최대 300px입니다.</small>
           </div>
 
           <div style={panelStyle}>
@@ -282,10 +284,7 @@ export function HeroLayoutEditorV2({
             <label style={labelStyle}><span style={{ fontSize: 12, fontWeight: 700 }}>메인 버튼 문구</span><input style={inputStyle} value={layout.cardPrimaryText} onChange={(e) => setField('cardPrimaryText', e.target.value)} /></label>
             <label style={labelStyle}><span style={{ fontSize: 12, fontWeight: 700 }}>보조 버튼 문구</span><input style={inputStyle} value={layout.cardSecondaryText} onChange={(e) => setField('cardSecondaryText', e.target.value)} /></label>
             <div style={{ marginTop: 11, display: 'flex', gap: 7, flexWrap: 'wrap' }}>
-              <label className="admin-button secondary" style={{ cursor: 'pointer' }}>
-                {uploading === 'card' ? '업로드 중…' : '카드 이미지 넣기'}
-                <input type="file" accept="image/png,image/jpeg,image/webp,image/avif,image/gif" hidden onChange={(e) => uploadImage(e, 'card')} disabled={uploading !== null} />
-              </label>
+              <label className="admin-button secondary" style={{ cursor: 'pointer' }}>{uploading === 'card' ? '업로드 중…' : '카드 이미지 넣기'}<input type="file" accept="image/png,image/jpeg,image/webp,image/avif,image/gif" hidden onChange={(e) => uploadImage(e, 'card')} disabled={uploading !== null} /></label>
               <button type="button" className="admin-button secondary" onClick={() => setField('cardImageUrl', '')}>이미지 제거</button>
             </div>
             <small style={{ display: 'block', marginTop: 7, color: '#687386', wordBreak: 'break-all' }}>{layout.cardImageUrl || '등록된 카드 이미지 없음'}</small>
@@ -296,10 +295,7 @@ export function HeroLayoutEditorV2({
             <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, fontWeight: 700 }}><input type="checkbox" checked={layout.symbolEnabled} onChange={(e) => setField('symbolEnabled', e.target.checked)} />심볼 표시</label>
             {renderNumberControls(symbolControls)}
             <div style={{ marginTop: 11, display: 'flex', gap: 7, flexWrap: 'wrap' }}>
-              <label className="admin-button secondary" style={{ cursor: 'pointer' }}>
-                {uploading === 'symbol' ? '업로드 중…' : '심볼 파일 넣기'}
-                <input type="file" accept="image/png,image/jpeg,image/webp,image/avif,image/gif" hidden onChange={(e) => uploadImage(e, 'symbol')} disabled={uploading !== null} />
-              </label>
+              <label className="admin-button secondary" style={{ cursor: 'pointer' }}>{uploading === 'symbol' ? '업로드 중…' : '심볼 파일 넣기'}<input type="file" accept="image/png,image/jpeg,image/webp,image/avif,image/gif" hidden onChange={(e) => uploadImage(e, 'symbol')} disabled={uploading !== null} /></label>
               <button type="button" className="admin-button secondary" onClick={() => setLayout((v) => normalizeHeroLayout({ ...v, symbolEnabled: true, symbolImageUrl: '/images/ksop-symbol-dark.svg' }))}>기본 심볼(다크)</button>
               <button type="button" className="admin-button secondary" onClick={() => setLayout((v) => normalizeHeroLayout({ ...v, symbolEnabled: false, symbolImageUrl: '' }))}>심볼 제거</button>
             </div>
