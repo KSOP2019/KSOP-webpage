@@ -10,15 +10,19 @@ main:has(> .premium-hero) > .premium-hero .hero-copy {
 
 main:has(> .premium-hero) > .premium-hero .hero-copy::before {
   content: 'KOREA SERIES OF POKER' !important;
+  display: block !important;
+  box-sizing: border-box !important;
   left: calc(var(--hero-brand-x, 295px) - var(--hero-card-x, 135px)) !important;
   top: calc(var(--hero-brand-y, 138px) - var(--hero-card-y, 430px)) !important;
   width: var(--hero-brand-width, 780px) !important;
+  min-width: var(--hero-brand-width, 780px) !important;
   max-width: var(--hero-brand-width, 780px) !important;
   font-size: var(--hero-brand-font-size, 76px) !important;
+  line-height: .88 !important;
   white-space: normal !important;
-  text-wrap: balance !important;
+  text-wrap: wrap !important;
   overflow-wrap: normal !important;
-  word-break: normal !important;
+  word-break: keep-all !important;
 }
 
 /* Exact symbol asset only. Upload/replacement is controlled by the HERO editor. */

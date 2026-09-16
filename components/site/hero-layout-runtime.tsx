@@ -13,6 +13,21 @@ function cssUrl(value: string) {
 
 export function HeroLayoutRuntime({ initialLayout }: { initialLayout: HeroLayoutSettings }) {
   const layout = normalizeHeroLayout(initialLayout)
+  const titleOverride = layout.cardTitleText
+    ? `
+main:has(> .premium-hero) > .premium-hero .hero-next-series > strong {
+  font-size: 0 !important;
+}
+main:has(> .premium-hero) > .premium-hero .hero-next-series > strong::before {
+  content: ${cssString(layout.cardTitleText)} !important;
+  font-size: 19px !important;
+  line-height: 1.2 !important;
+  font-weight: 700 !important;
+  letter-spacing: -.02em !important;
+}
+`
+    : ''
+
   const css = `
 main:has(> .premium-hero) > .premium-hero {
   --hero-brand-x: ${layout.brandX}px;
@@ -35,7 +50,8 @@ main:has(> .premium-hero) > .premium-hero {
   --hero-card-primary-text: ${cssString(layout.cardPrimaryText)};
   --hero-card-secondary-text: ${cssString(layout.cardSecondaryText)};
   --hero-card-image: ${cssUrl(layout.cardImageUrl)};
-}`
+}
+${titleOverride}`
 
   return <style dangerouslySetInnerHTML={{ __html: css }} />
 }
