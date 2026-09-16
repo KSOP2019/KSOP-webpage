@@ -6,6 +6,8 @@ import { DEFAULT_HERO_LAYOUT, normalizeHeroLayout } from '@/lib/hero-layout-admi
 
 const HERO_W = 1920
 const HERO_H = 998
+const PREVIEW_ORIGIN = 'https://ksophomepage-git-preview-premium-glass-cms-20260915-ksop.vercel.app'
+const HERO_STAGE_URL = `${PREVIEW_ORIGIN}/hero-stage`
 
 type DragTarget = 'brand' | 'card' | 'symbol' | null
 type NumberControl = [keyof HeroLayoutSettings, string, number, number, number]
@@ -27,6 +29,8 @@ export function HeroLayoutEditorV2({
   initialLayout: HeroLayoutSettings
   heroImage: string
 }) {
+  void heroImage
+
   const [layout, setLayout] = useState(() => normalizeHeroLayout(initialLayout))
   const [dragTarget, setDragTarget] = useState<DragTarget>(null)
   const [saving, setSaving] = useState(false)
@@ -35,6 +39,8 @@ export function HeroLayoutEditorV2({
   const [uploading, setUploading] = useState<'symbol' | 'card' | null>(null)
   const previewRef = useRef<HTMLDivElement>(null)
   const stageHostRef = useRef<HTMLDivElement>(null)
+  const stageFrameRef = useRef<HTMLIFrameElement>(null)
+  const dragOffsetRef = useRef({ x: 0, y: 0 })
 
   const fitPreview = useCallback(() => {
     const host = stageHostRef.current
@@ -45,11 +51,22 @@ export function HeroLayoutEditorV2({
     setPreviewScale(Number(next.toFixed(3)))
   }, [])
 
+  const postLayoutToStage = useCallback((next: HeroLayoutSettings) => {
+    stageFrameRef.current?.contentWindow?.postMessage(
+      { type: 'KSOP_HERO_EDITOR_LAYOUT', layout: normalizeHeroLayout(next) },
+      PREVIEW_ORIGIN,
+    )
+  }, [])
+
   useEffect(() => {
     fitPreview()
     window.addEventListener('resize', fitPreview)
     return () => window.removeEventListener('resize', fitPreview)
   }, [fitPreview])
+
+  useEffect(() => {
+    postLayoutToStage(layout)
+  }, [layout, postLayoutToStage])
 
   function setField<K extends keyof HeroLayoutSettings>(key: K, value: HeroLayoutSettings[K]) {
     setLayout((current) => normalizeHeroLayout({ ...current, [key]: value }))
@@ -61,20 +78,42 @@ export function HeroLayoutEditorV2({
     setMessage('')
   }
 
+  function targetPosition(target: Exclude<DragTarget, null>) {
+    if (target === 'brand') return { x: layout.brandX, y: layout.brandY }
+    if (target === 'card') return { x: layout.cardX, y: layout.cardY }
+    return { x: layout.symbolX, y: layout.symbolY }
+  }
+
+  function pointerPosition(event: ReactPointerEvent<HTMLElement>) {
+    const rect = previewRef.current?.getBoundingClientRect()
+    if (!rect) return { x: 0, y: 0 }
+    return {
+      x: ((event.clientX - rect.left) / rect.width) * HERO_W,
+      y: ((event.clientY - rect.top) / rect.height) * HERO_H,
+    }
+  }
+
   function beginDrag(event: ReactPointerEvent<HTMLElement>, target: Exclude<DragTarget, null>) {
     event.preventDefault()
+    const pointer = pointerPosition(event)
+    const current = targetPosition(target)
+    dragOffsetRef.current = { x: pointer.x - current.x, y: pointer.y - current.y }
     event.currentTarget.setPointerCapture(event.pointerId)
     setDragTarget(target)
   }
 
-  function onMove(event: ReactPointerEvent<HTMLDivElement>) {
+  function onMove(event: ReactPointerEvent<HTMLElement>) {
     if (!dragTarget || !previewRef.current) return
-    const rect = previewRef.current.getBoundingClientRect()
-    const x = Math.round(((event.clientX - rect.left) / rect.width) * HERO_W)
-    const y = Math.round(((event.clientY - rect.top) / rect.height) * HERO_H)
+    const pointer = pointerPosition(event)
+    const x = Math.round(pointer.x - dragOffsetRef.current.x)
+    const y = Math.round(pointer.y - dragOffsetRef.current.y)
     if (dragTarget === 'brand') setLayout((v) => normalizeHeroLayout({ ...v, brandX: x, brandY: y }))
     if (dragTarget === 'card') setLayout((v) => normalizeHeroLayout({ ...v, cardX: x, cardY: y }))
     if (dragTarget === 'symbol') setLayout((v) => normalizeHeroLayout({ ...v, symbolX: x, symbolY: y }))
+  }
+
+  function endDrag() {
+    setDragTarget(null)
   }
 
   async function uploadImage(event: ChangeEvent<HTMLInputElement>, target: 'symbol' | 'card') {
@@ -114,8 +153,10 @@ export function HeroLayoutEditorV2({
       })
       const payload = await response.json().catch(() => ({}))
       if (!response.ok) throw new Error(payload.error || 'Save failed')
-      setLayout(normalizeHeroLayout(payload))
-      setMessage('저장 완료. Preview HERO를 새로고침하면 반영됩니다.')
+      const saved = normalizeHeroLayout(payload)
+      setLayout(saved)
+      postLayoutToStage(saved)
+      setMessage('저장 완료. 이 미리보기와 Preview 홈페이지는 동일한 HERO를 사용합니다.')
     } catch (error) {
       setMessage(error instanceof Error ? error.message : '저장 실패')
     } finally {
@@ -157,11 +198,13 @@ export function HeroLayoutEditorV2({
     ))
   }
 
+  const titleHandleHeight = Math.max(72, Math.min(420, layout.brandFontSize * 2.05))
+
   return (
     <div style={{ display: 'grid', gap: 10, minWidth: 0 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', minHeight: 40 }}>
         <button type="button" className="admin-button secondary" onClick={fitPreview}>화면 맞춤</button>
-        <strong style={{ fontSize: 13 }}>미리보기</strong>
+        <strong style={{ fontSize: 13 }}>실제 Preview HERO · 1:1 좌표</strong>
         <input
           aria-label="HERO 미리보기 축소"
           type="range"
@@ -173,7 +216,7 @@ export function HeroLayoutEditorV2({
           style={{ width: 180 }}
         />
         <span style={{ minWidth: 42, fontSize: 12, fontWeight: 700 }}>{Math.round(previewScale * 100)}%</span>
-        <span style={{ color: '#687386', fontSize: 12 }}>브라우저 확대/축소 대신 이 비율을 사용하세요. 미리보기와 컨트롤이 한 화면에 유지됩니다.</span>
+        <span style={{ color: '#687386', fontSize: 12 }}>가짜 재현 화면이 아니라 실제 Preview HERO 위에서 조정합니다. 점선은 드래그 가이드입니다.</span>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 370px', gap: 14, height: 'calc(100vh - 205px)', minHeight: 560, maxHeight: 860, alignItems: 'stretch', minWidth: 0 }}>
@@ -181,55 +224,44 @@ export function HeroLayoutEditorV2({
           <div style={{ width: HERO_W * previewScale, height: HERO_H * previewScale, position: 'relative', flex: '0 0 auto' }}>
             <div
               ref={previewRef}
-              onPointerMove={onMove}
-              onPointerUp={() => setDragTarget(null)}
-              onPointerCancel={() => setDragTarget(null)}
               style={{ position: 'absolute', left: 0, top: 0, width: HERO_W, height: HERO_H, overflow: 'hidden', borderRadius: 24, background: '#07111f', border: '2px solid #cfd6df', touchAction: 'none', transform: `scale(${previewScale})`, transformOrigin: 'top left' }}
             >
-              <img src={heroImage} alt="HERO preview" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
-              <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg, rgba(3,10,20,.78) 0%, rgba(3,10,20,.35) 45%, rgba(3,10,20,.05) 75%)' }} />
-
-              {layout.symbolEnabled && layout.symbolImageUrl ? (
-                <img
-                  onPointerDown={(event) => beginDrag(event, 'symbol')}
-                  src={layout.symbolImageUrl}
-                  alt="KSOP symbol"
-                  title="심볼 드래그"
-                  style={{ position: 'absolute', left: layout.symbolX, top: layout.symbolY, width: layout.symbolSize, height: layout.symbolSize, objectFit: 'contain', objectPosition: 'center', opacity: layout.symbolOpacity, cursor: 'move', userSelect: 'none' }}
-                />
-              ) : null}
+              <iframe
+                ref={stageFrameRef}
+                src={HERO_STAGE_URL}
+                title="실제 KSOP Preview HERO"
+                onLoad={() => postLayoutToStage(layout)}
+                style={{ position: 'absolute', inset: 0, width: HERO_W, height: HERO_H, border: 0, pointerEvents: 'none', background: '#07111f' }}
+              />
 
               <div
                 onPointerDown={(event) => beginDrag(event, 'brand')}
+                onPointerMove={onMove}
+                onPointerUp={endDrag}
+                onPointerCancel={endDrag}
                 title="대형 타이틀 드래그"
-                style={{ position: 'absolute', left: layout.brandX, top: layout.brandY, width: layout.brandWidth, minWidth: layout.brandWidth, maxWidth: layout.brandWidth, boxSizing: 'border-box', color: 'white', fontSize: layout.brandFontSize, fontWeight: 800, lineHeight: .88, letterSpacing: '-.055em', whiteSpace: 'normal', wordBreak: 'keep-all', overflowWrap: 'normal', cursor: 'move', textShadow: '0 14px 40px rgba(0,0,0,.4)', outline: '2px dashed rgba(120,190,255,.55)', outlineOffset: 5 }}
-              >KOREA SERIES OF POKER</div>
+                style={{ position: 'absolute', left: layout.brandX, top: layout.brandY, width: layout.brandWidth, height: titleHandleHeight, boxSizing: 'border-box', cursor: 'move', border: '2px dashed rgba(72,164,255,.82)', background: 'rgba(72,164,255,.025)', zIndex: 20 }}
+              />
 
               <div
                 onPointerDown={(event) => beginDrag(event, 'card')}
+                onPointerMove={onMove}
+                onPointerUp={endDrag}
+                onPointerCancel={endDrag}
                 title="액션 카드 드래그"
-                style={{ position: 'absolute', left: layout.cardX, top: layout.cardY, width: layout.cardWidth, minHeight: 270, padding: 30, overflow: 'hidden', border: '1px solid rgba(255,255,255,.22)', borderRadius: 24, background: 'rgba(8,20,37,.72)', color: 'white', backdropFilter: 'blur(14px)', cursor: 'move', boxShadow: '0 20px 50px rgba(0,0,0,.28)' }}
-              >
-                {layout.cardImageUrl ? (
-                  <>
-                    <img src={layout.cardImageUrl} alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', opacity: .36, pointerEvents: 'none' }} />
-                    <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg, rgba(6,18,34,.90), rgba(6,18,34,.46))', pointerEvents: 'none' }} />
-                  </>
-                ) : null}
-                <div style={{ position: 'relative', zIndex: 1 }}>
-                  <p style={{ margin: 0, opacity: .72, fontSize: 15 }}>{layout.cardIntro}</p>
-                  <div style={{ marginTop: 20, padding: 17, border: '1px solid rgba(255,255,255,.18)', borderRadius: 16, background: 'rgba(255,255,255,.06)' }}>
-                    <div style={{ fontSize: 12, letterSpacing: '.12em', opacity: .75 }}>{layout.cardKicker}</div>
-                    <strong style={{ display: 'block', marginTop: 9, fontSize: 22 }}>{layout.cardTitleText || '실제 NEXT SERIES 제목'}</strong>
-                  </div>
-                  <div style={{ display: 'flex', gap: 12, marginTop: 18 }}>
-                    <span style={{ padding: '13px 22px', borderRadius: 999, background: '#1687ff', fontWeight: 700 }}>{layout.cardPrimaryText}</span>
-                    <span style={{ padding: '13px 22px', borderRadius: 999, border: '1px solid rgba(255,255,255,.35)', fontWeight: 700 }}>{layout.cardSecondaryText}</span>
-                  </div>
-                </div>
-              </div>
+                style={{ position: 'absolute', left: layout.cardX, top: layout.cardY, width: layout.cardWidth, height: 316, boxSizing: 'border-box', cursor: 'move', border: '2px dashed rgba(255,193,79,.82)', background: 'rgba(255,193,79,.018)', zIndex: 21 }}
+              />
 
-              <div style={{ position: 'absolute', left: 92, right: 92, bottom: layout.railBottom, height: layout.railHeight, borderRadius: 20, border: '1px solid rgba(255,255,255,.18)', background: 'rgba(6,18,34,.60)', color: 'white', display: 'flex', alignItems: 'center', padding: '0 24px', fontSize: 13, letterSpacing: '.08em' }}>UPCOMING SERIES · NEXT SERIES · DATE · LOCATION</div>
+              {layout.symbolEnabled && layout.symbolImageUrl ? (
+                <div
+                  onPointerDown={(event) => beginDrag(event, 'symbol')}
+                  onPointerMove={onMove}
+                  onPointerUp={endDrag}
+                  onPointerCancel={endDrag}
+                  title="KSOP 심볼 드래그"
+                  style={{ position: 'absolute', left: layout.symbolX, top: layout.symbolY, width: layout.symbolSize, height: layout.symbolSize, boxSizing: 'border-box', cursor: 'move', border: '2px dashed rgba(110,222,170,.82)', background: 'rgba(110,222,170,.015)', zIndex: 19 }}
+                />
+              ) : null}
             </div>
           </div>
         </div>
@@ -238,7 +270,7 @@ export function HeroLayoutEditorV2({
           <div style={panelStyle}>
             <h3 style={{ margin: '0 0 4px', fontSize: 16 }}>대형 타이틀</h3>
             {renderNumberControls(titleControls)}
-            <small style={{ display: 'block', marginTop: 8, color: '#687386' }}>파란 점선이 실제 타이틀 폭입니다. 폭을 줄이면 단어 단위로 줄바꿈됩니다. 글자 크기는 최대 300px입니다.</small>
+            <small style={{ display: 'block', marginTop: 8, color: '#687386' }}>파란 점선은 실제 HERO 좌표입니다. 글자 렌더링과 줄바꿈은 iframe 안의 실제 홈페이지 CSS가 담당합니다.</small>
           </div>
 
           <div style={panelStyle}>
