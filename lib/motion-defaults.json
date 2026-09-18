@@ -1,10 +1,10 @@
 {
   "assets": {
     "heroImage": "/motion/assets/arena.webp",
-    "heroVideo": "/motion/assets/arena-film.mp4",
+    "heroVideo": "",
     "logoDark": "/motion/assets/ksop-logo.png",
     "logoLight": "/motion/assets/ksop-logo-black.png",
-    "mobileVideo": "/motion/assets/arena-film-mobile.mp4",
+    "mobileVideo": "",
     "trophyImage": "/motion/assets/sculpture.webp"
   },
   "contactEmail": "",

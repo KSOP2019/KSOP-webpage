@@ -1,8 +1,1 @@
-{
-  "$schema": "https://openapi.vercel.sh/vercel.json",
-  "git": {
-    "deploymentEnabled": {
-      "checkpoint/motion-cms-20260916": false
-    }
-  }
-}
+{"$schema":"https://openapi.vercel.sh/vercel.json","git":{"deploymentEnabled":{"checkpoint/motion-cms-20260916":true}}}
