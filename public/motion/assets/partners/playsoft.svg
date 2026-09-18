@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 180" role="img" aria-labelledby="title desc">
+  <title id="title">PLAYSOFT</title>
+  <desc id="desc">Temporary PLAYSOFT partner logo</desc>
+  <g fill="none" fill-rule="evenodd">
+    <g transform="translate(28 24)">
+      <rect x="0" y="0" width="132" height="132" rx="34" fill="#171A24"/>
+      <path d="M39 94V38h34c24 0 37 10 37 28 0 18-13 28-37 28H39Zm22-18h12c10 0 15-3 15-10s-5-10-15-10H61v20Z" fill="#FFF"/>
+      <path d="M86 108c14-2 24-9 30-20" stroke="#B3923F" stroke-width="9" stroke-linecap="round"/>
+    </g>
+    <text x="188" y="91" fill="#171A24" font-family="Arial, Helvetica, sans-serif" font-size="54" font-weight="800" letter-spacing="2">PLAYSOFT</text>
+    <text x="191" y="126" fill="#7A7D86" font-family="Arial, Helvetica, sans-serif" font-size="15" font-weight="700" letter-spacing="4">SOFTWARE · INTERACTIVE</text>
+  </g>
+</svg>

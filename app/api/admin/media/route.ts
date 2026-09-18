@@ -1,8 +1,8 @@
 import { handleMediaDelete, handleMediaList } from '@/lib/media-upload'
 
 /** Admin-only media library listing (newest first). */
-export async function GET() {
-  return handleMediaList()
+export async function GET(request:Request) {
+  return handleMediaList(request)
 }
 
 /** Admin-only media delete. Body: { path }. Paths are validated server-side. */

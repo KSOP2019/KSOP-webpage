@@ -156,3 +156,5 @@
     padding-bottom: 12px;
   }
 }
+
+.motion-table{overflow:auto}.motion-save{position:sticky;bottom:12px;background:var(--admin-surface,#fff);padding:16px;border:1px solid #dde2e9;border-radius:16px;z-index:3}.admin-form fieldset{padding:20px;border:1px solid #dde2e9;border-radius:16px}.admin-form textarea{width:100%;min-height:72px}.admin-actions input{min-width:0;max-width:100%}
