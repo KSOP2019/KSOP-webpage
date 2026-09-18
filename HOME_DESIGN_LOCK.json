@@ -1,0 +1,38 @@
+{
+  "approved_home_commit": "815e901f3bd6a23a4c076a451a746bf00543244b",
+  "policy": "홈 구조·색상·효과·기존 자산은 이 기준을 유지한다. 카테고리 이동 URL과 상세 화면 코드만 변경 가능. 홈 디자인 변경은 사용자 신규 지시 필요.",
+  "style_sha256": "5656c54e0e77aac12186c6a56ca4f227878e1e8b9ee2a176dbc3d6f55c579407",
+  "approved_index_sha256": "f5b22b46ae27bf62b203ab5164c67cfe637b44177f1e9f796f9185addefab71b",
+  "approved_app_sha256": "a4ae1886183e04fbcaca373d663734f10e58de7623201a123e90ecc5ac66cbc2",
+  "assets_sha256": {
+    "dist/assets/arena-film-mobile.mp4": "e5968223ea0d851c5116f51968e0aac02da9b5a0432695cca4de66dd4d501141",
+    "dist/assets/arena-film.mp4": "0c53556e9b0e34e31e90f592bb6f1fde801c6b1a1d808e11230ea1b19f1bf2bd",
+    "dist/assets/arena-poster.webp": "ac2acee4a191738b2a692cd4ab0197698c4d9bbd4301c61022b6102c7197f5c9",
+    "dist/assets/arena.webp": "04b2dc1de4e62a9bc8ef23b9d432c005bba639a840a29f70742469d876e6bb47",
+    "dist/assets/ksop-logo-black.png": "2b07e999e6e955b6610d43a7c8e9f15596c4c4b06f7eedf3b6e1938994c41735",
+    "dist/assets/ksop-logo.png": "8fecc11570155105ebd54451fd20c32edb4b53064859a8b4c927f75244134e6a",
+    "dist/assets/partners/cpg.webp": "e54251bd03e6368b3cc7efa77b29644cb0d33104f11e8843a7d4bf982059c0de",
+    "dist/assets/partners/flopin-wordmark.svg": "c95e354a44a7dbe05f10ac8f78dddfd067de7d6c719d4d3c774cda4ce39038f0",
+    "dist/assets/partners/gpi.jpg": "fa6357f9a77f9b0d7cefe3fbedac4749b77d848f92285681bdbb021ad8143f38",
+    "dist/assets/partners/jopt.png": "e58b20aeecf5e89738ef0faa8c3b94b44ca4eb2f172300b79a6725b59946361c",
+    "dist/assets/partners/playplace.svg": "1a589e591d4b158daea0aff1b138f58333ee0c4e8a2ba0e31317f613ecb1c7c0",
+    "dist/assets/partners/playsoft.svg": "696be2f07ad3def7c3192227d12b6fc815435b96bbcd9ba34b83f301c5a652ce",
+    "dist/assets/sculpture.webp": "06f852767ea1c68f0ea0296e00d1b5d566b75c226df8d309ef8586f1c82f2057",
+    "dist/assets/social/discord.svg": "a2625a85ff8a4aa0703ba7c9db39bc57257b3223cd8c19394e8ec491f50b9b83",
+    "dist/assets/social/facebook.svg": "51e362770f996b7b44eef3687c1ea9556acdc9d0965bf029ca4dbb864c215546",
+    "dist/assets/social/flopin.svg": "b54086375d97da95333c100d50681bc2e27f899e2c1b5f9035dfbf91da73bfeb",
+    "dist/assets/social/instagram.svg": "5b46b51101631c38498c02c51580e2714fbc2cbae14a72396aa53ba9d8db2d69",
+    "dist/assets/social/x.svg": "6cc7df189ce44ff0d88420ab43ac9c19da083b3d9fd470519fc67f012fa313fe",
+    "dist/assets/social/youtube.svg": "e816ccb358a5c93b3010beaf758adf3e6d027731dbe353ce81336b05fa60f24d"
+  },
+  "detail_files": [
+    "dist/pages.css",
+    "dist/pages.js"
+  ],
+  "allowed_home_integration": [
+    "상세 CSS/JS 파일 로드",
+    "홈 및 메뉴 링크를 상세 주소로 연결",
+    "상세 화면에서 헤더 테마·현재 메뉴·스크롤 표시 처리",
+    "언어 변경 이벤트 전달"
+  ]
+}

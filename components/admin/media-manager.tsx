@@ -23,6 +23,7 @@ function formatBytes(size: number | null): string {
 export function MediaManager() {
   const fileRef = useRef<HTMLInputElement | null>(null)
   const [folder, setFolder] = useState<string>('misc')
+  const [page,setPage]=useState(1),[total,setTotal]=useState(0)
   const [items, setItems] = useState<MediaItem[]>([])
   const [loading, setLoading] = useState(true)
   const [uploading, setUploading] = useState(false)
@@ -34,19 +35,19 @@ export function MediaManager() {
     setLoading(true)
     setError('')
     try {
-      const response = await fetch('/api/admin/media')
+      const response = await fetch('/api/admin/media?page='+page)
       const data = await response.json().catch(() => ({}))
       if (!response.ok) {
         setError(typeof data?.error === 'string' ? data.error : '목록을 불러오지 못했습니다.')
         return
       }
-      setItems(Array.isArray(data?.items) ? data.items : [])
+      setItems(Array.isArray(data?.items) ? data.items : []);setTotal(data.total||0)
     } catch (e: any) {
       setError(e?.message || '목록을 불러오지 못했습니다.')
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [page])
 
   useEffect(() => {
     refresh()
@@ -127,19 +128,20 @@ export function MediaManager() {
         <input
           ref={fileRef}
           type="file"
-          accept="image/jpeg,image/png,image/webp,image/gif,image/avif"
+          accept="image/jpeg,image/png,image/webp,image/gif,application/pdf"
           onChange={() => setPendingName(fileRef.current?.files?.[0]?.name || '')}
         />
         <button className="admin-button" type="button" onClick={uploadSelected} disabled={uploading || !pendingName}>
-          {uploading ? '업로드 중…' : '이미지 업로드'}
+          {uploading ? '업로드 중…' : '파일 업로드'}
         </button>
         <button className="admin-button secondary" type="button" onClick={refresh} disabled={loading}>
           새로고침
         </button>
       </div>
-      <p className="muted-copy">JPG · PNG · WebP · GIF · AVIF, 최대 10MB. 업로드된 파일은 공개 URL로 바로 표시됩니다.</p>
+      <p className="muted-copy">JPG · PNG · WebP · GIF · PDF, 최대 4MB. 업로드된 파일은 공개 URL로 바로 표시됩니다.</p>
       {error ? <span style={{ color: '#b42318', fontSize: 13 }}>{error}</span> : null}
       {notice ? <span style={{ fontSize: 13, overflowWrap: 'anywhere' }}>{notice}</span> : null}
+      <div className="admin-actions"><button disabled={loading||page===1} onClick={()=>setPage(page-1)}>이전</button><span>{page} / {Math.max(1,Math.ceil(total/24))} · {total}개</span><button disabled={loading||page*24>=total} onClick={()=>setPage(page+1)}>다음</button></div>
       {loading ? (
         <p className="muted-copy">불러오는 중…</p>
       ) : items.length === 0 ? (
@@ -148,12 +150,12 @@ export function MediaManager() {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 12 }}>
           {items.map((item) => (
             <div key={item.path} style={{ border: '1px solid #d8dde5', borderRadius: 10, padding: 10, display: 'flex', flexDirection: 'column', gap: 8 }}>
-              <img
+              {item.mime==='application/pdf'?<a href={item.url} target="_blank" rel="noreferrer">PDF 열기 ↗</a>:<img
                 src={item.url}
                 alt={item.name}
                 loading="lazy"
                 style={{ width: '100%', height: 110, objectFit: 'cover', borderRadius: 6, background: '#f4f6f9' }}
-              />
+              />}
               <span style={{ fontSize: 12, fontWeight: 600, overflowWrap: 'anywhere' }}>{item.name}</span>
               <span className="muted-copy" style={{ fontSize: 11 }}>
                 {item.path} · {formatBytes(item.size)}

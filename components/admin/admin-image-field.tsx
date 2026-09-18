@@ -14,7 +14,7 @@ type AdminImageFieldProps = {
   allowClear?: boolean
 }
 
-const ACCEPT = 'image/jpeg,image/png,image/webp,image/gif,image/avif'
+const ACCEPT = 'image/jpeg,image/png,image/webp,image/gif'
 
 /**
  * Reusable CMS image field: preview + file select + upload + replace + clear.
@@ -115,7 +115,7 @@ export function AdminImageField({
         />
       ) : (
         <span className="muted-copy" style={{ fontSize: 12 }}>
-          No image selected.
+          이미지를 선택하세요.
         </span>
       )}
       <input ref={fileRef} type="file" accept={ACCEPT} style={{ display: 'none' }} onChange={onFileSelected} />
@@ -138,7 +138,7 @@ export function AdminImageField({
         </span>
       ) : null}
       <label style={{ fontWeight: 400, fontSize: 12 }}>
-        Current URL (advanced)
+        이미지 주소
         <input value={value} onChange={(event) => onChange(event.target.value)} placeholder="https://…" />
       </label>
       {error ? (

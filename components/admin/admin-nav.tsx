@@ -3,16 +3,7 @@
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 
-const links = [
-  { href: '/admin', label: 'Dashboard' },
-  { href: '/admin/hero', label: 'HERO Layout' },
-  { href: '/admin/content', label: 'Home Content' },
-  { href: '/admin/schedule', label: 'Schedule' },
-  { href: '/admin/events', label: 'Events' },
-  { href: '/admin/news', label: 'News' },
-  { href: '/admin/players', label: 'Players' },
-  { href: '/admin/media', label: 'Media' },
-]
+const links = [{href:'/admin',label:'관리 홈'},{href:'/admin/manage/settings',label:'홈 문구·이미지'},...Object.entries({series:'일정·시리즈',events:'이벤트',players:'선수·랭킹',results:'선수 경기 기록',news:'뉴스·인터뷰',videos:'영상·숏츠',about:'회사 소개·연혁',partners:'파트너'}).map(([k,v])=>({href:'/admin/manage/'+k,label:v})),{href:'/admin/media',label:'파일 관리'}]
 
 export function AdminNav() {
   const pathname = usePathname()
@@ -37,8 +28,8 @@ export function AdminNav() {
             {link.label}
           </Link>
         ))}
-        <Link href="/">Preview Site</Link>
-        <button type="button" onClick={logout}>Logout</button>
+        <Link href="/">홈페이지 보기</Link>
+        <button type="button" onClick={logout}>로그아웃</button>
       </nav>
     </aside>
   )
